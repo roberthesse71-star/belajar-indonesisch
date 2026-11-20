@@ -679,10 +679,18 @@ function stopAudio(){playTok++;try{speechSynthesis.cancel();}catch(e){}}
 function speak(text,rate,pitch){
   return new Promise(res=>{
     if(!("speechSynthesis" in window)){res();return;}
-    try{speechSynthesis.cancel();}catch(e){}
-    const u=new SpeechSynthesisUtterance(text);u.lang="id-ID";
-    const v=idVoice();if(v)u.voice=v;u.rate=rate||.95;u.pitch=pitch||1;
-    u.onend=u.onerror=()=>res();speechSynthesis.speak(u);
+    try{loadVoices();}catch(e){}
+    const go=()=>{
+      const u=new SpeechSynthesisUtterance(text);u.lang="id-ID";
+      const v=idVoice();if(v)u.voice=v;u.rate=rate||.95;u.pitch=pitch||1;u.volume=1;
+      let done=false;const fin=()=>{if(!done){done=true;res();}};
+      u.onend=u.onerror=fin;
+      try{speechSynthesis.resume();}catch(e){}
+      try{speechSynthesis.speak(u);}catch(e){fin();}
+      setTimeout(fin,Math.max(5000,text.length*300));
+    };
+    // iOS verschluckt Äußerungen direkt nach cancel(): kurz warten
+    if(speechSynthesis.speaking||speechSynthesis.pending){try{speechSynthesis.cancel();}catch(e){}setTimeout(go,120);}else go();
   });
 }
 async function playDialog(u,cb){
@@ -715,37 +723,58 @@ function evaluate(target,alts){
   }
   return {score:Math.round(best.sc*100),words:best.words,heard:best.heard};
 }
-const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,
+/* ---------- Audio-Element (iOS: einmal per Fingertipp „entsperren“) ---------- */
+const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+const AUD=typeof Audio!=="undefined"?new Audio():{play(){return Promise.resolve();},pause(){}};
+let audUnlocked=false;
+function unlockAudio(){
+  try{AUD.src=SILENT;const p=AUD.play();p&&p.catch&&p.catch(()=>{});}catch(e){}
+  if(audUnlocked)return;audUnlocked=true;
+  try{if("speechSynthesis" in window){const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u);}}catch(e){}
+}
+function pickMime(){const c=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];for(const t of c){try{if(window.MediaRecorder&&MediaRecorder.isTypeSupported(t))return t;}catch(e){}}return "";}
+const SRERR={"not-allowed":"Spracherkennung nicht erlaubt (Mikrofon-Berechtigung prüfen).","service-not-allowed":"Spracherkennung hier nicht erlaubt. iPhone: Einstellungen → Allgemein → Tastatur → „Diktierfunktion“ einschalten und die Seite im Safari-Tab statt als Home-Bildschirm-App testen.","no-speech":"Es wurde keine Sprache gehört.","audio-capture":"Kein Mikrofon gefunden.","network":"Keine Internetverbindung für die Spracherkennung.","language-not-supported":"Indonesisch wird von der Spracherkennung dieses Geräts nicht unterstützt.","aborted":"Erkennung abgebrochen."};
+const recMode=()=>S.recMode||(isIOS?"rec":"both");
+const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,
  async start(cb){
   if(this.active)return;
-  const gen=++this.gen;this.cb=cb;this.fin=false;this.alts=[];this.chunks=[];this.srErr=null;
+  const gen=++this.gen,mode=recMode(),wantRec=mode!=="sr";
+  this.wantSR=mode!=="rec"&&!!SRC;
+  this.cb=cb;this.fin=false;this.alts=[];this.chunks=[];this.srErr=null;this.blob=null;this.mr=null;this.stream=null;
+  unlockAudio();
   try{speechSynthesis.cancel();}catch(e){}
-  if(!navigator.mediaDevices||!window.MediaRecorder){SP.status="Aufnahme wird von diesem Browser nicht unterstützt.";render();return;}
-  try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
-  catch(e){SP.status="Mikrofon blockiert – bitte Zugriff erlauben (Schloss-Symbol in der Adressleiste). Falls die Datei lokal geöffnet ist und der Browser nicht fragt: im Ordner der Datei „python3 -m http.server“ starten und http://localhost:8000 öffnen.";render();return;}
-  this.mr=new MediaRecorder(this.stream);this.mrDone=false;
-  this.mr.ondataavailable=e=>{if(e.data.size)this.chunks.push(e.data);};
-  this.mr.onstop=()=>{if(gen!==this.gen)return;this.mrDone=true;this.blob=new Blob(this.chunks,{type:this.mr.mimeType||"audio/webm"});this.tryFinish();};
-  this.mr.start();this.active=true;
-  try{
-    this.ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const src=this.ctx.createMediaStreamSource(this.stream),an=this.ctx.createAnalyser();an.fftSize=1024;src.connect(an);
-    const data=new Uint8Array(an.fftSize);
-    const draw=()=>{const cv=document.getElementById("meter");if(!this.active)return;
-      if(cv){const g=cv.getContext("2d");an.getByteTimeDomainData(data);g.clearRect(0,0,cv.width,cv.height);g.strokeStyle="#c8102e";g.lineWidth=2;g.beginPath();
-        for(let i=0;i<data.length;i++){const x=i/data.length*cv.width,y=data[i]/255*cv.height;i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}
-      this.raf=requestAnimationFrame(draw);};
-    draw();
-  }catch(e){}
+  if(mode==="sr"&&!SRC){SP.status="Keine Spracherkennung in diesem Browser – wähle oben „Nur Aufnahme“.";render();return;}
+  if(wantRec){
+    if(!navigator.mediaDevices||!window.MediaRecorder){SP.status="Aufnahme wird von diesem Browser nicht unterstützt (Tab „Laute“ → Diagnose).";render();return;}
+    try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
+    catch(e){SP.status="Mikrofon blockiert ("+((e&&e.name)||"Fehler")+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon, oder Hinweis in der Adressleiste). Lokale Dateien (file://) funktionieren oft nicht – nutze die https-Adresse.";render();return;}
+    const mime=pickMime();
+    try{this.mr=new MediaRecorder(this.stream,mime?{mimeType:mime}:undefined);}catch(e){this.mr=new MediaRecorder(this.stream);}
+    this.mrDone=false;
+    this.mr.ondataavailable=e=>{if(e.data&&e.data.size)this.chunks.push(e.data);};
+    this.mr.onstop=()=>{if(gen!==this.gen)return;this.mrDone=true;this.blob=new Blob(this.chunks,{type:(this.mr&&this.mr.mimeType)||mime||"audio/mp4"});this.tryFinish();};
+    this.mr.start();
+    try{
+      this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+      const src=this.ctx.createMediaStreamSource(this.stream),an=this.ctx.createAnalyser();an.fftSize=1024;src.connect(an);
+      const data=new Uint8Array(an.fftSize);
+      const draw=()=>{if(!this.active)return;const cv=document.getElementById("meter");
+        if(cv){const g=cv.getContext("2d");an.getByteTimeDomainData(data);g.clearRect(0,0,cv.width,cv.height);g.strokeStyle="#c8102e";g.lineWidth=2;g.beginPath();
+          for(let i=0;i<data.length;i++){const x=i/data.length*cv.width,y=data[i]/255*cv.height;i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}
+        this.raf=requestAnimationFrame(draw);};
+      this.active=true;draw();
+    }catch(e){}
+  }else{this.mrDone=true;}
+  this.active=true;
   this.srDone=true;
-  if(SRC){
+  if(this.wantSR){
     try{
       const sr=new SRC();sr.lang="id-ID";sr.interimResults=false;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;
       sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);};
       sr.onerror=e=>{this.srErr=e.error;};
       sr.onend=()=>{if(gen!==this.gen)return;this.srDone=true;if(this.active)this.stop();else this.tryFinish();};
       sr.start();this.sr=sr;
-    }catch(e){this.srDone=true;}
+    }catch(e){this.srDone=true;this.srErr="aborted";}
   }
   SP.status="● Aufnahme läuft … sprich jetzt (stoppt automatisch).";
   clearTimeout(this.timer);this.timer=setTimeout(()=>this.stop(),9000);
@@ -760,30 +789,41 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   try{this.ctx&&this.ctx.close();}catch(e){}
   this.ctx=null;
   if(silent){this.gen++;this.fin=true;this.srDone=true;this.mrDone=true;return;}
-  if(was){SP.status="Auswertung …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){this.srDone=true;this.tryFinish();}},2500);}
+  if(was){SP.status="Auswertung …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){this.srDone=true;this.mrDone=true;this.tryFinish();}},2500);}
  },
  tryFinish(){
   if(this.active||!this.srDone||!this.mrDone||this.fin)return;
   this.fin=true;
   const alts=this.alts.slice(),err=this.srErr;
   if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}
-  SP.url=this.blob?URL.createObjectURL(this.blob):null;
+  SP.url=(this.blob&&this.blob.size>0)?URL.createObjectURL(this.blob):null;
   S.totalSpeak=(S.totalSpeak||0)+1;D().speak++;
-  if(SRC&&alts.length){
+  if(this.wantSR&&alts.length){
     SP.res=evaluate(SP.target,alts);
     const key="t:"+norm(SP.target);S.best[key]=Math.max(S.best[key]||0,SP.res.score);
     addXp(Math.max(1,Math.round(SP.res.score/10)));
-    SP.status="Fertig – höre deine Aufnahme und vergleiche mit dem Vorbild.";
-  }else if(SRC){
+    SP.status=SP.url?"Fertig – höre deine Aufnahme (▶) und vergleiche (⇄) mit dem Vorbild.":"Fertig – Bewertung unten.";
+  }else if(this.wantSR){
     SP.res=null;addXp(1);
-    SP.status="Es wurde nichts erkannt"+(err?" ("+err+")":"")+". Sprich lauter/näher am Mikrofon. Die Spracherkennung braucht Internet. Du kannst deine Aufnahme zum Selbstvergleich anhören.";
-  }else{SP.res=null;addXp(1);SP.status="Aufnahme gespeichert – vergleiche sie selbst mit dem Vorbild.";}
+    SP.status=(err&&SRERR[err])?SRERR[err]:"Es wurde nichts erkannt. Sprich lauter und näher am Mikrofon. Die Spracherkennung braucht Internet.";
+    if(SP.url)SP.status+=" Deine Aufnahme kannst du trotzdem anhören.";
+  }else{SP.res=null;addXp(1);SP.status=SP.url?"Aufnahme gespeichert – höre sie mit ▶ an und vergleiche mit ⇄ Vergleich.":"Es wurde nichts aufgenommen. Prüfe die Mikrofon-Berechtigung.";}
   if(this.cb)this.cb(SP.res);
   render();
  }
 };
-function playMine(){if(!SP.url)return Promise.resolve();const a=new Audio(SP.url);return new Promise(r=>{a.onended=a.onerror=r;a.play().catch(r);});}
-async function compareAudio(){await speak(SP.target,.9);await sleep(350);await playMine();}
+function playAud(url){
+  return new Promise(r=>{
+    try{AUD.pause();AUD.onended=AUD.onerror=()=>r();AUD.src=url;AUD.load&&AUD.load();
+      const p=AUD.play();if(p&&p.catch)p.catch(()=>{SP.status="Wiedergabe blockiert – tippe noch einmal auf ▶ „Meine Aufnahme“.";const el=document.querySelector("#spstat");if(el)el.textContent=SP.status;r();});
+    }catch(e){r();}
+  });
+}
+function playMine(){if(!SP.url)return Promise.resolve();return playAud(SP.url);}
+async function compareAudio(){
+  unlockAudio();                         // im Fingertipp: Audio-Element für spätere Wiedergabe freischalten
+  await speak(SP.target,.9);await sleep(250);await playMine();
+}
 function resultHtml(r){
   const col=r.score>=85?"var(--ok)":r.score>=60?"var(--mid)":"var(--bad)";
   return `<div class="row" style="justify-content:space-between"><div><div class="small">Erkannt:</div><div style="font-size:17px">„${esc(r.heard||"–")}“</div></div><div class="score" style="color:${col}">${r.score}%</div></div>
@@ -791,12 +831,15 @@ function resultHtml(r){
   <div class="small">${r.score>=85?"Sehr gut! 🎉":r.score>=60?"Fast – achte auf die orangen/roten Wörter und höre das Vorbild noch einmal.":"Noch nicht ganz – langsam anhören und Silbe für Silbe nachsprechen."} (Bewertung per Spracherkennung = Richtwert.)</div>`;
 }
 function speakBox(target,ph,hideTarget){
-  const supp=!navigator.mediaDevices?'<div class="warn">Kein Mikrofonzugriff möglich. Öffne die Datei direkt in Chrome/Edge/Safari (nicht in einer Vorschau).</div>':"";
-  const noSR=!SRC?'<div class="warn">Keine Spracherkennung in diesem Browser (z. B. Firefox). Aufnahme & Vergleich gehen, die automatische Bewertung braucht Chrome, Edge oder Safari.</div>':"";
-  return `${supp}${noSR}
+  const m=recMode();
+  const supp=(m!=="sr"&&!navigator.mediaDevices)?'<div class="warn">Kein Mikrofonzugriff möglich. Öffne die https-Adresse der App direkt in Safari/Chrome/Edge (nicht in einer Vorschau oder als lokale Datei).</div>':"";
+  const noSR=(m!=="rec"&&!SRC)?'<div class="warn">Keine Spracherkennung in diesem Browser. Wähle oben „Nur Aufnahme“ und vergleiche per Gehör.</div>':"";
+  const mix=(m==="both"&&isIOS)?'<div class="warn">Auf dem iPhone blockieren sich gleichzeitige Aufnahme und Spracherkennung oft. Falls etwas hakt: wähle „Nur Aufnahme“ oder „Nur Bewertung“.</div>':"";
+  const idv=(!idVoice()&&"speechSynthesis" in window)?'<div class="small" style="margin-bottom:6px">⚠️ Keine indonesische Stimme gefunden – Vorbild klingt evtl. falsch (Tab „Laute“ → Diagnose).</div>':"";
+  return `${supp}${noSR}${mix}
   <div class="card" style="text-align:center">
    ${hideTarget?`<div class="small">Text verdeckt – sprich aus dem Gedächtnis.</div>`:`<div class="big" style="font-size:26px">${esc(target)}</div>`}
-   ${ph&&!hideTarget?`<div class="ph">${esc(ph)}</div>`:""}
+   ${ph&&!hideTarget?`<div class="ph">${esc(ph)}</div>`:""}${idv}
    <div class="row" style="justify-content:center;margin:12px 0">
     <button class="btn" data-act="saySP">🔊 Vorbild</button><button class="btn" data-act="saySP" data-slow="1">🐢 Langsam</button></div>
    <canvas id="meter" width="700" height="50"></canvas>
@@ -804,7 +847,11 @@ function speakBox(target,ph,hideTarget){
     <button class="btn ${Rec.active?"rec":"pri"}" data-act="toggleRec">${Rec.active?"⏹ Stopp":"🎙 Aufnehmen"}</button>
     <button class="btn" data-act="playMine" ${SP.url?"":"disabled"}>▶ Meine Aufnahme</button>
     <button class="btn" data-act="compare" ${SP.url?"":"disabled"}>⇄ Vergleich</button></div>
-   <div class="small" style="margin-top:8px">${esc(SP.status||"Tipp: Erst Vorbild anhören, dann nachsprechen.")}</div>
+   <div class="small" id="spstat" style="margin-top:8px">${esc(SP.status||"Tipp: Erst Vorbild anhören, dann nachsprechen.")}</div>
+   <div class="row" style="justify-content:center;margin-top:8px"><select data-sel="recmode">
+    <option value="both" ${m==="both"?"selected":""}>Aufnahme + Bewertung</option>
+    <option value="rec" ${m==="rec"?"selected":""}>Nur Aufnahme (Selbstvergleich)</option>
+    <option value="sr" ${m==="sr"?"selected":""}>Nur Bewertung (Spracherkennung)</option></select></div>
   </div>
   ${SP.res?`<div class="card">${resultHtml(SP.res)}</div>`:""}`;
 }
@@ -1127,11 +1174,39 @@ function vDict(){
   const i=$("#dq");i.oninput=()=>{V.q=i.value;$("#dres").innerHTML=dictResults(V.q);};
 }
 
+
+/* ---------- Diagnose ---------- */
+const DIAG={url:null};
+function diagHtml(){
+  const yes=b=>b?"✅":"❌",standalone=!!(navigator.standalone||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches));
+  const v=idVoice(),nv=voices.length;
+  const rows=[["Sprachausgabe",yes("speechSynthesis" in window)],["Stimmen gefunden",nv+""],["Indonesische Stimme",v?("✅ "+esc(v.name)):"❌ keine (Vorbild klingt evtl. falsch)"],["Spracherkennung",yes(!!SRC)],["Aufnahme (MediaRecorder)",window.MediaRecorder?("✅ "+esc(pickMime()||"Standardformat")):"❌"],["Mikrofon-Zugriff möglich",yes(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))],["Sichere Verbindung (https)",yes(window.isSecureContext)],["Als Home-Bildschirm-App",standalone?"ja":"nein"],["Speicher funktioniert",yes(STORE_OK)],["Aufnahmemodus",esc(recMode())]];
+  return `<div class="card"><b>🔧 Audio-Diagnose</b><p class="small">Zeigt, was dein Gerät kann. Teste hier zuerst Ton und Mikrofon.</p>
+   <table>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>
+   <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">🔊 Sprachtest</button><button class="btn" data-act="diagMic">🎙 Mikrofon-Test (3 Sek.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Test-Aufnahme abspielen</button></div>
+   <div class="small" id="diagmsg" style="margin-top:8px">iPhone: Stumm-Schalter aus und Lautstärke hoch! Die Sprachausgabe ist bei aktivem Stumm-Schalter oft lautlos.</div></div>`;
+}
+async function diagMic(){
+  const m=document.getElementById("diagmsg");unlockAudio();
+  if(!navigator.mediaDevices||!window.MediaRecorder){m.textContent="❌ Aufnahme wird hier nicht unterstützt.";return;}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true}),mime=pickMime();
+    let mr;try{mr=new MediaRecorder(st,mime?{mimeType:mime}:undefined);}catch(e){mr=new MediaRecorder(st);}
+    const ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data);};
+    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());const b=new Blob(ch,{type:mr.mimeType||mime||"audio/mp4"});
+      if(DIAG.url){try{URL.revokeObjectURL(DIAG.url);}catch(e){}}DIAG.url=b.size?URL.createObjectURL(b):null;
+      m.textContent=b.size?("✅ Aufgenommen ("+Math.round(b.size/1024)+" KB). Tippe auf „Test-Aufnahme abspielen“."):"⚠️ Es kam kein Ton an – Mikrofon prüfen.";
+      const bt=document.getElementById("diagplay");if(bt)bt.disabled=!DIAG.url;};
+    m.textContent="🎙 Sprich jetzt … (3 Sek.)";mr.start();setTimeout(()=>{if(mr.state!=="inactive")mr.stop();},3000);
+  }catch(e){m.textContent="❌ Mikrofon: "+((e&&e.name)||e)+" – Zugriff erlauben und https-Adresse nutzen.";}
+}
+
 /* ===================== LAUTE ===================== */
 function vSounds(){
   $("#view").innerHTML=`<h2>Aussprache-Guide</h2>${voiceWarning()}
   <div class="card"><p>Indonesisch wird fast so gesprochen, wie es geschrieben wird – <b>jeder Buchstabe hat (fast) immer denselben Laut</b>. Es gibt keine Töne. Klicke auf die Beispiele, um sie zu hören, und übe sie dann im Tab „Sprechen“.</p>
   <table><tr><th>Schreibung</th><th>Aussprache</th><th>Beispiele</th></tr>${SOUNDS.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${r[2].split(", ").map(w=>`<button class="btn sm" style="margin:2px" data-act="sayw" data-w="${esc(w)}">🔊 ${esc(w)}</button>`).join("")}</td></tr>`).join("")}</table></div>
+  ${diagHtml()}
   <div class="card"><b>Mini-Zungenbrecher</b><p class="small">Erst langsam, dann schneller. Nimm dich auf und vergleiche!</p>
   ${["Kakak kaya kaya raya.","Saya suka makan ikan bakar.","Burung itu terbang tinggi.","Cinta tanah air.","Ayam goreng enak sekali."].map(w=>`<div class="row" style="margin:6px 0"><button class="btn sm" data-act="sayw" data-w="${esc(w)}">🔊</button><span>${esc(w)}</span><span class="ph" style="font-size:13px">${esc(phon(w))}</span></div>`).join("")}</div>`;
 }
@@ -1217,6 +1292,9 @@ document.addEventListener("click",e=>{
    case"exTransCheck":exTransCheck();break;
    case"exSkip":{const q=V.ex.qs[V.ex.i];q.typed="";exFinish(q,false);break;}
    case"exNext":V.ex.i++;render();break;
+   case"diagSpeak":unlockAudio();speak("Selamat pagi. Apa kabar?",.9);break;
+   case"diagMic":diagMic();break;
+   case"diagPlay":if(DIAG.url)playAud(DIAG.url);break;
    case"hideIos":S.hideIos=true;save();render();break;
    case"bkCopy":{const txt=JSON.stringify(S),msg=document.getElementById("bkmsg");
      const ok=()=>{S.lastBackup=Date.now();save();msg.textContent="✅ Kopiert. Füge den Text z. B. in Notizen ein und bewahre ihn auf.";};
@@ -1250,6 +1328,7 @@ document.addEventListener("change",e=>{
   if(k==="rpunit"){V.rp={u:v,role:V.rp.role,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
   if(k==="rprole"){V.rp={u:V.rp.u,role:v,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
   if(k==="hdlg"){V.hear.dlgU=v;stopAudio();render();}
+  if(k==="recmode"){Rec.stop(true);S.recMode=v;save();render();}
   if(k==="goal"){S.goal=+v;save();render();}
   if(k==="newpd"){S.newPerDay=+v;save();}
 });
@@ -1259,6 +1338,7 @@ document.addEventListener("keydown",e=>{
   if(e.key===" "||e.key==="Enter"){e.preventDefault();if(!V.cards.flip){V.cards.flip=true;render();}}
   else if(V.cards.flip&&["1","2","3"].includes(e.key))rateCard(+e.key-1);
 });
+document.addEventListener("pointerdown",()=>{if(!audUnlocked)unlockAudio();},{passive:true});
 window.addEventListener("beforeunload",()=>{try{speechSynthesis.cancel();}catch(e){}});
 header();render();
 idbLoad().then(raw=>{if(!raw)return;try{const o=JSON.parse(raw);if((o.ts||0)>(S.ts||0)&&o.box){S=Object.assign(S,o);header();render();}}catch(e){}});
