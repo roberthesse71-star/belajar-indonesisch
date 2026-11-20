@@ -734,7 +734,8 @@ function deviceSpeak(text,rate,pitch,forceDefault){
   });
 }
 async function speak(text,rate,pitch,forceDefault){
-  const mode=S.ttsMode||"auto";
+  if(S.ttsV!==2){S.ttsV=2;S.ttsMode="online";save();}   // einmalig: Online-Stimme als Standard für alle Lektionen
+  const mode=S.ttsMode||"online";
   if(!forceDefault&&(mode==="online"||(mode==="auto"&&(S.ttsAutoOnline||!idVoice())))){
     if(await speakOnline(text,rate))return;
     tlog("Online-Stimme nicht möglich → Gerätestimme");
@@ -1255,9 +1256,9 @@ function diagHtml(){
    <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">🔊 Test 1: Indonesisch</button><button class="btn" data-act="diagSpeakDef">🔊 Test 2: Standardstimme (Englisch)</button><button class="btn" data-act="diagSpeakOn">🔊 Test 3: Online-Stimme</button><button class="btn" data-act="diagMic">🎙 Mikrofon-Test (3 Sek.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Test-Aufnahme abspielen</button></div>
    <div class="row" style="margin-top:10px"><span class="small">Stimme:</span><select data-sel="voice"><option value="">Automatisch (Indonesisch → Malaiisch → Standard)</option>${voices.slice().sort((x,y)=>(isIdLang(y)-isIdLang(x))||((/^ms/i.test(y.lang)-/^ms/i.test(x.lang)))||x.name.localeCompare(y.name)).map(x=>`<option value="${esc(x.voiceURI)}" ${S.voiceURI===x.voiceURI?"selected":""}>${esc(x.name)} – ${esc(x.lang)}</option>`).join("")}</select></div>
    <div class="row" style="margin-top:10px"><span class="small">Quelle:</span><select data-sel="ttsmode">
-    <option value="auto" ${(S.ttsMode||"auto")==="auto"?"selected":""}>Automatisch (Gerät, sonst Online)</option>
+    <option value="auto" ${(S.ttsMode||"online")==="auto"?"selected":""}>Automatisch (Gerät, sonst Online)</option>
     <option value="device" ${S.ttsMode==="device"?"selected":""}>Nur Gerätestimme</option>
-    <option value="online" ${S.ttsMode==="online"?"selected":""}>Nur Online-Stimme (Internet)</option></select></div>
+    <option value="online" ${(S.ttsMode||"online")==="online"?"selected":""}>Online-Stimme (Standard, Internet nötig)</option></select></div>
    <div class="small" style="margin-top:10px"><b>Protokoll der Sprachausgabe</b> (zeigt, was passiert):</div>
    <pre id="ttslog" style="background:var(--soft);padding:8px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:200px;overflow:auto;margin:4px 0">${esc(TTSLOG.join("\n")||"– noch nichts –")}</pre>
    <div class="small" id="diagmsg" style="margin-top:8px">iPhone: Stumm-Schalter aus und Lautstärke hoch! Die Sprachausgabe ist bei aktivem Stumm-Schalter oft lautlos.</div></div>`;
