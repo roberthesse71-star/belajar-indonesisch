@@ -649,6 +649,7 @@ const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const sample=(a,n)=>shuffle(a).slice(0,n);
+const APPVER="3.1";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
 function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);
@@ -928,7 +929,8 @@ function speakBox(target,ph,hideTarget){
     <button class="btn ${Rec.active&&Rec.curMode!=="sr"?"rec":"pri"}" data-act="toggleRec" ${Rec.active&&Rec.curMode==="sr"?"disabled":""}>${Rec.active&&Rec.curMode!=="sr"?"⏹ Stopp":"🎙 Aufnehmen"}</button>
     <button class="btn" data-act="playMine" ${SP.url?"":"disabled"}>▶ Meine Aufnahme</button>
     <button class="btn" data-act="compare" ${SP.url?"":"disabled"}>⇄ Abgleich</button>
-    <button class="btn ${Rec.active&&Rec.curMode==="sr"?"rec":""}" data-act="scoreOnly" ${(!SRC||(Rec.active&&Rec.curMode!=="sr"))?"disabled":""}>${Rec.active&&Rec.curMode==="sr"?"⏹ Stopp":"📊 Bewerten"}</button></div>
+    <button class="btn ${Rec.active&&Rec.curMode==="sr"?"rec":""}" data-act="scoreOnly" ${(!SRC||(Rec.active&&Rec.curMode!=="sr"))?"disabled":""}>${Rec.active&&Rec.curMode==="sr"?"⏹ Stopp":"📊 Bewerten"}</button>
+    <button class="btn" data-act="altRec">🎤 Aufnahme über iPhone-Rekorder</button></div>
    <div class="small" style="margin-top:6px">① Vorbild hören → ② 🎙 aufnehmen → ③ ⇄ Abgleich (Vorbild, dann du) → ④ 📊 Bewerten (nochmal sprechen, für die Prozentwertung)</div>
    <div class="small" id="spstat" style="margin-top:8px">${esc(SP.status||"Tipp: Erst Vorbild anhören, dann nachsprechen.")}</div>
    <div class="row" style="justify-content:center;margin-top:8px"><select data-sel="recmode">
@@ -1288,7 +1290,7 @@ async function diagMic(){
       m.textContent=b.size?("✅ Aufgenommen ("+Math.round(b.size/1024)+" KB). Tippe auf „Test-Aufnahme abspielen“."):"⚠️ Es kam kein Ton an – Mikrofon prüfen.";
       const bt=document.getElementById("diagplay");if(bt)bt.disabled=!DIAG.url;};
     m.textContent="🎙 Sprich jetzt … (3 Sek.)";mr.start();setTimeout(()=>{if(mr.state!=="inactive")mr.stop();},3000);
-  }catch(e){m.textContent="❌ Mikrofon: "+((e&&e.name)||e)+" – Zugriff erlauben und https-Adresse nutzen.";}
+  }catch(e){m.textContent="❌ Mikrofon: "+((e&&e.name)||e)+(e&&e.message?" ("+String(e.message).slice(0,80)+")":"")+" [v"+APPVER+"] – Tipp: im Tab „Sprechen“ gibt es „Aufnahme über iPhone-Rekorder“. Schließe außerdem andere Safari-/Chrome-Tabs und Apps, die das Mikrofon nutzen.";}
 }
 
 /* ===================== LAUTE ===================== */
@@ -1360,6 +1362,14 @@ document.addEventListener("click",e=>{
    case"spMode":V.sp.mode=dsx.m;Rec.stop(true);stopAudio();render();break;
    case"spNext":case"spPrev":case"spRand":{const l=ITEMS.filter(x=>x.u===V.sp.unit&&x.k===V.sp.kind);const n=l.length;V.sp.i=a==="spRand"?Math.floor(Math.random()*n):(V.sp.i+(a==="spNext"?1:n-1))%n;Rec.stop(true);render();break;}
    case"toggleRec":Rec.active?Rec.stop():Rec.start(null,recMode()==="sr"?"rec":undefined);break;
+   case"altRec":{
+    let inp=document.getElementById("altrecinp");
+    if(!inp){inp=document.createElement("input");inp.type="file";inp.accept="audio/*";inp.setAttribute("capture","microphone");inp.id="altrecinp";inp.style.display="none";document.body.appendChild(inp);
+      inp.addEventListener("change",()=>{const f=inp.files&&inp.files[0];if(!f)return;
+        if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}
+        SP.url=URL.createObjectURL(f);S.totalSpeak=(S.totalSpeak||0)+1;D().speak++;addXp(1);save();
+        SP.status="Aufnahme übernommen. Tippe auf ⇄ Abgleich oder ▶ Meine Aufnahme.";inp.value="";render();});}
+    inp.click();break;}
    case"scoreOnly":Rec.active?Rec.stop():Rec.start(null,"sr");break;
    case"playMine":playMine();break;
    case"compare":compareAudio();break;
