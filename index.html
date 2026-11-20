@@ -791,11 +791,13 @@ function unlockAudio(){
 function pickMime(){const c=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];for(const t of c){try{if(window.MediaRecorder&&MediaRecorder.isTypeSupported(t))return t;}catch(e){}}return "";}
 const SRERR={"not-allowed":"Spracherkennung nicht erlaubt (Mikrofon-Berechtigung prüfen).","service-not-allowed":"Spracherkennung hier nicht erlaubt. iPhone: Einstellungen → Allgemein → Tastatur → „Diktierfunktion“ einschalten und die Seite im Safari-Tab statt als Home-Bildschirm-App testen.","no-speech":"Es wurde keine Sprache gehört.","audio-capture":"Kein Mikrofon gefunden.","network":"Keine Internetverbindung für die Spracherkennung.","language-not-supported":"Indonesisch wird von der Spracherkennung dieses Geräts nicht unterstützt.","aborted":"Erkennung abgebrochen."};
 const recMode=()=>S.recMode||(isIOS?"rec":"both");
-const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,
- async start(cb){
+const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,curMode:"",usedRec:false,
+ async start(cb,forceMode){
   if(this.active)return;
-  const gen=++this.gen,mode=recMode(),wantRec=mode!=="sr";
+  const gen=++this.gen,mode=forceMode||recMode(),wantRec=mode!=="sr";
+  this.curMode=mode;this.usedRec=wantRec;
   this.wantSR=mode!=="rec"&&!!SRC;
+  if(wantRec&&!this.wantSR)SP.res=null;
   this.cb=cb;this.fin=false;this.alts=[];this.chunks=[];this.srErr=null;this.blob=null;this.mr=null;this.stream=null;
   unlockAudio();
   try{speechSynthesis.cancel();}catch(e){}
@@ -853,19 +855,21 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   if(this.active||!this.srDone||!this.mrDone||this.fin)return;
   this.fin=true;
   const alts=this.alts.slice(),err=this.srErr;
-  if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}
-  SP.url=(this.blob&&this.blob.size>0)?URL.createObjectURL(this.blob):null;
+  if(this.usedRec){
+    if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}
+    SP.url=(this.blob&&this.blob.size>0)?URL.createObjectURL(this.blob):null;
+  }
   S.totalSpeak=(S.totalSpeak||0)+1;D().speak++;
   if(this.wantSR&&alts.length){
     SP.res=evaluate(SP.target,alts);
     const key="t:"+norm(SP.target);S.best[key]=Math.max(S.best[key]||0,SP.res.score);
     addXp(Math.max(1,Math.round(SP.res.score/10)));
-    SP.status=SP.url?"Fertig – höre deine Aufnahme (▶) und vergleiche (⇄) mit dem Vorbild.":"Fertig – Bewertung unten.";
+    SP.status=this.usedRec?"Fertig – höre deine Aufnahme (▶) und vergleiche (⇄) mit dem Vorbild.":"Bewertung fertig – unten siehst du, welche Wörter erkannt wurden.";
   }else if(this.wantSR){
     SP.res=null;addXp(1);
     SP.status=(err&&SRERR[err])?SRERR[err]:"Es wurde nichts erkannt. Sprich lauter und näher am Mikrofon. Die Spracherkennung braucht Internet.";
     if(SP.url)SP.status+=" Deine Aufnahme kannst du trotzdem anhören.";
-  }else{SP.res=null;addXp(1);SP.status=SP.url?"Aufnahme gespeichert – höre sie mit ▶ an und vergleiche mit ⇄ Vergleich.":"Es wurde nichts aufgenommen. Prüfe die Mikrofon-Berechtigung.";}
+  }else{SP.res=null;addXp(1);SP.status=SP.url?"Aufnahme gespeichert. Tippe auf ⇄ Abgleich (Vorbild, dann du) oder ▶ nur deine Aufnahme. Für eine Prozentwertung: 📊 Bewerten und den Satz noch einmal sprechen.":"Es wurde nichts aufgenommen. Prüfe die Mikrofon-Berechtigung.";}
   if(this.cb)this.cb(SP.res);
   render();
  }
@@ -879,8 +883,13 @@ function playAud(url){
 }
 function playMine(){if(!SP.url)return Promise.resolve();return playAud(SP.url);}
 async function compareAudio(){
-  unlockAudio();                         // im Fingertipp: Audio-Element für spätere Wiedergabe freischalten
-  await speak(SP.target,.9);await sleep(250);await playMine();
+  unlockAudio();                                  // im Fingertipp: Audio-Element freischalten
+  if(!SP.url)return;
+  SP.status="⇄ Abgleich: erst das Vorbild, dann deine Aufnahme …";const el=document.getElementById("spstat");if(el)el.textContent=SP.status;
+  await speak(SP.target,.9);
+  await sleep(350);
+  await playMine();
+  SP.status="Abgleich fertig – noch einmal? Tippe auf ⇄ oder nimm neu auf.";const e2=document.getElementById("spstat");if(e2)e2.textContent=SP.status;
 }
 function resultHtml(r){
   const col=r.score>=85?"var(--ok)":r.score>=60?"var(--mid)":"var(--bad)";
@@ -902,9 +911,11 @@ function speakBox(target,ph,hideTarget){
     <button class="btn" data-act="saySP">🔊 Vorbild</button><button class="btn" data-act="saySP" data-slow="1">🐢 Langsam</button></div>
    <canvas id="meter" width="700" height="50"></canvas>
    <div class="row" style="justify-content:center;margin-top:10px">
-    <button class="btn ${Rec.active?"rec":"pri"}" data-act="toggleRec">${Rec.active?"⏹ Stopp":"🎙 Aufnehmen"}</button>
+    <button class="btn ${Rec.active&&Rec.curMode!=="sr"?"rec":"pri"}" data-act="toggleRec" ${Rec.active&&Rec.curMode==="sr"?"disabled":""}>${Rec.active&&Rec.curMode!=="sr"?"⏹ Stopp":"🎙 Aufnehmen"}</button>
     <button class="btn" data-act="playMine" ${SP.url?"":"disabled"}>▶ Meine Aufnahme</button>
-    <button class="btn" data-act="compare" ${SP.url?"":"disabled"}>⇄ Vergleich</button></div>
+    <button class="btn" data-act="compare" ${SP.url?"":"disabled"}>⇄ Abgleich</button>
+    <button class="btn ${Rec.active&&Rec.curMode==="sr"?"rec":""}" data-act="scoreOnly" ${(!SRC||(Rec.active&&Rec.curMode!=="sr"))?"disabled":""}>${Rec.active&&Rec.curMode==="sr"?"⏹ Stopp":"📊 Bewerten"}</button></div>
+   <div class="small" style="margin-top:6px">① Vorbild hören → ② 🎙 aufnehmen → ③ ⇄ Abgleich (Vorbild, dann du) → ④ 📊 Bewerten (nochmal sprechen, für die Prozentwertung)</div>
    <div class="small" id="spstat" style="margin-top:8px">${esc(SP.status||"Tipp: Erst Vorbild anhören, dann nachsprechen.")}</div>
    <div class="row" style="justify-content:center;margin-top:8px"><select data-sel="recmode">
     <option value="both" ${m==="both"?"selected":""}>Aufnahme + Bewertung</option>
@@ -1334,7 +1345,8 @@ document.addEventListener("click",e=>{
    case"goSpeakItem":{const it=IDX[dsx.i];const l=ITEMS.filter(x=>x.u===it.u&&x.k===it.k);V.sp={mode:"item",unit:it.u,kind:it.k,i:l.indexOf(it)};go("speak");break;}
    case"spMode":V.sp.mode=dsx.m;Rec.stop(true);stopAudio();render();break;
    case"spNext":case"spPrev":case"spRand":{const l=ITEMS.filter(x=>x.u===V.sp.unit&&x.k===V.sp.kind);const n=l.length;V.sp.i=a==="spRand"?Math.floor(Math.random()*n):(V.sp.i+(a==="spNext"?1:n-1))%n;Rec.stop(true);render();break;}
-   case"toggleRec":Rec.active?Rec.stop():Rec.start();break;
+   case"toggleRec":Rec.active?Rec.stop():Rec.start(null,recMode()==="sr"?"rec":undefined);break;
+   case"scoreOnly":Rec.active?Rec.stop():Rec.start(null,"sr");break;
    case"playMine":playMine();break;
    case"compare":compareAudio();break;
    case"startRp":V.rp={u:dsx.u,role:dsx.role||"B",i:0,scores:[],played:{},done:false};V.sp.mode="role";go("speak");break;
