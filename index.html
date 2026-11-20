@@ -791,6 +791,19 @@ function unlockAudio(){
 }
 function pickMime(){const c=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];for(const t of c){try{if(window.MediaRecorder&&MediaRecorder.isTypeSupported(t))return t;}catch(e){}}return "";}
 const SRERR={"not-allowed":"Spracherkennung nicht erlaubt (Mikrofon-Berechtigung prüfen).","service-not-allowed":"Spracherkennung hier nicht erlaubt. iPhone: Einstellungen → Allgemein → Tastatur → „Diktierfunktion“ einschalten und die Seite im Safari-Tab statt als Home-Bildschirm-App testen.","no-speech":"Es wurde keine Sprache gehört.","audio-capture":"Kein Mikrofon gefunden.","network":"Keine Internetverbindung für die Spracherkennung.","language-not-supported":"Indonesisch wird von der Spracherkennung dieses Geräts nicht unterstützt.","aborted":"Erkennung abgebrochen."};
+async function getMic(opts){
+  try{AUD.onended=null;AUD.onerror=null;AUD.pause();}catch(e){}
+  const as=t=>{try{if(navigator.audioSession)navigator.audioSession.type=t;}catch(e){}};
+  let last;
+  for(const t of ["play-and-record","auto",null]){
+    if(t)as(t);
+    for(let k=0;k<2;k++){
+      try{return await navigator.mediaDevices.getUserMedia(opts||{audio:true});}
+      catch(e){last=e;if(e&&(e.name==="NotAllowedError"||e.name==="NotFoundError"||e.name==="SecurityError"))throw e;await sleep(250);}
+    }
+  }
+  throw last;
+}
 const recMode=()=>S.recMode||(isIOS?"rec":"both");
 const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,curMode:"",usedRec:false,
  async start(cb,forceMode){
@@ -805,8 +818,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   if(mode==="sr"&&!SRC){SP.status="Keine Spracherkennung in diesem Browser – wähle oben „Nur Aufnahme“.";render();return;}
   if(wantRec){
     if(!navigator.mediaDevices||!window.MediaRecorder){SP.status="Aufnahme wird von diesem Browser nicht unterstützt (Tab „Laute“ → Diagnose).";render();return;}
-    try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
-    try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
+    try{this.stream=await getMic({audio:{echoCancellation:true,noiseSuppression:true}});}
     catch(e){SP.status="Mikrofon blockiert ("+((e&&e.name)||"Fehler")+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon, oder Hinweis in der Adressleiste). Lokale Dateien (file://) funktionieren oft nicht – nutze die https-Adresse.";render();return;}
     try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
     const mime=pickMime();
@@ -1265,13 +1277,13 @@ function diagHtml(){
    <div class="small" id="diagmsg" style="margin-top:8px">iPhone: Stumm-Schalter aus und Lautstärke hoch! Die Sprachausgabe ist bei aktivem Stumm-Schalter oft lautlos.</div></div>`;
 }
 async function diagMic(){
-  const m=document.getElementById("diagmsg");unlockAudio();
+  const m=document.getElementById("diagmsg");
   if(!navigator.mediaDevices||!window.MediaRecorder){m.textContent="❌ Aufnahme wird hier nicht unterstützt.";return;}
   try{
-    const st=await navigator.mediaDevices.getUserMedia({audio:true}),mime=pickMime();
+    const st=await getMic({audio:true}),mime=pickMime();
     let mr;try{mr=new MediaRecorder(st,mime?{mimeType:mime}:undefined);}catch(e){mr=new MediaRecorder(st);}
     const ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data);};
-    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());const b=new Blob(ch,{type:mr.mimeType||mime||"audio/mp4"});
+    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}const b=new Blob(ch,{type:mr.mimeType||mime||"audio/mp4"});
       if(DIAG.url){try{URL.revokeObjectURL(DIAG.url);}catch(e){}}DIAG.url=b.size?URL.createObjectURL(b):null;
       m.textContent=b.size?("✅ Aufgenommen ("+Math.round(b.size/1024)+" KB). Tippe auf „Test-Aufnahme abspielen“."):"⚠️ Es kam kein Ton an – Mikrofon prüfen.";
       const bt=document.getElementById("diagplay");if(bt)bt.disabled=!DIAG.url;};
