@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Belajar">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#c8102e">
+<title>Belajar – Indonesisch lernen (A1–B1)</title>
+<style>
+:root{--bg:#faf7f2;--card:#fff;--ink:#1f2933;--mute:#6b7280;--line:#e7e1d6;--red:#c8102e;--redd:#9b0c24;--ok:#2e8b57;--mid:#d9930d;--bad:#c0392b;--soft:#f3ece0}
+@media(prefers-color-scheme:dark){:root{--bg:#16181c;--card:#1f2228;--ink:#eceae5;--mute:#9aa1ab;--line:#2d3138;--soft:#262a31}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--red);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 18px 12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:19px;letter-spacing:.3px}
+header .stats{margin-left:auto;display:flex;gap:14px;font-size:14px}
+nav{display:flex;gap:2px;padding:6px 8px;background:var(--card);border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;z-index:5}
+nav button{border:0;background:none;color:var(--mute);font-size:14px;padding:9px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--soft);color:var(--red);font-weight:600}
+main{max-width:920px;margin:0 auto;padding:16px 14px calc(70px + env(safe-area-inset-bottom))}
+h2{margin:6px 0 12px;font-size:21px}
+h3{margin:14px 0 8px;font-size:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 13px;border-radius:10px;font-size:14.5px;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--soft)}
+.btn.pri{background:var(--red);border-color:var(--red);color:#fff}
+.btn.pri:hover{background:var(--redd)}
+.btn.rec{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.sm{padding:4px 9px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar{height:8px;background:var(--soft);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok)}
+.big{font-size:30px;font-weight:700;margin:8px 0 2px;word-break:break-word}
+.de{color:var(--mute);font-size:17px}
+.ph{font-size:15px;color:var(--red);font-weight:600}
+.small{font-size:13px;color:var(--mute)}
+.lvl{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;background:var(--soft);color:var(--red);margin-right:6px}
+.warn{background:#fff4d6;color:#6b4e00;border:1px solid #f0d58a;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+@media(prefers-color-scheme:dark){.warn{background:#3a3016;color:#f1d98a;border-color:#5a4a1d}}
+.word{display:inline-block;padding:3px 9px;border-radius:8px;margin:2px;font-weight:600;font-size:17px}
+.word.g{background:#d9f2e3;color:#14532d}.word.m{background:#fdecc0;color:#7a4b00}.word.r{background:#fbd5d1;color:#7f1d1d}
+.score{font-size:40px;font-weight:800}
+canvas{width:100%;height:50px;background:var(--soft);border-radius:10px;display:block}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:11px 14px}
+.opt.ok{background:#d9f2e3;border-color:var(--ok);color:#14532d}
+.opt.no{background:#fbd5d1;border-color:var(--bad);color:#7f1d1d}
+input[type=text],textarea{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;font-family:inherit}
+textarea{font-size:13px;min-height:90px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14.5px;vertical-align:top}
+table.g th{background:var(--soft)}
+select{padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:14.5px;max-width:100%}
+.flip{min-height:200px;text-align:center;display:flex;flex-direction:column;justify-content:center;cursor:pointer}
+.chip{display:inline-block;padding:7px 12px;margin:3px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer;font-size:16px;user-select:none}
+.chip:hover{background:var(--soft)}
+.ans{min-height:52px;padding:8px;border:2px dashed var(--line);border-radius:12px;margin:8px 0}
+.bub{max-width:88%;padding:9px 13px;border-radius:14px;margin:7px 0;background:var(--soft)}
+.bub.A{margin-right:auto;border-bottom-left-radius:4px}
+.bub.B{margin-left:auto;background:#fde4e8;color:#3b0a14;border-bottom-right-radius:4px}
+.bub.on{outline:2px solid var(--red)}
+.bub b{display:block}
+.bub span{color:#6b7280;font-size:13px}
+.tabs2{display:flex;gap:4px;margin:10px 0;overflow-x:auto}
+.tabs2 button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:9px;cursor:pointer;font-size:14px;white-space:nowrap}
+.tabs2 button.on{background:var(--red);color:#fff;border-color:var(--red)}
+details{margin-bottom:8px}
+summary{cursor:pointer;font-weight:600;padding:8px 2px}
+.chart{display:flex;align-items:flex-end;gap:5px;height:90px}
+.chart div{flex:1;background:var(--red);border-radius:4px 4px 0 0;min-height:2px;opacity:.85}
+.ring{display:flex;align-items:center;gap:12px}
+.check{font-size:20px;margin-right:6px}
+.tip li{margin:5px 0}
+
+</style>
+</head>
+<body>
+<header>
+  <h1>🇮🇩 Belajar – Indonesisch</h1>
+  <div class="stats"><span id="sXp">⭐ 0 XP</span><span id="sStreak">🔥 0 Tage</span></div>
+</header>
+<nav id="tabs"></nav>
+<main id="view"></main>
+<script>
+"use strict";
+/* =====================================================================
+   Belajar v2 – Indonesisch bis B1
+   ===================================================================== */
+
+/* ---------- Aussprachehilfe (regelbasiert) ---------- */
+const PH_MAP={c:"tsch",j:"dsch",y:"j",ny:"nj",sy:"sch",kh:"ch",gh:"g",q:"k",v:"f",z:"s",x:"ks","é":"e"};
+function phonWord(w){
+  w=w.toLowerCase().replace(/[^a-zé]/g,"");
+  if(!w)return "";
+  const toks=[];let i=0;const VOW="aeioué";
+  while(i<w.length){
+    const c=w[i],d=w.substr(i,2);
+    if(VOW.includes(c)){toks.push({v:1,s:c});i++;continue;}
+    if(d==="ng"||d==="ny"||d==="sy"||d==="kh"||d==="gh"){toks.push({v:0,s:d});i+=2;continue;}
+    toks.push({v:0,s:c});i++;
+  }
+  let nuc=[];toks.forEach((t,k)=>{if(t.v)nuc.push(k);});
+  if(!nuc.length)return w;
+  const n0=nuc.length;
+  if(n0>=2&&nuc[n0-1]===toks.length-1&&nuc[n0-2]===nuc[n0-1]-1&&["ai","au","oi"].includes(toks[nuc[n0-2]].s+toks[nuc[n0-1]].s)){
+    toks[nuc[n0-2]].s+=toks[nuc[n0-1]].s;toks.pop();nuc.pop();
+  }
+  const starts=[0];
+  for(let j=0;j<nuc.length-1;j++){
+    const m=nuc[j+1]-nuc[j]-1;
+    starts.push(m===0?nuc[j]+1:m===1?nuc[j]+1:nuc[j]+2);
+  }
+  starts.push(toks.length);
+  const syl=[];
+  for(let j=0;j<nuc.length;j++){
+    const part=toks.slice(starts[j],starts[j+1]);
+    syl.push({txt:part.map(t=>PH_MAP[t.s]||t.s).join(""),vow:toks[nuc[j]].s,len:part.length});
+  }
+  const n=syl.length;let st=-1;
+  if(n>1){
+    st=n-2;
+    if(n===2&&syl[0].vow==="e"&&syl[0].len<=2&&syl[1].vow!=="e")st=1;
+  }
+  return syl.map((s,k)=>k===st?s.txt.toUpperCase():s.txt).join("-");
+}
+function phon(text){
+  return text.split(/\s+/).map(p=>p.split("-").map(phonWord).filter(Boolean).join(" ")).filter(Boolean).join(" ");
+}
+
+/* ---------- Daten aufbauen ---------- */
+const UNITS=[];
+function U(o){UNITS.push(o);}
+
+/* ===== Stufe A1 ===== */
+U({id:"a1-01",lvl:"A1",e:"👋",t:"Begrüßung & Höflichkeit",
+ intro:"Die ersten Sätze, die du in Indonesien wirklich brauchst: Grüßen, Danken, Entschuldigen. Wer diese Formeln locker beherrscht, macht sofort einen guten Eindruck.",
+ grammar:{t:"Keine Artikel, keine Beugung – und Grüße nach Tageszeit",html:`
+<p>Indonesisch ist für Deutschsprachige angenehm einfach: Es gibt <b>keine Artikel</b> (der/die/das), <b>keine Verbkonjugation</b> (<i>saya makan, dia makan</i>) und <b>keine Verbzeiten</b>. Die Zeit zeigt man mit Hilfswörtern wie <i>sudah</i> (schon), <i>sedang</i> (gerade) oder <i>akan</i> (werden).</p>
+<p>Gegrüßt wird je nach Tageszeit mit <i>Selamat …</i>:</p>
+<table class="g"><tr><th>Grußformel</th><th>Zeitraum (ca.)</th></tr>
+<tr><td><i>Selamat pagi</i></td><td>Morgen, bis ca. 11 Uhr</td></tr>
+<tr><td><i>Selamat siang</i></td><td>Mittag, ca. 11–15 Uhr</td></tr>
+<tr><td><i>Selamat sore</i></td><td>Nachmittag, ca. 15–18 Uhr</td></tr>
+<tr><td><i>Selamat malam</i></td><td>Abend/Nacht, ab ca. 18 Uhr</td></tr></table>
+<p><b>Höflichkeit:</b> Ältere oder Fremde sprichst du mit <i>Bapak</i> / <i>Pak</i> (Herr) und <i>Ibu</i> / <i>Bu</i> (Frau) an: <i>Selamat pagi, Bu.</i> Das wirkt respektvoll und freundlich.</p>`},
+ vocab:[["Halo","Hallo"],["Selamat pagi","Guten Morgen"],["Selamat siang","Guten Tag (mittags)"],["Selamat sore","Guten Nachmittag"],["Selamat malam","Guten Abend / Gute Nacht"],["Selamat datang","Willkommen"],["Selamat makan","Guten Appetit"],["Selamat jalan","Gute Reise (zu jemandem, der geht)"],["Selamat tidur","Schlaf gut"],["Selamat ulang tahun","Alles Gute zum Geburtstag"],["Apa kabar?","Wie geht's?"],["Baik","gut"],["Kabar baik","mir geht es gut"],["Terima kasih","Danke"],["Terima kasih banyak","Vielen Dank"],["Sama-sama","Gern geschehen"],["Maaf","Entschuldigung"],["Permisi","Darf ich mal? / Mit Verlaub"],["Tolong","Bitte (um Hilfe)"],["Silakan","Bitte sehr / Bitte schön"],["Boleh","erlaubt / darf / gern"],["Ya","Ja"],["Tidak","Nein / nicht"],["Hati-hati","Pass auf / Gute Fahrt"],["Sampai jumpa","Auf Wiedersehen"],["Sampai nanti","Bis später"],["Sampai ketemu lagi","Bis zum nächsten Mal"]],
+ sent:[["Selamat pagi, Bu. Apa kabar?","Guten Morgen, (Frau). Wie geht es Ihnen?"],["Kabar baik, terima kasih. Dan Anda?","Gut, danke. Und Ihnen?"],["Terima kasih banyak atas bantuannya.","Vielen Dank für Ihre Hilfe."],["Maaf, saya terlambat.","Entschuldigung, ich bin zu spät."],["Permisi, boleh saya lewat?","Entschuldigung, darf ich vorbei?"],["Silakan duduk.","Bitte setzen Sie sich."],["Sampai jumpa besok!","Bis morgen!"],["Selamat makan, semuanya!","Guten Appetit zusammen!"],["Tolong bantu saya.","Bitte helfen Sie mir."],["Hati-hati di jalan!","Pass auf dich auf unterwegs!"]],
+ dlg:{t:"Am Morgen im Büro",lines:[["A","Selamat pagi, Pak.","Guten Morgen, Herr ..."],["B","Selamat pagi, Bu. Apa kabar?","Guten Morgen. Wie geht es Ihnen?"],["A","Kabar baik, terima kasih. Dan Bapak?","Gut, danke. Und Ihnen?"],["B","Baik juga. Silakan masuk.","Auch gut. Bitte kommen Sie herein."],["A","Terima kasih.","Danke."],["B","Sama-sama.","Gern geschehen."]]},
+ ex:[["___ pagi! (Guten Morgen!)","Selamat",["Selamat","Terima","Maaf","Silakan"],"Selamat + Tageszeit ergibt den Gruß."],["„Terima kasih.“ – „___-sama.“","Sama",["Sama","Baik","Tolong","Boleh"],"Sama-sama = Gern geschehen."],["___, saya terlambat. (Entschuldigung, ich bin zu spät.)","Maaf",["Maaf","Silakan","Selamat","Sama-sama"],""],["Selamat ___. (Guten Abend, ab ca. 18 Uhr)","malam",["pagi","siang","sore","malam"],""],["___ duduk. (Bitte setzen Sie sich.)","Silakan",["Silakan","Tolong","Maaf","Hati-hati"],"Silakan bietet etwas an: Bitte sehr."]]
+});
+
+U({id:"a1-02",lvl:"A1",e:"🙋",t:"Sich vorstellen",
+ intro:"Name, Herkunft, Wohnort, Sprache: Mit diesen Sätzen führst du dein erstes echtes Gespräch.",
+ grammar:{t:"Pronomen und der Satz ohne „sein“",html:`
+<table class="g"><tr><th>Indonesisch</th><th>Deutsch</th></tr>
+<tr><td><i>saya</i></td><td>ich (neutral/höflich)</td></tr>
+<tr><td><i>aku</i></td><td>ich (vertraut, Freunde)</td></tr>
+<tr><td><i>kamu</i></td><td>du</td></tr>
+<tr><td><i>Anda</i></td><td>Sie (höflich)</td></tr>
+<tr><td><i>dia / ia</i></td><td>er / sie / es</td></tr>
+<tr><td><i>kami</i></td><td>wir (ohne den Angesprochenen)</td></tr>
+<tr><td><i>kita</i></td><td>wir (inklusive Angesprochene)</td></tr>
+<tr><td><i>kalian</i></td><td>ihr</td></tr>
+<tr><td><i>mereka</i></td><td>sie (Plural)</td></tr></table>
+<p><b>Kein „sein“:</b> <i>Saya guru.</i> = Ich (bin) Lehrer. <i>Dia orang Jerman.</i> = Sie ist Deutsche.</p>
+<p><b>Besitz</b> steht <i>hinter</i> dem Nomen: <i>nama saya</i> = mein Name, <i>rumah Anda</i> = Ihr Haus. Das Adjektiv steht ebenfalls <i>hinter</i> dem Nomen: <i>rumah besar</i> = großes Haus.</p>
+<p><b>kami vs. kita:</b> Sagst du „wir“ zu jemandem, der mitgemeint ist, nimm <i>kita</i>: <i>Mari kita makan!</i> (Lass uns essen!).</p>`},
+ vocab:[["saya","ich"],["aku","ich (vertraut)"],["kamu","du"],["Anda","Sie"],["dia","er / sie"],["kami","wir (ohne dich)"],["kita","wir (mit dir)"],["kalian","ihr"],["mereka","sie (Plural)"],["nama","Name"],["siapa","wer"],["dari","von / aus"],["mana","wo / welche(r)"],["Jerman","Deutschland"],["Indonesia","Indonesien"],["Swiss","Schweiz"],["Austria","Österreich"],["orang","Mensch / Person"],["bahasa","Sprache"],["tinggal","wohnen"],["berasal","stammen"],["bekerja","arbeiten"],["belajar","lernen"],["senang","froh / gern"],["bertemu","treffen"],["sedikit","ein bisschen"],["lancar","fließend"],["mengerti","verstehen"],["umur","Alter"],["tahun","Jahr"],["juga","auch"],["dan","und"],["atau","oder"],["mahasiswa","Student(in)"]],
+ sent:[["Nama saya Anna.","Mein Name ist Anna."],["Siapa nama Anda?","Wie heißen Sie?"],["Saya berasal dari Jerman.","Ich komme aus Deutschland."],["Saya tinggal di Berlin.","Ich wohne in Berlin."],["Anda dari mana?","Woher kommen Sie?"],["Saya orang Jerman.","Ich bin Deutsche(r)."],["Senang bertemu dengan Anda.","Freut mich, Sie kennenzulernen."],["Saya sedang belajar bahasa Indonesia.","Ich lerne gerade Indonesisch."],["Bahasa Indonesia saya masih sedikit.","Mein Indonesisch ist noch ein bisschen."],["Saya ingin bisa berbicara dengan lancar.","Ich möchte fließend sprechen können."]],
+ dlg:{t:"Kennenlernen",lines:[["A","Halo, nama saya Budi. Siapa nama Anda?","Hallo, ich heiße Budi. Wie heißen Sie?"],["B","Nama saya Anna. Senang bertemu dengan Anda.","Ich heiße Anna. Freut mich."],["A","Senang bertemu dengan Anda juga. Anda dari mana?","Mich auch. Woher kommen Sie?"],["B","Saya dari Jerman. Saya tinggal di Berlin.","Aus Deutschland. Ich wohne in Berlin."],["A","Wah, jauh sekali! Anda bisa bahasa Indonesia?","Wow, so weit weg! Können Sie Indonesisch?"],["B","Sedikit. Saya sedang belajar.","Ein bisschen. Ich lerne gerade."],["A","Bahasa Indonesia Anda bagus!","Ihr Indonesisch ist gut!"]]},
+ ex:[["___ dari Jerman. (Ich komme ...)","Saya",["Saya","Anda","Dia","Kita"],""],["Anda ___ mana? (Woher kommen Sie?)","dari",["dari","di","ke","pada"],"dari mana = woher"],["Nama ___ Anna. (Mein Name ...)","saya",["saya","aku","Anda","kami"],"Der Besitzer steht hinter dem Nomen."],["Saya tinggal ___ Berlin. (in)","di",["di","ke","dari","pada"],""],["___ nama Anda? (Wie heißt ...)","Siapa",["Siapa","Apa","Mana","Kapan"],"siapa = wer"],["___ pergi ke pasar. (Lass uns ... gehen – inkl. dir)","Kita",["Kita","Kami","Mereka","Dia"],"kita schließt den Angesprochenen ein."]]
+});
+
+U({id:"a1-03",lvl:"A1",e:"🔢",t:"Zahlen & Preise",
+ intro:"Zahlen sind die Basis für Preise, Uhrzeiten und Alter. Indonesische Zahlen sind sehr regelmäßig – du lernst nur 13 Wörter und baust den Rest.",
+ grammar:{t:"Zahlen bauen",html:`
+<p>0 <i>nol</i>, 1 <i>satu</i>, 2 <i>dua</i>, 3 <i>tiga</i>, 4 <i>empat</i>, 5 <i>lima</i>, 6 <i>enam</i>, 7 <i>tujuh</i>, 8 <i>delapan</i>, 9 <i>sembilan</i>, 10 <i>sepuluh</i>.</p>
+<table class="g"><tr><th>Zahl</th><th>Indonesisch</th><th>Bauregel</th></tr>
+<tr><td>11</td><td><i>sebelas</i></td><td>se- + belas</td></tr>
+<tr><td>12–19</td><td><i>dua belas, tiga belas …</i></td><td>Zahl + belas</td></tr>
+<tr><td>20</td><td><i>dua puluh</i></td><td>Zahl + puluh</td></tr>
+<tr><td>21</td><td><i>dua puluh satu</i></td><td>Zehner + Einer</td></tr>
+<tr><td>100</td><td><i>seratus</i></td><td>se- + ratus</td></tr>
+<tr><td>250</td><td><i>dua ratus lima puluh</i></td><td></td></tr>
+<tr><td>1.000</td><td><i>seribu</i></td><td>se- + ribu</td></tr>
+<tr><td>15.000</td><td><i>lima belas ribu</i></td><td></td></tr>
+<tr><td>1.000.000</td><td><i>sejuta</i></td><td></td></tr></table>
+<p><b>Ordnungszahlen:</b> <i>ke-</i> + Zahl: <i>kedua</i> (zweite), <i>ketiga</i> (dritte); „erste“ ist <i>pertama</i>.</p>
+<p><b>Zählwörter:</b> Bei Dingen zählt man mit einem Hilfswort: <i>dua orang</i> (2 Personen), <i>tiga buah apel</i> (3 Äpfel), <i>lima ekor ikan</i> (5 Fische), <i>dua gelas teh</i> (2 Gläser Tee). <i>Buah</i> passt für viele Gegenstände.</p>
+<p><b>Preise:</b> Rp 15.000 sagt man <i>lima belas ribu rupiah</i>. Im Alltag lässt man oft „rupiah“ weg.</p>`},
+ vocab:[["nol","null"],["satu","eins"],["dua","zwei"],["tiga","drei"],["empat","vier"],["lima","fünf"],["enam","sechs"],["tujuh","sieben"],["delapan","acht"],["sembilan","neun"],["sepuluh","zehn"],["sebelas","elf"],["dua belas","zwölf"],["dua puluh","zwanzig"],["tiga puluh","dreißig"],["lima puluh","fünfzig"],["seratus","hundert"],["dua ratus","zweihundert"],["seribu","tausend"],["sepuluh ribu","zehntausend"],["seratus ribu","hunderttausend"],["sejuta","eine Million"],["setengah","halb"],["pertama","erste(r)"],["kedua","zweite(r)"],["kali","Mal"],["tambah","plus"],["kurang","minus / weniger"],["berapa","wie viel"],["banyak","viel"],["uang","Geld"],["rupiah","Rupiah"],["buah","Stück (Zählwort)"],["ekor","Stück (für Tiere)"],["gelas","Glas"]],
+ sent:[["Saya punya dua anak.","Ich habe zwei Kinder."],["Umur saya dua puluh lima tahun.","Ich bin fünfundzwanzig Jahre alt."],["Berapa harganya?","Wie viel kostet das?"],["Harganya lima belas ribu rupiah.","Es kostet fünfzehntausend Rupiah."],["Saya mau tiga buah apel.","Ich möchte drei Äpfel."],["Tolong, dua gelas teh.","Bitte, zwei Gläser Tee."],["Ada sepuluh orang di sini.","Hier sind zehn Personen."],["Ini yang kedua kalinya.","Das ist das zweite Mal."],["Satu, dua, tiga, empat, lima!","Eins, zwei, drei, vier, fünf!"],["Harganya seratus lima puluh ribu rupiah.","Der Preis beträgt hundertfünfzigtausend Rupiah."]],
+ dlg:{t:"Am Obststand",lines:[["A","Mau beli apa, Bu?","Was möchten Sie kaufen?"],["B","Berapa harga jeruk ini?","Wie viel kosten diese Orangen?"],["A","Dua puluh ribu satu kilo.","Zwanzigtausend das Kilo."],["B","Mahal! Bisa kurang?","Teuer! Geht es günstiger?"],["A","Ya, delapan belas ribu, Bu.","Ja, achtzehntausend."],["B","Baik. Saya mau dua kilo.","Gut. Ich nehme zwei Kilo."],["A","Jadi tiga puluh enam ribu rupiah.","Dann sind es sechsunddreißigtausend Rupiah."]]},
+ ex:[["Tiga ditambah dua sama dengan ___. (5)","lima",["lima","enam","empat","tujuh"],""],["Saya punya ___ anak. (zwei)","dua",["dua","tiga","satu","empat"],""],["1.000 = ___","seribu",["seribu","seratus","sepuluh","sejuta"],"se- + ribu"],["dua puluh ___ = 25","lima",["lima","enam","tiga","tujuh"],""],["dua ___ orang = 2 Personen","orang",["orang","buah","ekor","gelas"],"Zählwort für Menschen: orang."],["lima belas ribu = ___","15.000",["15.000","5.015","1.500","50.000"],""]]
+});
+
+U({id:"a1-04",lvl:"A1",e:"🍜",t:"Essen & Trinken",
+ intro:"Indonesien ist ein Paradies für Essen. Bestellen, Wünsche äußern, scharf oder nicht scharf – und bezahlen.",
+ grammar:{t:"Wünsche äußern und höflich bestellen",html:`
+<ul><li><b>mau</b> = wollen/möchten: <i>Saya mau nasi goreng.</i></li>
+<li><b>ingin</b> = möchten (etwas gehobener): <i>Saya ingin memesan kamar.</i></li>
+<li><b>minta</b> = um etwas bitten/bekommen: <i>Minta air putih, ya.</i> / <i>Boleh minta menunya?</i></li>
+<li><b>pesan</b> = bestellen: <i>Saya mau pesan satu teh.</i></li></ul>
+<p><b>Ya am Satzende</b> macht Bitten weicher: <i>Tidak pedas, ya.</i> (Nicht scharf, ja?)</p>
+<p><b>Zählwörter mit se-:</b><i>segelas teh</i> (ein Glas Tee), <i>sepiring nasi</i> (ein Teller Reis), <i>semangkuk soto</i> (eine Schüssel Soto). Das Präfix <i>se-</i> bedeutet „ein“.</p>
+<p><b>Verstärken:</b> <i>enak sekali</i> / <i>sangat enak</i> = sehr lecker. <i>sekali</i> steht <i>hinter</i> dem Adjektiv, <i>sangat</i> davor.</p>`},
+ vocab:[["makan","essen"],["minum","trinken"],["makanan","Essen"],["minuman","Getränk"],["nasi","Reis (gekocht)"],["nasi goreng","gebratener Reis"],["mie","Nudeln"],["ayam","Huhn"],["daging","Fleisch"],["ikan","Fisch"],["telur","Ei"],["sayur","Gemüse"],["buah","Obst"],["roti","Brot"],["sate","Spieße"],["soto","Suppe (Soto)"],["tahu","Tofu"],["tempe","Tempeh"],["sambal","Chili-Paste"],["garam","Salz"],["gula","Zucker"],["air putih","Trinkwasser"],["kopi","Kaffee"],["teh","Tee"],["susu","Milch"],["es","Eis / kalt"],["panas","heiß"],["dingin","kalt"],["manis","süß"],["pedas","scharf"],["asin","salzig"],["enak","lecker"],["lapar","hungrig"],["haus","durstig"],["kenyang","satt"],["menu","Speisekarte"],["piring","Teller"],["sendok","Löffel"],["garpu","Gabel"],["pesan","bestellen"],["minta","bitten um"],["bayar","bezahlen"],["bon","Rechnung"]],
+ sent:[["Saya mau pesan nasi goreng.","Ich möchte gebratenen Reis bestellen."],["Boleh minta menunya?","Kann ich die Speisekarte haben?"],["Saya tidak makan daging.","Ich esse kein Fleisch."],["Tidak pedas, ya.","Nicht scharf, bitte."],["Satu teh manis dingin, tolong.","Einen kalten Süßtee, bitte."],["Makanannya enak sekali!","Das Essen ist sehr lecker!"],["Saya sudah kenyang.","Ich bin schon satt."],["Minta bonnya, ya.","Die Rechnung bitte."],["Bisa bayar pakai kartu?","Kann ich mit Karte zahlen?"],["Apa rekomendasi Anda?","Was empfehlen Sie?"],["Saya lapar dan haus.","Ich habe Hunger und Durst."]],
+ dlg:{t:"Im Warung (Imbiss)",lines:[["A","Selamat siang. Mau pesan apa?","Guten Tag. Was möchten Sie bestellen?"],["B","Saya mau nasi goreng ayam, satu.","Ich möchte einmal gebratenen Reis mit Huhn."],["A","Mau pedas atau tidak?","Scharf oder nicht?"],["B","Tidak terlalu pedas, ya.","Nicht zu scharf, bitte."],["A","Minumnya?","Und zu trinken?"],["B","Teh manis dingin, tolong.","Kalten Süßtee, bitte."],["A","Baik, silakan tunggu sebentar.","Gut, bitte warten Sie einen Moment."],["B","Terima kasih. Nanti saya minta bonnya.","Danke. Später hätte ich gern die Rechnung."]]},
+ ex:[["Saya ___ pesan nasi goreng. (möchte)","mau",["mau","bisa","tidak","pergi"],""],["Makanannya ___ sekali! (lecker)","enak",["enak","lapar","haus","panas"],""],["Tidak ___, ya. (scharf)","pedas",["pedas","manis","asin","dingin"],""],["Saya ___ (hungrig)","lapar",["lapar","haus","kenyang","enak"],""],["Boleh ___ menunya? (bekommen/bitten)","minta",["minta","makan","pergi","tinggal"],"minta = bitten um / bekommen"],["Teh ___ dingin = kalter Tee (mit Eis)","es",["es","gula","garam","susu"],"es teh"]]
+});
+
+U({id:"a1-05",lvl:"A1",e:"🧭",t:"Unterwegs & Richtungen",
+ intro:"Nach dem Weg fragen, Transportmittel, Orte: damit kommst du in jeder Stadt zurecht.",
+ grammar:{t:"di – ke – dari und Wegbeschreibung",html:`
+<table class="g"><tr><th>Wort</th><th>Bedeutung</th><th>Beispiel</th></tr>
+<tr><td><i>di</i></td><td>an / in / auf (Ort, ohne Bewegung)</td><td><i>di rumah</i> (zu Hause)</td></tr>
+<tr><td><i>ke</i></td><td>nach / zu (Richtung)</td><td><i>ke pasar</i> (zum Markt)</td></tr>
+<tr><td><i>dari</i></td><td>von / aus</td><td><i>dari Jakarta</i></td></tr></table>
+<p>Fragen: <i>Di mana …?</i> (Wo?), <i>Ke mana …?</i> (Wohin?), <i>Dari mana …?</i> (Woher?)</p>
+<p><b>Wegbeschreibung:</b> <i>lurus</i> (geradeaus), <i>belok kiri/kanan</i> (links/rechts abbiegen), <i>di depan</i> (vorne), <i>di belakang</i> (hinten), <i>di sebelah</i> (neben), <i>di seberang</i> (gegenüber), <i>dekat</i> (nah), <i>jauh</i> (weit).</p>
+<p><b>naik</b> heißt „einsteigen/mitfahren“: <i>naik bus</i>, <i>naik kereta</i>. <b>turun</b> = aussteigen.</p>`},
+ vocab:[["di","in / an / auf"],["ke","nach / zu"],["dari","von / aus"],["di mana","wo"],["ke mana","wohin"],["jalan","Straße / gehen"],["jalan kaki","zu Fuß"],["belok","abbiegen"],["kiri","links"],["kanan","rechts"],["lurus","geradeaus"],["dekat","nah"],["jauh","weit"],["depan","vorne"],["belakang","hinten"],["sebelah","neben"],["seberang","gegenüber"],["perempatan","Kreuzung"],["lampu merah","Ampel"],["naik","einsteigen / fahren mit"],["turun","aussteigen"],["berhenti","anhalten"],["mobil","Auto"],["motor","Motorrad"],["sepeda","Fahrrad"],["bus","Bus"],["kereta","Zug"],["taksi","Taxi"],["ojek","Motorrad-Taxi"],["pesawat","Flugzeug"],["bandara","Flughafen"],["stasiun","Bahnhof"],["halte","Haltestelle"],["pasar","Markt"],["toko","Laden"],["bank","Bank"],["rumah sakit","Krankenhaus"],["kamar mandi","Toilette / Bad"],["peta","Karte"],["tersesat","sich verirrt"],["macet","Stau"],["ongkos","Fahrpreis"]],
+ sent:[["Di mana stasiun kereta?","Wo ist der Bahnhof?"],["Saya mau pergi ke bandara.","Ich möchte zum Flughafen."],["Belok kiri di lampu merah.","Biegen Sie an der Ampel links ab."],["Lurus saja, lalu belok kanan.","Einfach geradeaus, dann rechts."],["Apakah jauh dari sini?","Ist es weit von hier?"],["Tidak jauh, hanya lima menit jalan kaki.","Nicht weit, nur fünf Minuten zu Fuß."],["Tolong berhenti di sini.","Bitte halten Sie hier an."],["Saya tersesat.","Ich habe mich verirrt."],["Berapa ongkos ke pusat kota?","Wie viel kostet die Fahrt ins Zentrum?"],["Jalanannya macet sekali.","Die Straße ist total verstopft."],["Di mana kamar mandi?","Wo ist die Toilette?"]],
+ dlg:{t:"Nach dem Weg fragen",lines:[["A","Permisi, Pak. Di mana stasiun?","Entschuldigung, wo ist der Bahnhof?"],["B","Lurus saja, lalu belok kiri di lampu merah.","Geradeaus, dann an der Ampel links."],["A","Apakah jauh?","Ist es weit?"],["B","Tidak jauh. Sekitar sepuluh menit jalan kaki.","Nicht weit. Etwa zehn Minuten zu Fuß."],["A","Terima kasih banyak.","Vielen Dank."],["B","Sama-sama. Hati-hati!","Gern geschehen. Pass auf dich auf!"]]},
+ ex:[["Saya mau pergi ___ pasar. (zum)","ke",["ke","di","dari","pada"],""],["Rumah saya ___ Jakarta. (in)","di",["di","ke","dari","oleh"],""],["Saya berasal ___ Jerman. (aus)","dari",["dari","di","ke","untuk"],""],["Belok ___. (links)","kiri",["kiri","kanan","lurus","jauh"],""],["Kantor pos ___ dari sini. (nah)","dekat",["dekat","jauh","macet","kiri"],""],["Saya ___ bus ke kota. (nehme / fahre mit)","naik",["naik","turun","makan","beli"],"naik = einsteigen / mitfahren"]]
+});
+
+U({id:"a1-06",lvl:"A1",e:"📅",t:"Zeit, Tage & Uhrzeit",
+ intro:"Tage, Monate, Uhrzeit und Verabredungen – damit kannst du Pläne machen.",
+ grammar:{t:"Uhrzeit sagen",html:`
+<table class="g"><tr><th>Uhrzeit</th><th>Indonesisch</th></tr>
+<tr><td>7:00</td><td><i>jam tujuh</i></td></tr>
+<tr><td>7:30</td><td><i>jam setengah delapan</i> (halb acht – wie im Deutschen!)</td></tr>
+<tr><td>7:15</td><td><i>jam tujuh lewat lima belas</i> (7 vorbei 15)</td></tr>
+<tr><td>7:55</td><td><i>jam delapan kurang lima</i> (8 minus 5)</td></tr></table>
+<p>Frage: <i>Jam berapa sekarang?</i> oder <i>Pukul berapa?</i> Danach: <i>pagi, siang, sore, malam</i> zur Klärung: <i>jam tujuh pagi</i> (7 Uhr morgens).</p>
+<p><b>Zeitwörter:</b> <i>kemarin</i> (gestern), <i>hari ini</i> (heute), <i>besok</i> (morgen), <i>lusa</i> (übermorgen), <i>minggu lalu</i> (letzte Woche), <i>minggu depan</i> (nächste Woche). Zeitangaben stehen oft am Satzanfang.</p>
+<p><b>Datum:</b> <i>tanggal lima Mei</i> (der 5. Mai). Wochentage und Monate werden großgeschrieben.</p>`},
+ vocab:[["jam","Uhr / Stunde"],["pukul","Uhr (formell)"],["menit","Minute"],["hari","Tag"],["minggu","Woche / Sonntag"],["bulan","Monat / Mond"],["tahun","Jahr"],["hari ini","heute"],["kemarin","gestern"],["besok","morgen"],["lusa","übermorgen"],["sekarang","jetzt"],["nanti","später"],["tadi","vorhin"],["kapan","wann"],["lewat","nach / vorbei"],["setiap hari","jeden Tag"],["akhir pekan","Wochenende"],["minggu depan","nächste Woche"],["minggu lalu","letzte Woche"],["tanggal","Datum"],["libur","frei / Urlaub"],["berangkat","abfahren"],["tiba","ankommen"],["Senin","Montag"],["Selasa","Dienstag"],["Rabu","Mittwoch"],["Kamis","Donnerstag"],["Jumat","Freitag"],["Sabtu","Samstag"],["Minggu","Sonntag"],["Januari","Januar"],["Februari","Februar"],["Maret","März"],["April","April"],["Mei","Mai"],["Juni","Juni"],["Juli","Juli"],["Agustus","August"],["September","September"],["Oktober","Oktober"],["November","November"],["Desember","Dezember"]],
+ sent:[["Jam berapa sekarang?","Wie spät ist es jetzt?"],["Sekarang jam setengah delapan.","Es ist jetzt halb acht."],["Saya bangun jam enam pagi.","Ich stehe um sechs Uhr morgens auf."],["Kita bertemu hari Jumat.","Wir treffen uns am Freitag."],["Besok saya libur.","Morgen habe ich frei."],["Ulang tahun saya tanggal lima Mei.","Mein Geburtstag ist am fünften Mai."],["Pesawat berangkat jam sebelas lewat dua puluh.","Das Flugzeug startet um 11:20 Uhr."],["Saya tiba kemarin malam.","Ich bin gestern Abend angekommen."],["Sampai nanti sore!","Bis heute Nachmittag!"],["Setiap hari Senin saya bekerja.","Jeden Montag arbeite ich."]],
+ dlg:{t:"Verabredung treffen",lines:[["A","Kapan kita bertemu?","Wann treffen wir uns?"],["B","Bagaimana kalau hari Sabtu?","Wie wäre es am Samstag?"],["A","Jam berapa?","Um wie viel Uhr?"],["B","Jam sepuluh pagi.","Um zehn Uhr morgens."],["A","Baik. Di mana?","Gut. Wo?"],["B","Di kafe dekat stasiun.","In dem Café beim Bahnhof."],["A","Oke, sampai Sabtu!","Okay, bis Samstag!"]]},
+ ex:[["Jam ___ sekarang? (wie viel)","berapa",["berapa","apa","siapa","mana"],""],["Hari ini hari ___. (Montag)","Senin",["Senin","Selasa","Rabu","Minggu"],""],["___ saya libur. (Morgen)","Besok",["Besok","Kemarin","Tadi","Setiap"],""],["jam setengah delapan = ___","7:30",["7:30","8:30","8:00","7:00"],"Wie im Deutschen: halb acht = 7:30."],["Kita bertemu ___ Jumat. (am)","hari",["hari","bulan","tahun","jam"],"hari Jumat = am Freitag"]]
+});
+
+U({id:"a1-07",lvl:"A1",e:"👨‍👩‍👧",t:"Familie & Menschen",
+ intro:"Familie, Freunde, Anrede: Familie ist in Indonesien ein Kernthema jedes Gesprächs.",
+ grammar:{t:"Anreden, Besitz und Doppelung",html:`
+<table class="g"><tr><th>Anrede</th><th>Für wen?</th></tr>
+<tr><td><i>Bapak / Pak</i></td><td>Herr, älterer Mann, Vater</td></tr>
+<tr><td><i>Ibu / Bu</i></td><td>Frau, ältere Frau, Mutter</td></tr>
+<tr><td><i>Mas</i></td><td>jüngerer Mann / älterer Bruder (Java)</td></tr>
+<tr><td><i>Mbak</i></td><td>jüngere Frau / ältere Schwester (Java)</td></tr>
+<tr><td><i>kakak</i></td><td>älteres Geschwister</td></tr>
+<tr><td><i>adik</i></td><td>jüngeres Geschwister</td></tr></table>
+<p><b>Doppelung = Mehrzahl oder Vielfalt:</b> <i>anak</i> (Kind) → <i>anak-anak</i> (Kinder). <i>teman-teman</i> (Freunde). Nach Zahlen braucht man sie nicht: <i>dua anak</i>.</p>
+<p><b>Haben:</b> <i>punya</i> (besitzen) oder <i>ada</i> (es gibt/es ist vorhanden): <i>Saya punya dua kakak.</i> / <i>Ada tiga orang di rumah.</i></p>
+<p><b>Verkürzter Besitz:</b> <i>-ku</i> (mein), <i>-mu</i> (dein), <i>-nya</i> (sein/ihr): <i>rumahku</i>, <i>rumahmu</i>, <i>rumahnya</i>.</p>`},
+ vocab:[["keluarga","Familie"],["ayah","Vater"],["ibu","Mutter / Frau"],["bapak","Vater / Herr"],["orang tua","Eltern"],["anak","Kind"],["anak laki-laki","Sohn / Junge"],["anak perempuan","Tochter / Mädchen"],["kakak","älteres Geschwister"],["adik","jüngeres Geschwister"],["saudara","Verwandte / Geschwister"],["suami","Ehemann"],["istri","Ehefrau"],["kakek","Großvater"],["nenek","Großmutter"],["paman","Onkel"],["bibi","Tante"],["sepupu","Cousin(e)"],["cucu","Enkel"],["teman","Freund(in) / Bekannte(r)"],["sahabat","enger Freund"],["pacar","Partner(in)"],["tetangga","Nachbar"],["laki-laki","männlich / Mann"],["perempuan","weiblich / Frau"],["bayi","Baby"],["muda","jung"],["tua","alt"],["menikah","verheiratet"],["lajang","ledig"],["punya","haben"],["ada","es gibt / vorhanden"]],
+ sent:[["Ini keluarga saya.","Das ist meine Familie."],["Saya punya dua kakak dan satu adik.","Ich habe zwei ältere Geschwister und ein jüngeres."],["Ayah saya bekerja di bank.","Mein Vater arbeitet bei einer Bank."],["Ibu saya sedang memasak.","Meine Mutter kocht gerade."],["Apakah Anda sudah menikah?","Sind Sie schon verheiratet?"],["Belum, saya masih lajang.","Noch nicht, ich bin noch ledig."],["Dia teman baik saya.","Er/Sie ist ein guter Freund von mir."],["Nenek saya tinggal di desa.","Meine Oma lebt auf dem Dorf."],["Anak-anak sedang bermain.","Die Kinder spielen gerade."],["Istri saya berasal dari Bali.","Meine Frau stammt aus Bali."]],
+ dlg:{t:"Über die Familie",lines:[["A","Anda punya saudara?","Haben Sie Geschwister?"],["B","Ya, saya punya satu kakak laki-laki dan satu adik perempuan.","Ja, einen älteren Bruder und eine jüngere Schwester."],["A","Berapa umur adik Anda?","Wie alt ist Ihre jüngere Schwester?"],["B","Delapan belas tahun. Dia masih sekolah.","Achtzehn. Sie geht noch zur Schule."],["A","Orang tua Anda tinggal di mana?","Wo wohnen Ihre Eltern?"],["B","Mereka tinggal di Hamburg.","Sie wohnen in Hamburg."]]},
+ ex:[["Saya ___ dua kakak. (habe)","punya",["punya","pergi","makan","suka"],""],["Ayah dan ibu = ___ tua","orang",["orang","anak","teman","adik"],"orang tua = Eltern"],["Älterer Bruder = ___ laki-laki","kakak",["kakak","adik","paman","bayi"],""],["___ saya dokter. (Mein Mann)","Suami",["Suami","Istri","Nenek","Kakek"],""],["Mehrzahl von anak: ___","anak-anak",["anak-anak","anak2x","banyak anak","anaks"],"Doppelung bildet die Mehrzahl."]]
+});
+
+U({id:"a1-08",lvl:"A1",e:"🛍️",t:"Einkaufen, Farben & Feilschen",
+ intro:"Märkte, Läden, Preise verhandeln. Handeln gehört in Indonesien zum Alltag – freundlich und mit Humor.",
+ grammar:{t:"Demonstrativa, Adjektive und Steigerungswörter",html:`
+<p><b>ini</b> = dieser/diese/dieses/hier, <b>itu</b> = jener/dort. Sie stehen <i>hinter</i> dem Nomen: <i>tas ini</i> (diese Tasche), <i>baju itu</i> (jenes Hemd).</p>
+<p><b>Adjektive</b> stehen hinter dem Nomen: <i>baju merah</i> (rotes Hemd), <i>tas besar</i> (große Tasche).</p>
+<p><b>yang</b> verbindet und hebt hervor: <i>yang ini</i> = dieses hier, <i>yang biru</i> = das blaue, <i>yang lebih murah</i> = das günstigere.</p>
+<p><b>Verstärker:</b> <i>sangat mahal</i>, <i>mahal sekali</i> (sehr teuer), <i>terlalu mahal</i> (zu teuer), <i>agak mahal</i> (ziemlich/etwas teuer), <i>cukup</i> (genug/ziemlich).</p>
+<p><b>Verhandeln:</b> <i>Bisa kurang?</i> (Geht’s günstiger?), <i>Harga pas</i> (Festpreis), <i>Saya ambil</i> (Ich nehme es).</p>`},
+ vocab:[["beli","kaufen"],["jual","verkaufen"],["bayar","bezahlen"],["harga","Preis"],["murah","billig"],["mahal","teuer"],["tawar","Gebot / handeln"],["menawar","feilschen"],["uang tunai","Bargeld"],["kartu","Karte"],["kembalian","Wechselgeld"],["diskon","Rabatt"],["toko","Laden"],["pasar","Markt"],["baju","Hemd / Kleidung"],["celana","Hose"],["sepatu","Schuhe"],["tas","Tasche"],["topi","Mütze / Hut"],["ukuran","Größe"],["warna","Farbe"],["merah","rot"],["biru","blau"],["hijau","grün"],["kuning","gelb"],["hitam","schwarz"],["putih","weiß"],["cokelat","braun"],["besar","groß"],["kecil","klein"],["ini","dieser / hier"],["itu","jener / dort"],["yang","der/die/das (Relativ)"],["habis","aus / ausverkauft"],["cari","suchen"],["ambil","nehmen"],["coba","ausprobieren"],["lagi","noch / wieder"],["terlalu","zu (zu viel)"],["sekali","sehr"]],
+ sent:[["Saya sedang mencari baju.","Ich suche gerade ein Hemd."],["Ada ukuran lebih besar?","Gibt es eine größere Größe?"],["Yang ini berapa harganya?","Wie viel kostet dieses hier?"],["Terlalu mahal! Bisa kurang?","Zu teuer! Geht es günstiger?"],["Saya ambil yang biru.","Ich nehme das blaue."],["Bisa bayar pakai kartu?","Kann ich mit Karte zahlen?"],["Maaf, hanya uang tunai.","Entschuldigung, nur Bargeld."],["Ini kembaliannya.","Hier ist das Wechselgeld."],["Tidak ada yang lebih murah?","Gibt es nichts Günstigeres?"],["Warna ini sudah habis.","Diese Farbe ist ausverkauft."]],
+ dlg:{t:"Auf dem Markt",lines:[["A","Silakan, Mbak. Cari apa?","Bitte, was suchen Sie?"],["B","Saya cari tas. Yang ini berapa?","Ich suche eine Tasche. Wie viel kostet diese?"],["A","Seratus lima puluh ribu.","Hundertfünfzigtausend."],["B","Wah, terlalu mahal. Seratus ribu bisa?","Oh, zu teuer. Geht hunderttausend?"],["A","Seratus dua puluh lima, ya. Harga pas.","Hundertfünfundzwanzig. Letzter Preis."],["B","Baiklah, saya ambil.","Na gut, ich nehme sie."],["A","Terima kasih, Mbak.","Danke."]]},
+ ex:[["Tas ___ berapa? (diese)","ini",["ini","itu","yang","sangat"],""],["Terlalu ___! (teuer)","mahal",["mahal","murah","besar","habis"],""],["Baju ___ (rotes Hemd)","merah",["merah","biru","hitam","putih"],"Adjektiv steht hinter dem Nomen."],["Ada ukuran lebih ___? (größer)","besar",["besar","kecil","murah","habis"],""],["Bisa bayar ___ kartu? (mit)","pakai",["pakai","dari","ke","di"],"pakai = benutzen/mit"],["Saya ___ yang biru. (nehme)","ambil",["ambil","jual","cari","bayar"],""]]
+});
+
+U({id:"a1-09",lvl:"A1",e:"🏠",t:"Haus & Alltagsverben",
+ intro:"Zimmer, Möbel und die wichtigsten Alltagsverben. Hier lernst du auch, wie Zeit durch Hilfswörter entsteht.",
+ grammar:{t:"Zeit ohne Verbformen: sudah, sedang, akan",html:`
+<p>Verben ändern sich nie. Die Zeit wird durch Hilfswörter angezeigt:</p>
+<table class="g"><tr><th>Wort</th><th>Bedeutung</th><th>Beispiel</th></tr>
+<tr><td><i>sudah</i></td><td>schon / bereits (abgeschlossen)</td><td><i>Saya sudah makan.</i></td></tr>
+<tr><td><i>belum</i></td><td>noch nicht</td><td><i>Saya belum makan.</i></td></tr>
+<tr><td><i>sedang</i></td><td>gerade dabei</td><td><i>Saya sedang makan.</i></td></tr>
+<tr><td><i>akan</i></td><td>werden (Zukunft)</td><td><i>Saya akan makan.</i></td></tr></table>
+<p><b>Tipp:</b> Aus dem Kontext (<i>kemarin</i>, <i>besok</i>) ist die Zeit oft klar, dann lässt man das Hilfswort weg: <i>Kemarin saya makan nasi.</i></p>
+<p><b>Verben mit me-:</b> Viele Verben haben ein Präfix <i>me-</i> (<i>memasak</i>, <i>membaca</i>). Im Alltag lässt man es oft weg (<i>masak</i>, <i>baca</i>). Das lernst du genau in Stufe B1.</p>`},
+ vocab:[["rumah","Haus"],["kamar","Zimmer"],["kamar tidur","Schlafzimmer"],["dapur","Küche"],["ruang tamu","Wohnzimmer"],["pintu","Tür"],["jendela","Fenster"],["meja","Tisch"],["kursi","Stuhl"],["tempat tidur","Bett"],["lampu","Lampe / Licht"],["air","Wasser"],["listrik","Strom"],["bangun","aufstehen"],["tidur","schlafen"],["mandi","baden / duschen"],["sarapan","frühstücken"],["memasak","kochen"],["mencuci","waschen"],["membersihkan","reinigen"],["membaca","lesen"],["menulis","schreiben"],["menonton","anschauen"],["mendengar","hören"],["berbicara","sprechen"],["istirahat","ausruhen"],["pulang","nach Hause gehen"],["pergi","gehen"],["datang","kommen"],["buka","öffnen"],["tutup","schließen"],["mulai","anfangen"],["selesai","fertig / beenden"],["bermain","spielen"],["sudah","schon"],["belum","noch nicht"],["sedang","gerade"],["akan","werden"]],
+ sent:[["Saya bangun jam enam.","Ich stehe um sechs Uhr auf."],["Setelah itu saya mandi dan sarapan.","Danach dusche ich und frühstücke."],["Ibu sedang memasak di dapur.","Mama kocht gerade in der Küche."],["Tolong tutup pintunya.","Bitte schließen Sie die Tür."],["Saya suka membaca buku.","Ich lese gern Bücher."],["Kami menonton film tadi malam.","Wir haben gestern Abend einen Film geschaut."],["Saya pulang jam lima sore.","Ich gehe um fünf Uhr nachmittags nach Hause."],["Lampunya mati.","Das Licht ist aus."],["Rumah saya kecil tetapi nyaman.","Mein Haus ist klein, aber gemütlich."],["Saya sudah selesai.","Ich bin schon fertig."]],
+ dlg:{t:"Zu Hause",lines:[["A","Kamu sedang apa?","Was machst du gerade?"],["B","Saya sedang memasak.","Ich koche gerade."],["A","Masak apa?","Was kochst du?"],["B","Nasi goreng. Mau makan bersama?","Gebratenen Reis. Möchtest du mitessen?"],["A","Boleh. Saya belum makan.","Gern. Ich habe noch nicht gegessen."],["B","Baik, tunggu sebentar.","Gut, warte einen Moment."]]},
+ ex:[["Saya ___ memasak. (gerade dabei)","sedang",["sedang","sudah","akan","belum"],""],["Tolong ___ pintunya. (schließen)","tutup",["tutup","buka","beli","cari"],""],["Saya ___ jam enam. (stehe auf)","bangun",["bangun","tidur","mandi","pulang"],""],["Besok saya ___ pergi. (werde)","akan",["akan","sudah","sedang","belum"],""],["Saya ___ makan. (noch nicht)","belum",["belum","sudah","sedang","akan"],""],["Kami ___ film. (schauen)","menonton",["menonton","membaca","memasak","menulis"],""]]
+});
+
+U({id:"a1-10",lvl:"A1",e:"🌴",t:"Wetter, Natur & Tiere",
+ intro:"Über das Wetter reden ist überall Smalltalk. Und Indonesien hat eine unglaubliche Natur.",
+ grammar:{t:"Fragen & Zustandsbeschreibung",html:`
+<p>Wetter beschreibt man ohne „es“: <i>Hujan.</i> (Es regnet.) <i>Panas sekali.</i> (Es ist sehr heiß.) <i>Cuacanya cerah.</i> (Das Wetter ist klar.)</p>
+<p><b>Fragen mit bagaimana:</b> <i>Bagaimana cuaca hari ini?</i> (Wie ist das Wetter heute?)</p>
+<p><b>Das Suffix -nya</b> funktioniert wie ein bestimmter Artikel: <i>cuaca</i> (Wetter) → <i>cuacanya</i> (das Wetter), <i>pintu</i> → <i>pintunya</i> (die Tür).</p>
+<p><b>Jahreszeiten:</b> Indonesien kennt nur zwei: <i>musim hujan</i> (Regenzeit, ca. Okt–Apr) und <i>musim kemarau</i> (Trockenzeit, ca. Mai–Sep).</p>`},
+ vocab:[["cuaca","Wetter"],["hujan","Regen"],["panas","heiß"],["dingin","kalt"],["hangat","warm"],["angin","Wind"],["awan","Wolke"],["mendung","bewölkt"],["cerah","klar / sonnig"],["langit","Himmel"],["matahari","Sonne"],["bulan","Mond"],["bintang","Stern"],["musim hujan","Regenzeit"],["musim kemarau","Trockenzeit"],["payung","Regenschirm"],["laut","Meer"],["pantai","Strand"],["gunung","Berg"],["hutan","Wald"],["sungai","Fluss"],["danau","See"],["pulau","Insel"],["sawah","Reisfeld"],["pohon","Baum"],["bunga","Blume"],["hewan","Tier"],["kucing","Katze"],["anjing","Hund"],["burung","Vogel"],["sapi","Rind"],["kerbau","Büffel"],["gajah","Elefant"],["harimau","Tiger"],["monyet","Affe"],["tinggi","hoch / groß"],["indah","schön (Landschaft)"],["lucu","niedlich / lustig"]],
+ sent:[["Cuacanya panas sekali hari ini.","Das Wetter ist heute sehr heiß."],["Besok akan hujan.","Morgen wird es regnen."],["Saya suka pantai.","Ich mag den Strand."],["Gunung itu sangat tinggi.","Dieser Berg ist sehr hoch."],["Indonesia punya banyak pulau.","Indonesien hat viele Inseln."],["Musim hujan dimulai bulan Oktober.","Die Regenzeit beginnt im Oktober."],["Anjing itu lucu.","Der Hund ist niedlich."],["Ada banyak burung di hutan.","Im Wald gibt es viele Vögel."],["Pemandangannya indah sekali!","Die Aussicht ist wunderschön!"],["Jangan lupa bawa payung.","Vergiss den Regenschirm nicht."]],
+ dlg:{t:"Smalltalk übers Wetter",lines:[["A","Bagaimana cuaca hari ini?","Wie ist das Wetter heute?"],["B","Cerah, tetapi panas sekali.","Klar, aber sehr heiß."],["A","Besok bagaimana?","Und morgen?"],["B","Katanya akan hujan.","Es soll regnen."],["A","Wah, bawa payung, ya!","Oh, nimm einen Schirm mit!"],["B","Terima kasih, Bu.","Danke."]]},
+ ex:[["Besok ___ hujan. (wird)","akan",["akan","sudah","sedang","belum"],""],["Cuaca hari ini ___ sekali. (sehr heiß)","panas",["panas","dingin","hujan","angin"],""],["Saya suka ___. (Strand)","pantai",["pantai","gunung","hutan","sawah"],""],["Bawa ___, ya! (Schirm)","payung",["payung","bunga","pohon","bintang"],""],["Musim ___ = Regenzeit","hujan",["hujan","kemarau","panas","angin"],""]]
+});
+
+/* ===== Stufe A2 ===== */
+U({id:"a2-11",lvl:"A2",e:"⏰",t:"Tagesablauf & Gewohnheiten",
+ intro:"Beschreibe deinen Tag: Aufstehen, Arbeit, Freizeit. Dazu lernst du Häufigkeitswörter und das wichtige Präfix ber-.",
+ grammar:{t:"Das Präfix ber- und Häufigkeitswörter",html:`
+<p><b>ber-</b> bildet Verben aus Nomen oder Wurzeln, die oft „haben / tun / sich verhalten“ bedeuten:</p>
+<table class="g"><tr><th>Wurzel</th><th>Verb</th><th>Bedeutung</th></tr>
+<tr><td><i>kerja</i></td><td><i>bekerja</i></td><td>arbeiten</td></tr>
+<tr><td><i>jalan</i></td><td><i>berjalan</i></td><td>gehen</td></tr>
+<tr><td><i>main</i></td><td><i>bermain</i></td><td>spielen</td></tr>
+<tr><td><i>belanja</i></td><td><i>berbelanja</i></td><td>einkaufen</td></tr>
+<tr><td><i>olahraga</i></td><td><i>berolahraga</i></td><td>Sport treiben</td></tr>
+<tr><td><i>sepeda</i></td><td><i>bersepeda</i></td><td>Fahrrad fahren</td></tr>
+<tr><td><i>renang</i></td><td><i>berenang</i></td><td>schwimmen</td></tr></table>
+<p>Vor <i>r</i> und manchen Wörtern wird ber- zu <i>be-</i> (<i>bekerja</i>, <i>belajar</i> aus <i>ber+ajar</i>, <i>beternak</i>).</p>
+<p><b>Häufigkeit</b> (von immer bis nie): <i>selalu</i> › <i>sering</i> › <i>biasanya</i> › <i>kadang-kadang</i> › <i>jarang</i> › <i>tidak pernah</i>. Sie stehen vor dem Verb: <i>Saya sering berenang.</i></p>
+<p><b>Reihenfolge:</b> <i>pertama</i> (zuerst), <i>lalu / kemudian</i> (dann), <i>setelah itu</i> (danach), <i>akhirnya</i> (schließlich).</p>`},
+ vocab:[["selalu","immer"],["sering","oft"],["biasanya","normalerweise"],["kadang-kadang","manchmal"],["jarang","selten"],["tidak pernah","nie"],["bekerja","arbeiten"],["berjalan","gehen"],["berangkat","aufbrechen"],["bermain","spielen"],["berbelanja","einkaufen"],["berolahraga","Sport treiben"],["bersepeda","Rad fahren"],["berenang","schwimmen"],["berlari","rennen / joggen"],["beristirahat","sich ausruhen"],["berkumpul","zusammenkommen"],["bercerita","erzählen"],["berpikir","denken"],["bertanya","fragen"],["berdoa","beten"],["berdiri","stehen"],["berlibur","Urlaub machen"],["berbicara","sprechen"],["sarapan","frühstücken"],["makan siang","Mittagessen"],["makan malam","Abendessen"],["lalu","dann"],["kemudian","dann / anschließend"],["setelah","nachdem"],["sebelum","bevor"],["akhirnya","schließlich"],["selama","während / für (Dauer)"],["kantor","Büro"],["taman","Park"],["sekolah","Schule"]],
+ sent:[["Setiap pagi saya berolahraga selama tiga puluh menit.","Jeden Morgen mache ich dreißig Minuten Sport."],["Saya berangkat ke kantor naik kereta.","Ich fahre mit dem Zug zur Arbeit."],["Setelah bekerja, saya berbelanja di pasar.","Nach der Arbeit kaufe ich auf dem Markt ein."],["Kami berkumpul di rumah nenek setiap hari Minggu.","Wir treffen uns jeden Sonntag bei Oma."],["Anak-anak bermain di taman.","Die Kinder spielen im Park."],["Saya biasanya tidur jam sebelas malam.","Normalerweise gehe ich um elf Uhr nachts schlafen."],["Sebelum tidur, saya membaca buku.","Bevor ich schlafe, lese ich ein Buch."],["Akhir pekan saya sering berenang.","Am Wochenende schwimme ich oft."],["Dia berjalan kaki ke sekolah.","Er/Sie geht zu Fuß zur Schule."],["Saya tidak pernah makan pedas.","Ich esse nie scharf."]],
+ dlg:{t:"Über den Tagesablauf",lines:[["A","Biasanya kamu bangun jam berapa?","Wann stehst du normalerweise auf?"],["B","Jam enam. Lalu saya berolahraga sebentar.","Um sechs. Dann mache ich kurz Sport."],["A","Setelah itu?","Und danach?"],["B","Saya sarapan dan berangkat ke kantor.","Ich frühstücke und fahre ins Büro."],["A","Kamu pulang jam berapa?","Wann kommst du nach Hause?"],["B","Biasanya jam enam sore, tetapi kadang-kadang lembur.","Meistens um sechs, manchmal mache ich Überstunden."]]},
+ ex:[["Saya ___ berolahraga setiap pagi. (immer)","selalu",["selalu","jarang","tidak pernah","kadang"],""],["bekerja = ___","arbeiten",["arbeiten","spielen","gehen","fragen"],""],["Saya tidak ___ makan pedas. (nie)","pernah",["pernah","sering","selalu","biasanya"],"tidak pernah = nie"],["___ tidur, saya membaca. (Bevor)","Sebelum",["Sebelum","Setelah","Selama","Lalu"],""],["Anak-anak ___ di taman. (spielen)","bermain",["bermain","berenang","bekerja","berdoa"],""]]
+});
+
+U({id:"a2-12",lvl:"A2",e:"❓",t:"Fragen & Verneinung",
+ intro:"Fragen stellen und richtig verneinen – zwei Fähigkeiten, ohne die kein Gespräch gelingt. Indonesisch hat vier Verneinungen.",
+ grammar:{t:"tidak, bukan, belum, jangan – und alle Fragewörter",html:`
+<table class="g"><tr><th>Wort</th><th>Wann?</th><th>Beispiel</th></tr>
+<tr><td><b>tidak</b></td><td>Verben & Adjektive</td><td><i>Saya tidak mau.</i> / <i>Tidak pedas.</i></td></tr>
+<tr><td><b>bukan</b></td><td>Nomen & Pronomen (= kein, nicht)</td><td><i>Dia bukan guru.</i></td></tr>
+<tr><td><b>belum</b></td><td>noch nicht</td><td><i>Saya belum makan.</i></td></tr>
+<tr><td><b>jangan</b></td><td>Verbot / „nicht tun!“</td><td><i>Jangan lupa!</i></td></tr>
+<tr><td><b>tanpa</b></td><td>ohne</td><td><i>kopi tanpa gula</i></td></tr></table>
+<p><b>Fragewörter:</b> <i>apa</i> (was), <i>siapa</i> (wer), <i>kapan</i> (wann), <i>di mana</i> (wo), <i>ke mana</i> (wohin), <i>dari mana</i> (woher), <i>mengapa/kenapa</i> (warum), <i>bagaimana</i> (wie), <i>berapa</i> (wie viel), <i>yang mana</i> (welche/r), <i>berapa lama</i> (wie lange).</p>
+<p><b>Ja/Nein-Fragen:</b> Mit <i>apakah</i> am Anfang (formell) oder einfach durch Intonation. <i>Anda mau kopi?</i> (Möchten Sie Kaffee?) Antwort: <i>Mau.</i> / <i>Tidak.</i> – man wiederholt das Verb statt „ja“.</p>
+<p><b>kan</b> am Ende ist wie „oder?/nicht wahr?“: <i>Kamu sudah makan, kan?</i></p>`},
+ vocab:[["apa","was"],["siapa","wer"],["kapan","wann"],["kenapa","warum (umgangssprachlich)"],["mengapa","warum"],["bagaimana","wie"],["berapa lama","wie lange"],["yang mana","welche(r)"],["apakah","ob / (Fragepartikel)"],["bukan","nicht (Nomen) / nein"],["tidak","nicht (Verb/Adj.)"],["belum","noch nicht"],["jangan","nicht tun!"],["tanpa","ohne"],["benar","richtig"],["salah","falsch / Fehler"],["betul","richtig / stimmt"],["tentu","bestimmt / natürlich"],["mungkin","vielleicht"],["pasti","sicher"],["harus","müssen"],["perlu","brauchen"],["ingin","wollen / möchten"],["tahu","wissen"],["paham","verstehen"],["ingat","sich erinnern"],["lupa","vergessen"],["jawab","antworten"],["pertanyaan","Frage"],["jawaban","Antwort"]],
+ sent:[["Ini bukan buku saya.","Das ist nicht mein Buch."],["Saya tidak mau kopi.","Ich möchte keinen Kaffee."],["Dia belum datang.","Er/Sie ist noch nicht gekommen."],["Jangan lupa membawa paspor!","Vergiss den Pass nicht!"],["Mengapa Anda belajar bahasa Indonesia?","Warum lernen Sie Indonesisch?"],["Karena saya suka Indonesia.","Weil ich Indonesien mag."],["Bagaimana kabar keluarga Anda?","Wie geht es Ihrer Familie?"],["Kapan Anda datang ke Jakarta?","Wann kommen Sie nach Jakarta?"],["Berapa lama Anda tinggal di sini?","Wie lange wohnen Sie schon hier?"],["Siapa yang datang tadi?","Wer ist vorhin gekommen?"],["Kopi tanpa gula, tolong.","Kaffee ohne Zucker, bitte."]],
+ dlg:{t:"Nachfragen im Gespräch",lines:[["A","Apakah Anda sudah makan?","Haben Sie schon gegessen?"],["B","Belum. Saya tidak sempat sarapan.","Noch nicht. Ich hatte keine Zeit zu frühstücken."],["A","Jangan lupa makan, ya!","Vergessen Sie das Essen nicht!"],["B","Tentu. Anda mau ikut?","Natürlich. Kommen Sie mit?"],["A","Tidak, terima kasih. Saya sudah makan.","Nein, danke. Ich habe schon gegessen."],["B","Baik, kalau begitu saya pergi dulu.","Gut, dann gehe ich schon mal."]]},
+ ex:[["Dia ___ guru, tetapi dokter. (kein Lehrer)","bukan",["bukan","tidak","belum","jangan"],"Vor Nomen: bukan."],["Saya ___ mau kopi. (möchte nicht)","tidak",["tidak","bukan","belum","jangan"],"Vor Verben: tidak."],["Dia ___ datang. (noch nicht)","belum",["belum","bukan","tidak","tanpa"],""],["___ lupa! (Vergiss nicht)","Jangan",["Jangan","Tidak","Bukan","Belum"],""],["___ Anda pergi? (Wohin)","Ke mana",["Ke mana","Di mana","Dari mana","Kapan"],""],["Kopi ___ gula = Kaffee ohne Zucker","tanpa",["tanpa","bukan","tidak","jangan"],""]]
+});
+
+U({id:"a2-13",lvl:"A2",e:"⌛",t:"Zeitformen & Aspekte",
+ intro:"Indonesisch kennt keine Verbzeiten, aber sehr präzise Zeitwörter. Mit ihnen drückst du Vergangenheit, Gegenwart und Zukunft sicher aus.",
+ grammar:{t:"Die Zeitwörter im Überblick",html:`
+<table class="g"><tr><th>Wort</th><th>Bedeutung</th><th>Beispiel</th></tr>
+<tr><td><i>sudah / telah</i></td><td>schon, bereits (fertig)</td><td><i>Dia sudah pulang.</i></td></tr>
+<tr><td><i>belum</i></td><td>noch nicht</td><td><i>Saya belum selesai.</i></td></tr>
+<tr><td><i>sedang / lagi</i></td><td>gerade dabei</td><td><i>Kami sedang makan.</i></td></tr>
+<tr><td><i>akan / mau</i></td><td>wird / will</td><td><i>Saya akan datang.</i></td></tr>
+<tr><td><i>pernah</i></td><td>schon einmal (Erfahrung)</td><td><i>Saya pernah ke Bali.</i></td></tr>
+<tr><td><i>belum pernah</i></td><td>noch nie</td><td><i>Saya belum pernah ke Papua.</i></td></tr>
+<tr><td><i>baru / baru saja</i></td><td>gerade erst</td><td><i>Dia baru saja tiba.</i></td></tr>
+<tr><td><i>masih</i></td><td>noch (immer)</td><td><i>Saya masih lapar.</i></td></tr>
+<tr><td><i>tidak … lagi</i></td><td>nicht mehr</td><td><i>Saya tidak lapar lagi.</i></td></tr>
+<tr><td><i>dulu</i></td><td>früher</td><td><i>Dulu saya tinggal di Munich.</i></td></tr></table>
+<p><b>Merke:</b> <i>sudah</i> kann auch „ja, schon“ als Antwort sein: <i>Sudah makan? – Sudah.</i> / <i>Belum.</i> Das ist die typische Antwortform auf „Hast du schon …?“.</p>`},
+ vocab:[["sudah","schon"],["telah","bereits (formell)"],["belum","noch nicht"],["sedang","gerade"],["lagi","gerade (umgspr.) / wieder"],["akan","wird"],["pernah","schon mal"],["belum pernah","noch nie"],["baru","neu / gerade erst"],["baru saja","gerade eben"],["masih","noch"],["dulu","früher"],["nanti","später"],["tadi","vorhin"],["dahulu","vorher"],["sekarang","jetzt"],["segera","bald / sofort"],["sebentar","kurz"],["lama","lange"],["sejak","seit"],["sampai","bis"],["dalam","in (Zeit) / tief"],["lalu","dann / vergangen"],["selesai","fertig"],["terlambat","verspätet"],["tepat waktu","pünktlich"],["awal","früh"],["akhir","Ende / letzte"]],
+ sent:[["Saya sudah makan.","Ich habe schon gegessen."],["Saya belum makan.","Ich habe noch nicht gegessen."],["Dia sedang tidur.","Er/Sie schläft gerade."],["Kami akan pergi ke Bali bulan depan.","Wir werden nächsten Monat nach Bali reisen."],["Saya pernah ke Jepang.","Ich war schon einmal in Japan."],["Saya belum pernah ke Papua.","Ich war noch nie in Papua."],["Dia baru saja pulang.","Er/Sie ist gerade erst nach Hause gekommen."],["Saya masih belajar.","Ich lerne noch."],["Dulu saya tinggal di Munich.","Früher habe ich in München gewohnt."],["Nanti saya telepon Anda.","Ich rufe Sie später an."]],
+ dlg:{t:"Schon erledigt?",lines:[["A","Kamu sudah makan?","Hast du schon gegessen?"],["B","Belum, saya masih bekerja.","Noch nicht, ich arbeite noch."],["A","Sudah selesai laporannya?","Ist der Bericht schon fertig?"],["B","Belum. Saya akan selesaikan nanti sore.","Noch nicht. Ich beende ihn heute Nachmittag."],["A","Oke. Kalau sudah selesai, kita makan bersama.","Okay. Wenn du fertig bist, essen wir zusammen."],["B","Setuju!","Einverstanden!"]]},
+ ex:[["Dia ___ pulang. (ist schon)","sudah",["sudah","akan","sedang","belum"],""],["Kami ___ makan. (gerade dabei)","sedang",["sedang","sudah","akan","pernah"],""],["Saya ___ ke Jepang. (war schon einmal)","pernah",["pernah","baru","masih","akan"],""],["Saya ___ lapar. (noch)","masih",["masih","sudah","akan","belum"],""],["Besok saya ___ datang. (werde)","akan",["akan","sedang","sudah","pernah"],""],["Saya ___ pernah ke Papua. (noch nie)","belum",["belum","tidak","bukan","jangan"],""]]
+});
+
+U({id:"a2-14",lvl:"A2",e:"🩺",t:"Körper & Gesundheit",
+ intro:"Wenn du krank wirst, willst du erklären können, was wehtut. Hier lernst du Körperteile, Symptome und Arztgespräche.",
+ grammar:{t:"sakit, perlu, harus – Beschwerden und Pflichten",html:`
+<p><b>Schmerzen:</b> <i>sakit</i> = krank / schmerzhaft. <i>Saya sakit.</i> (Ich bin krank.) <i>Kepala saya sakit.</i> (Mein Kopf tut weh.) Kurzform: <i>sakit kepala</i> (Kopfschmerzen), <i>sakit perut</i>, <i>sakit gigi</i>.</p>
+<p><b>Dauer:</b> <i>sejak kemarin</i> (seit gestern), <i>selama tiga hari</i> (drei Tage lang).</p>
+<p><b>Modale Verben:</b> <i>harus</i> (müssen), <i>perlu</i> (brauchen/nötig), <i>boleh</i> (dürfen), <i>bisa</i> (können), <i>mau</i> (wollen). Alle stehen <i>vor</i> dem Verb und ändern sich nie: <i>Saya harus istirahat.</i></p>
+<p><b>Gute Besserung:</b> <i>Cepat sembuh!</i> / <i>Semoga lekas sembuh!</i></p>`},
+ vocab:[["tubuh","Körper"],["kepala","Kopf"],["rambut","Haar"],["mata","Auge"],["telinga","Ohr"],["hidung","Nase"],["mulut","Mund"],["gigi","Zahn"],["leher","Hals / Nacken"],["bahu","Schulter"],["tangan","Hand / Arm"],["jari","Finger"],["perut","Bauch"],["punggung","Rücken"],["kaki","Fuß / Bein"],["lutut","Knie"],["jantung","Herz"],["kulit","Haut"],["sakit","krank / Schmerz"],["demam","Fieber"],["batuk","Husten"],["pilek","Schnupfen"],["pusing","schwindelig"],["mual","übel"],["lelah","müde / erschöpft"],["sehat","gesund"],["obat","Medikament"],["dokter","Arzt"],["apotek","Apotheke"],["resep","Rezept"],["alergi","Allergie"],["sembuh","genesen"],["istirahat","ausruhen"],["periksa","untersuchen"],["luka","Wunde"],["darah","Blut"]],
+ sent:[["Saya sakit kepala.","Ich habe Kopfschmerzen."],["Perut saya sakit sekali.","Mein Bauch tut sehr weh."],["Saya demam sejak kemarin.","Ich habe seit gestern Fieber."],["Saya perlu ke dokter.","Ich muss zum Arzt."],["Berapa kali sehari saya harus minum obat ini?","Wie oft am Tag muss ich dieses Medikament nehmen?"],["Saya alergi terhadap kacang.","Ich bin allergisch gegen Nüsse."],["Cepat sembuh!","Gute Besserung!"],["Apakah ada apotek di dekat sini?","Gibt es hier in der Nähe eine Apotheke?"],["Saya merasa lelah dan pusing.","Ich fühle mich müde und schwindelig."],["Anda harus banyak istirahat.","Sie müssen viel ruhen."]],
+ dlg:{t:"Beim Arzt",lines:[["A","Selamat pagi. Apa keluhan Anda?","Guten Morgen. Was für Beschwerden haben Sie?"],["B","Saya demam dan batuk sejak tiga hari.","Ich habe seit drei Tagen Fieber und Husten."],["A","Apakah ada sakit tenggorokan?","Haben Sie Halsschmerzen?"],["B","Ya, sedikit. Dan kepala saya pusing.","Ja, ein bisschen. Und mir ist schwindelig."],["A","Anda harus banyak istirahat dan minum obat ini.","Sie müssen viel ruhen und dieses Medikament nehmen."],["B","Berapa kali sehari, Dok?","Wie oft am Tag, Herr Doktor?"],["A","Tiga kali sehari setelah makan.","Dreimal täglich nach dem Essen."]]},
+ ex:[["Saya ___ kepala. (habe Kopfschmerzen)","sakit",["sakit","sehat","mual","lelah"],""],["Saya ___ ke dokter. (muss)","perlu",["perlu","mau","suka","bisa"],"perlu = nötig / müssen"],["Cepat ___! (Gute Besserung)","sembuh",["sembuh","sakit","lupa","pergi"],""],["Saya demam ___ kemarin. (seit)","sejak",["sejak","selama","sampai","setelah"],""],["Obat bekommt man in der ___","apotek",["apotek","pasar","kantor","taman"],""]]
+});
+
+U({id:"a2-15",lvl:"A2",e:"🧳",t:"Reisen & Hotel",
+ intro:"Zimmer buchen, einchecken, Probleme melden, Ausflüge planen: alles, was du unterwegs brauchst.",
+ grammar:{t:"Bitten, Fragen nach Möglichkeiten und Höflichkeit",html:`
+<p><b>Bitten:</b> <i>Boleh saya …?</i> (Darf ich …?), <i>Bisa …?</i> (Geht …?), <i>Tolong …</i> (Bitte …), <i>Saya ingin …</i> (Ich möchte …), <i>Apakah ada …?</i> (Gibt es …?).</p>
+<p><b>Probleme melden:</b> <i>… tidak berfungsi</i> (… funktioniert nicht), <i>… rusak</i> (… ist kaputt), <i>… tidak ada</i> (… ist nicht vorhanden).</p>
+<p><b>Dauer & Preis:</b> <i>per malam</i> (pro Nacht), <i>selama tiga malam</i> (drei Nächte lang), <i>sudah termasuk sarapan</i> (inkl. Frühstück).</p>
+<p><b>Vorwissen:</b> <i>memesan</i> = reservieren/bestellen. <i>Saya sudah memesan kamar atas nama Schmidt.</i> (… auf den Namen Schmidt.)</p>`},
+ vocab:[["liburan","Urlaub"],["wisatawan","Tourist"],["tiket","Ticket"],["paspor","Reisepass"],["visa","Visum"],["bagasi","Gepäck"],["koper","Koffer"],["penerbangan","Flug"],["penginapan","Unterkunft"],["kamar kosong","freies Zimmer"],["kunci","Schlüssel"],["menginap","übernachten"],["malam","Nacht / Abend"],["sarapan","Frühstück"],["wifi","WLAN"],["AC","Klimaanlage"],["memesan","reservieren"],["membatalkan","stornieren"],["tersedia","verfügbar"],["penuh","voll"],["termasuk","inklusive"],["rusak","kaputt"],["berfungsi","funktionieren"],["objek wisata","Sehenswürdigkeit"],["pemandu wisata","Reiseführer"],["oleh-oleh","Mitbringsel"],["mengunjungi","besuchen"],["menyewa","mieten"],["pesan","Nachricht / bestellen"],["check-in","Einchecken"],["check-out","Auschecken"],["lantai","Etage"],["handuk","Handtuch"]],
+ sent:[["Saya sudah memesan kamar atas nama Schmidt.","Ich habe ein Zimmer auf den Namen Schmidt reserviert."],["Apakah masih ada kamar kosong?","Gibt es noch freie Zimmer?"],["Berapa harga per malam?","Wie viel kostet es pro Nacht?"],["Apakah sudah termasuk sarapan?","Ist das Frühstück inbegriffen?"],["Jam berapa check-out?","Wann ist Check-out?"],["AC di kamar saya tidak berfungsi.","Die Klimaanlage in meinem Zimmer funktioniert nicht."],["Boleh saya menitipkan koper?","Darf ich meinen Koffer hierlassen?"],["Saya ingin membeli oleh-oleh.","Ich möchte Mitbringsel kaufen."],["Kami berlibur di Bali selama seminggu.","Wir machen eine Woche Urlaub auf Bali."],["Di mana saya bisa menyewa motor?","Wo kann ich ein Motorrad mieten?"]],
+ dlg:{t:"An der Hotelrezeption",lines:[["A","Selamat sore. Ada yang bisa saya bantu?","Guten Tag. Wie kann ich helfen?"],["B","Saya sudah memesan kamar atas nama Schmidt.","Ich habe ein Zimmer auf den Namen Schmidt reserviert."],["A","Baik, untuk tiga malam, benar?","Gut, für drei Nächte, richtig?"],["B","Ya. Apakah sudah termasuk sarapan?","Ja. Ist das Frühstück inklusive?"],["A","Ya, sarapan jam tujuh sampai sepuluh.","Ja, Frühstück von sieben bis zehn."],["B","Baik. Wifinya gratis?","Gut. Ist das WLAN gratis?"],["A","Gratis, Pak. Kamar Anda di lantai dua.","Gratis. Ihr Zimmer ist im zweiten Stock."]]},
+ ex:[["Saya sudah ___ kamar. (reserviert)","memesan",["memesan","membeli","mencari","menjual"],""],["AC saya tidak ___. (funktioniert)","berfungsi",["berfungsi","penuh","tersedia","termasuk"],""],["___ saya menitipkan koper? (Darf)","Boleh",["Boleh","Harus","Sudah","Pernah"],""],["Sarapan sudah ___. (inklusive)","termasuk",["termasuk","rusak","kosong","penuh"],""],["Kami berlibur ___ seminggu. (eine Woche lang)","selama",["selama","sejak","sampai","setelah"],""]]
+});
+
+U({id:"a2-16",lvl:"A2",e:"💼",t:"Arbeit & Beruf",
+ intro:"Berufe, Büroalltag, Termine und ein erstes Bewerbungsgespräch.",
+ grammar:{t:"Berufe nennen, Hilfsverben und sebagai",html:`
+<p><b>Berufe:</b> <i>Saya guru.</i> / <i>Saya bekerja sebagai guru.</i> (… als Lehrer.) <i>sebagai</i> = als.</p>
+<p><b>Bei einer Firma:</b> <i>bekerja di sebuah perusahaan</i> (in einer Firma). <i>sebuah</i> = ein (Gegenstand/Ort).</p>
+<p><b>Aufforderung:</b> <i>Tolong kirim laporannya.</i> (Bitte schicken Sie den Bericht.) Das Suffix <i>-nya</i> macht „den Bericht“ bestimmt.</p>
+<p><b>Zeitraum:</b> <i>dari … sampai …</i> (von … bis …): <i>dari Senin sampai Jumat</i>.</p>
+<p><b>Termine:</b> <i>Saya punya rapat jam sepuluh.</i> (Ich habe um zehn eine Besprechung.)</p>`},
+ vocab:[["pekerjaan","Arbeit / Beruf"],["kantor","Büro"],["perusahaan","Firma"],["karyawan","Mitarbeiter"],["atasan","Vorgesetzter"],["bos","Chef"],["rekan kerja","Kollege"],["rapat","Besprechung"],["gaji","Gehalt"],["lowongan","Stellenangebot"],["melamar","bewerben"],["wawancara","Vorstellungsgespräch"],["pengalaman","Erfahrung"],["kontrak","Vertrag"],["proyek","Projekt"],["tugas","Aufgabe"],["laporan","Bericht"],["jadwal","Zeitplan"],["lembur","Überstunden"],["cuti","Urlaub (arbeitsrechtlich)"],["guru","Lehrer"],["dokter","Arzt"],["insinyur","Ingenieur"],["perawat","Pfleger(in)"],["pelayan","Kellner / Bedienung"],["petani","Landwirt"],["pengusaha","Unternehmer"],["sopir","Fahrer"],["koki","Koch"],["penerjemah","Übersetzer"],["sebagai","als"],["sebuah","ein (Ding)"],["mengirim","senden"],["bekerja","arbeiten"]],
+ sent:[["Apa pekerjaan Anda?","Was machen Sie beruflich?"],["Saya bekerja sebagai insinyur di sebuah perusahaan.","Ich arbeite als Ingenieur in einer Firma."],["Saya punya rapat jam sepuluh.","Ich habe um zehn Uhr eine Besprechung."],["Tolong kirim laporannya sebelum sore.","Bitte schicken Sie den Bericht vor dem Nachmittag."],["Saya sedang mencari pekerjaan.","Ich suche gerade eine Stelle."],["Gaji saya dibayar setiap akhir bulan.","Mein Gehalt wird am Monatsende gezahlt."],["Saya mau mengajukan cuti minggu depan.","Ich möchte nächste Woche Urlaub beantragen."],["Kami bekerja dari Senin sampai Jumat.","Wir arbeiten von Montag bis Freitag."],["Dia atasan saya.","Er/Sie ist mein Vorgesetzter."],["Saya lembur sampai malam.","Ich mache bis in die Nacht Überstunden."]],
+ dlg:{t:"Kurzes Vorstellungsgespräch",lines:[["A","Selamat pagi. Silakan duduk.","Guten Morgen. Bitte setzen Sie sich."],["B","Terima kasih, Bu.","Danke."],["A","Ceritakan sedikit tentang diri Anda.","Erzählen Sie etwas über sich."],["B","Saya insinyur dengan pengalaman lima tahun.","Ich bin Ingenieur mit fünf Jahren Erfahrung."],["A","Mengapa Anda melamar di perusahaan kami?","Warum bewerben Sie sich bei uns?"],["B","Karena saya tertarik dengan proyek-proyek Anda.","Weil mich Ihre Projekte interessieren."],["A","Baik. Kami akan menghubungi Anda minggu depan.","Gut. Wir melden uns nächste Woche."]]},
+ ex:[["Saya bekerja ___ guru. (als)","sebagai",["sebagai","dengan","untuk","dari"],""],["Kami bekerja dari Senin ___ Jumat. (bis)","sampai",["sampai","dari","sejak","karena"],""],["Saya punya ___ jam sepuluh. (Besprechung)","rapat",["rapat","gaji","tugas","kunci"],""],["___ saya dibayar setiap bulan. (Gehalt)","Gaji",["Gaji","Tugas","Cuti","Lembur"],""],["Saya sedang ___ pekerjaan. (suche)","mencari",["mencari","menjual","menunggu","membuka"],""]]
+});
+
+U({id:"a2-17",lvl:"A2",e:"🎸",t:"Hobbys, Vorlieben & Vergleiche",
+ intro:"Über Interessen sprechen, vergleichen und Meinungen ausdrücken – und Adjektive richtig steigern.",
+ grammar:{t:"Steigern & Vergleichen",html:`
+<table class="g"><tr><th>Form</th><th>Wie?</th><th>Beispiel</th></tr>
+<tr><td>Vergleich (−er als)</td><td><i>lebih … daripada / dari</i></td><td><i>Kopi lebih mahal daripada teh.</i></td></tr>
+<tr><td>Superlativ</td><td><i>paling …</i> / <i>ter-</i></td><td><i>paling besar</i> = <i>terbesar</i></td></tr>
+<tr><td>Gleichheit (so … wie)</td><td><i>se-</i> + Adj. / <i>sama … dengan</i></td><td><i>Kota ini sebesar Jakarta.</i></td></tr>
+<tr><td>zu viel</td><td><i>terlalu</i></td><td><i>terlalu pedas</i></td></tr>
+<tr><td>etwas / ziemlich</td><td><i>agak</i> / <i>cukup</i></td><td><i>agak mahal</i></td></tr>
+<tr><td>weniger</td><td><i>kurang</i> + Adj.</td><td><i>kurang enak</i></td></tr></table>
+<p><b>Lieber / mögen:</b> <i>suka</i> (mögen), <i>lebih suka</i> (lieber mögen), <i>paling suka</i> (am liebsten): <i>Saya lebih suka kopi daripada teh.</i></p>
+<p><b>Hobbys:</b> <i>Hobi saya adalah …</i> (Mein Hobby ist …). <i>Saya suka + Verb</i>: <i>Saya suka berenang.</i></p>`},
+ vocab:[["hobi","Hobby"],["suka","mögen"],["lebih suka","lieber mögen"],["paling suka","am liebsten mögen"],["olahraga","Sport"],["sepak bola","Fußball"],["berenang","schwimmen"],["musik","Musik"],["film","Film"],["menyanyi","singen"],["menari","tanzen"],["memasak","kochen"],["jalan-jalan","bummeln / reisen"],["bermain gitar","Gitarre spielen"],["memotret","fotografieren"],["lebih","mehr / -er"],["daripada","als (Vergleich)"],["paling","am meisten / -ste"],["sama","gleich"],["agak","etwas"],["cukup","ziemlich / genug"],["kurang","weniger"],["pintar","klug"],["rajin","fleißig"],["malas","faul"],["mudah","leicht"],["sulit","schwer"],["tinggi","hoch"],["rendah","niedrig"],["panjang","lang"],["pendek","kurz"],["baru","neu"],["lama","alt (Ding) / lange"],["cepat","schnell"],["lambat","langsam"],["bagus","gut / schön"],["jelek","hässlich / schlecht"]],
+ sent:[["Hobi saya adalah membaca dan berenang.","Meine Hobbys sind Lesen und Schwimmen."],["Saya lebih suka kopi daripada teh.","Ich mag Kaffee lieber als Tee."],["Dia paling pintar di kelas.","Er/Sie ist der/die Klügste in der Klasse."],["Bahasa Indonesia lebih mudah daripada bahasa Jerman.","Indonesisch ist leichter als Deutsch."],["Kota ini sebesar Jakarta.","Diese Stadt ist so groß wie Jakarta."],["Film itu sangat bagus.","Der Film ist sehr gut."],["Makanan di sini agak pedas.","Das Essen hier ist etwas scharf."],["Saya kurang suka musik keras.","Ich mag laute Musik weniger."],["Gunung ini yang tertinggi di pulau ini.","Dieser Berg ist der höchste auf dieser Insel."],["Cuacanya lebih panas dari kemarin.","Das Wetter ist heißer als gestern."]],
+ dlg:{t:"Über Hobbys",lines:[["A","Apa hobi Anda?","Was sind Ihre Hobbys?"],["B","Saya suka berenang dan bermain gitar. Kalau Anda?","Ich schwimme und spiele Gitarre. Und Sie?"],["A","Saya lebih suka olahraga, terutama sepak bola.","Ich mag Sport mehr, besonders Fußball."],["B","Wah, saya kurang suka sepak bola.","Oh, ich mag Fußball weniger."],["A","Mengapa?","Warum?"],["B","Menurut saya terlalu ramai.","Ich finde es zu laut/voll."]]},
+ ex:[["Kopi lebih mahal ___ teh. (als)","daripada",["daripada","dengan","dari mana","karena"],""],["Dia ___ pintar di kelas. (am klügsten)","paling",["paling","lebih","agak","terlalu"],""],["Kota ini ___ Jakarta. (so groß wie)","sebesar",["sebesar","terbesar","lebih besar","besar"],"se- + Adjektiv = so … wie"],["Makanan ini ___ pedas. (zu)","terlalu",["terlalu","agak","kurang","paling"],""],["Saya lebih ___ kopi. (mag lieber)","suka",["suka","benci","buat","tahu"],""]]
+});
+
+U({id:"a2-18",lvl:"A2",e:"📱",t:"Telefon, Internet & Technik",
+ intro:"Alltagstechnik: Handy, Nachrichten, Internet, WLAN, Daten. In Indonesien läuft alles über WhatsApp.",
+ grammar:{t:"Nachrichten, Anrufe und Imperative",html:`
+<p><b>Imperative</b> sind einfach: Wurzelverb + <i>lah</i> (freundlich) oder mit <i>tolong</i>, <i>silakan</i>, <i>ayo</i> (los):
+<br><i>Kirim pesan!</i> / <i>Kirimlah pesan.</i> / <i>Tolong kirim pesan.</i> / <i>Ayo, kita telepon!</i></p>
+<p><b>Verneint:</b> <i>Jangan telepon sekarang!</i></p>
+<p><b>Technik-Verben:</b> <i>mengirim</i> (senden), <i>menerima</i> (empfangen), <i>mengunduh</i> (herunterladen), <i>menelepon</i> (anrufen), <i>mengetik</i> (tippen), <i>mematikan</i> (ausschalten), <i>menyalakan</i> (einschalten), <i>mengisi daya</i> (laden).</p>
+<p><b>kehabisan</b> = „etwas ist einem ausgegangen“: <i>Saya kehabisan baterai.</i> (Mein Akku ist leer.) / <i>kehabisan kuota</i> (Datenvolumen aufgebraucht).</p>`},
+ vocab:[["ponsel","Handy"],["HP","Handy (umgspr.)"],["telepon","Telefon / anrufen"],["menelepon","anrufen"],["pesan","Nachricht"],["mengirim","senden"],["menerima","empfangen"],["aplikasi","App"],["internet","Internet"],["sinyal","Empfang"],["baterai","Akku"],["isi daya","aufladen"],["pulsa","Guthaben"],["kuota","Datenvolumen"],["layar","Bildschirm"],["komputer","Computer"],["foto","Foto"],["video","Video"],["akun","Konto"],["kata sandi","Passwort"],["media sosial","soziale Medien"],["grup","Gruppe"],["unduh","herunterladen"],["klik","klicken"],["mengetik","tippen"],["mencari","suchen"],["menyalakan","einschalten"],["mematikan","ausschalten"],["kehabisan","ausgegangen sein"],["jelek","schlecht"],["putus","unterbrochen"],["jelas","klar / deutlich"],["ayo","los / komm"]],
+ sent:[["Nomor ponsel Anda berapa?","Wie lautet Ihre Handynummer?"],["Tolong kirim pesan lewat WhatsApp.","Bitte schicken Sie eine Nachricht über WhatsApp."],["Sinyalnya jelek di sini.","Der Empfang ist hier schlecht."],["Baterai saya habis.","Mein Akku ist leer."],["Apa kata sandi wifi-nya?","Wie lautet das WLAN-Passwort?"],["Saya kehabisan kuota.","Mein Datenvolumen ist aufgebraucht."],["Bisa kita video call besok?","Können wir morgen einen Videoanruf machen?"],["Saya akan mengirim fotonya nanti.","Ich schicke das Foto später."],["Halo, siapa ini?","Hallo, wer ist da?"],["Maaf, suaranya putus-putus.","Entschuldigung, die Verbindung bricht ab."]],
+ dlg:{t:"Am Telefon",lines:[["A","Halo, selamat siang. Ini dengan siapa?","Hallo, guten Tag. Mit wem spreche ich?"],["B","Selamat siang. Saya Anna dari Jerman.","Guten Tag. Ich bin Anna aus Deutschland."],["A","Oh, Anna! Maaf, suaranya kurang jelas.","Oh, Anna! Entschuldigung, die Verbindung ist schlecht."],["B","Saya akan menelepon lagi nanti.","Ich rufe später noch einmal an."],["A","Baik. Atau kirim pesan lewat WhatsApp saja.","Gut. Oder schick einfach eine WhatsApp."],["B","Oke, saya kirim sekarang.","Okay, ich schicke sie jetzt."]]},
+ ex:[["Baterai saya ___. (ist leer)","habis",["habis","baru","kuat","lama"],""],["Tolong ___ pesan lewat WhatsApp. (senden)","kirim",["kirim","ambil","beli","cari"],""],["Saya ___ kuota. (aufgebraucht)","kehabisan",["kehabisan","kecurian","kehujanan","kebaikan"],"kehabisan = etwas ausgegangen"],["___, kita telepon! (Los)","Ayo",["Ayo","Maaf","Boleh","Sudah"],""],["Sinyalnya ___ di sini. (schlecht)","jelek",["jelek","jelas","baru","besar"],""]]
+});
+
+/* ===== Stufe B1 ===== */
+U({id:"b1-19",lvl:"B1",e:"🔧",t:"Aktiv-Verben mit me-",
+ intro:"Das Präfix me- (meN-) ist das Herz der formellen Sprache: Bücher, Nachrichten, Reden. Wer die Regeln beherrscht, versteht und spricht auf einem ganz neuen Niveau.",
+ grammar:{t:"Die meN-Regeln (Lautanpassung)",html:`
+<p>Die Wurzel (<i>baca</i>) wird mit <b>meN-</b> zum aktiven, formellen Verb (<i>membaca</i>). Die Endung des Präfixes passt sich dem ersten Buchstaben der Wurzel an:</p>
+<table class="g"><tr><th>Wurzel beginnt mit</th><th>Präfix</th><th>Beispiele</th></tr>
+<tr><td>l, m, n, r, w, y</td><td><b>me-</b></td><td><i>lihat → melihat</i>, <i>masak → memasak</i>, <i>nanti → menanti</i></td></tr>
+<tr><td>b, f, v</td><td><b>mem-</b></td><td><i>baca → membaca</i>, <i>beli → membeli</i>, <i>bawa → membawa</i></td></tr>
+<tr><td>p</td><td><b>mem-</b> (p fällt weg)</td><td><i>pakai → memakai</i>, <i>pilih → memilih</i></td></tr>
+<tr><td>d, c, j, z</td><td><b>men-</b></td><td><i>dengar → mendengar</i>, <i>cari → mencari</i>, <i>jual → menjual</i></td></tr>
+<tr><td>t</td><td><b>men-</b> (t fällt weg)</td><td><i>tulis → menulis</i>, <i>tutup → menutup</i>, <i>tunggu → menunggu</i></td></tr>
+<tr><td>g, h, kh, Vokal</td><td><b>meng-</b></td><td><i>ambil → mengambil</i>, <i>ajar → mengajar</i>, <i>hitung → menghitung</i></td></tr>
+<tr><td>k</td><td><b>meng-</b> (k fällt weg)</td><td><i>kirim → mengirim</i>, <i>kerja → mengerjakan</i></td></tr>
+<tr><td>s</td><td><b>meny-</b> (s fällt weg)</td><td><i>sapu → menyapu</i>, <i>sewa → menyewa</i></td></tr>
+<tr><td>einsilbig</td><td><b>menge-</b></td><td><i>cat → mengecat</i>, <i>bom → mengebom</i></td></tr></table>
+<p><b>Wichtig:</b> Im Alltag lässt man me- oft weg: <i>Saya baca buku</i> statt <i>Saya membaca buku</i>. In Texten, Nachrichten und formellen Gesprächen bleibt es.</p>
+<p>Verben mit <i>ber-</i> (<i>bekerja</i>, <i>belajar</i>) bekommen kein me-. Verben, die schon ein Objekt brauchen, sind meist me-Verben (<i>membaca buku</i>); intransitive (<i>berjalan</i>, <i>datang</i>, <i>pergi</i>) nicht.</p>`},
+ vocab:[["membaca","lesen (baca)"],["menulis","schreiben (tulis)"],["membeli","kaufen (beli)"],["menjual","verkaufen (jual)"],["mengambil","nehmen (ambil)"],["mengirim","senden (kirim)"],["mencari","suchen (cari)"],["melihat","sehen (lihat)"],["mendengar","hören (dengar)"],["meminta","bitten (minta)"],["memakai","benutzen / anziehen (pakai)"],["memilih","wählen (pilih)"],["mengajar","unterrichten (ajar)"],["membantu","helfen (bantu)"],["membawa","tragen / mitbringen (bawa)"],["membuka","öffnen (buka)"],["menutup","schließen (tutup)"],["menunggu","warten (tunggu)"],["menjawab","antworten (jawab)"],["mengingat","sich erinnern (ingat)"],["membuat","machen (buat)"],["memasak","kochen (masak)"],["menyapu","fegen (sapu)"],["menyewa","mieten (sewa)"],["mengubah","verändern (ubah)"],["menggunakan","benutzen (guna)"],["menemukan","finden (temu)"],["menyukai","mögen (suka)"],["mengatakan","sagen (kata)"],["menjelaskan","erklären (jelas)"],["mengerti","verstehen (erti)"],["menyelesaikan","beenden (selesai)"],["mengunjungi","besuchen (kunjung)"]],
+ sent:[["Saya membaca koran setiap pagi.","Ich lese jeden Morgen die Zeitung."],["Dia menulis surat kepada neneknya.","Er/Sie schreibt einen Brief an seine/ihre Oma."],["Kami membeli oleh-oleh di pasar.","Wir kaufen Mitbringsel auf dem Markt."],["Tolong membuka jendelanya.","Bitte öffnen Sie das Fenster."],["Ibu sedang menyapu halaman.","Mutter fegt gerade den Hof."],["Saya sedang mencari kunci mobil.","Ich suche gerade den Autoschlüssel."],["Dia mengajar bahasa Inggris di sekolah.","Er/Sie unterrichtet Englisch an der Schule."],["Mereka menunggu bus di halte.","Sie warten an der Haltestelle auf den Bus."],["Anda bisa menggunakan kartu ini.","Sie können diese Karte benutzen."],["Saya menemukan dompet di jalan.","Ich habe auf der Straße eine Geldbörse gefunden."],["Bisakah Anda menjelaskan lagi?","Könnten Sie das noch einmal erklären?"]],
+ dlg:{t:"Im Büro",lines:[["A","Kamu sedang apa?","Was machst du gerade?"],["B","Saya sedang menulis laporan.","Ich schreibe gerade einen Bericht."],["A","Sudah mengirim email ke klien?","Hast du die E-Mail schon an den Kunden geschickt?"],["B","Belum. Saya akan mengirimnya setelah makan siang.","Noch nicht. Ich schicke sie nach dem Mittagessen."],["A","Tolong bantu saya mencari dokumen itu.","Hilf mir bitte, das Dokument zu suchen."],["B","Boleh. Dokumennya di mana?","Gern. Wo ist es?"],["A","Mungkin di atas meja.","Vielleicht auf dem Tisch."]]},
+ ex:[["baca → ___ (lesen)","membaca",["membaca","mengaca","bembaca","menbaca"],"b → mem-"],["tulis → ___ (schreiben)","menulis",["menulis","memulis","mentulis","menglis"],"t fällt weg: men-ulis"],["kirim → ___ (senden)","mengirim",["mengirim","menkirim","memirim","mengkirim"],"k fällt weg: meng-irim"],["sapu → ___ (fegen)","menyapu",["menyapu","mensapu","memapu","mengsapu"],"s fällt weg: meny-apu"],["cari → ___ (suchen)","mencari",["mencari","mengari","membari","memcari"],"c → men-"],["pakai → ___ (benutzen)","memakai",["memakai","mempakai","mengakai","menpakai"],"p fällt weg: mem-akai"]]
+});
+
+U({id:"b1-20",lvl:"B1",e:"🔁",t:"Passiv & ter-/ke-an",
+ intro:"Indonesisch liebt das Passiv – besonders in Nachrichten und Schildern. Du lernst di-, das Objektpassiv und ter-/ke-an.",
+ grammar:{t:"di-Passiv, Objektpassiv und ter-",html:`
+<p><b>1. di-Passiv:</b> di- + Wurzel, Handelnder mit <i>oleh</i> (von): <br><i>Surat itu ditulis oleh Ibu.</i> (Der Brief wurde von Mutter geschrieben.)<br>Aktiv: <i>Ibu menulis surat itu.</i></p>
+<p><b>2. Objektpassiv (Pronomen + Wurzel):</b> bei Pronomen als Handelndem steht das Objekt vorne, das Verb ohne Präfix: <br><i>Buku itu saya baca.</i> (Das Buch habe ich gelesen / wurde von mir gelesen.)<br><i>Surat itu kamu tulis.</i> – <i>Rumah itu dia jual.</i></p>
+<p><b>3. ter-</b> hat drei Hauptbedeutungen:</p>
+<ul><li><b>Zustand/Resultat:</b> <i>terbuka</i> (offen), <i>tertutup</i> (geschlossen), <i>terlambat</i> (verspätet)</li>
+<li><b>Unabsichtlich:</b> <i>tertidur</i> (eingeschlafen), <i>terjatuh</i> (hingefallen)</li>
+<li><b>Superlativ:</b> <i>terbesar</i> (größte), <i>tertinggi</i> (höchste), <i>termurah</i> (billigste)</li></ul>
+<p><b>4. ke-an (Widerfahrnis):</b> <i>kehujanan</i> (vom Regen überrascht), <i>kecurian</i> (bestohlen), <i>kehilangan</i> (etwas verlieren), <i>kebanjiran</i> (überflutet).</p>
+<p><b>Schilder:</b> <i>Dilarang merokok</i> (Rauchen verboten), <i>Dijual</i> (zu verkaufen), <i>Dibuka</i> (geöffnet), <i>Ditutup</i> (geschlossen).</p>`},
+ vocab:[["dibaca","gelesen"],["ditulis","geschrieben"],["dibeli","gekauft"],["dijual","verkauft / zu verkaufen"],["dibuat","gemacht"],["dikirim","gesendet"],["ditemukan","gefunden"],["diadakan","veranstaltet"],["dilarang","verboten"],["dibuka","geöffnet"],["ditutup","geschlossen"],["diperbaiki","repariert"],["disebut","genannt"],["dipakai","benutzt"],["ditunda","verschoben"],["dibatalkan","abgesagt"],["dibayar","bezahlt"],["dicuri","gestohlen"],["dikunci","abgeschlossen"],["oleh","von (Urheber)"],["terbuka","offen"],["tertutup","geschlossen"],["terbesar","größte"],["tertinggi","höchste"],["termurah","billigste"],["terlambat","verspätet"],["tertidur","eingeschlafen"],["terjatuh","hingefallen"],["kehujanan","vom Regen überrascht"],["kecurian","bestohlen"],["kehilangan","verlieren"],["kebanjiran","überflutet"],["merokok","rauchen"]],
+ sent:[["Pintu ini dikunci setiap malam.","Diese Tür wird jede Nacht abgeschlossen."],["Surat itu sudah dikirim kemarin.","Der Brief wurde gestern schon verschickt."],["Dilarang merokok di sini.","Rauchen ist hier verboten."],["Makanan ini dibuat dari beras.","Dieses Essen ist aus Reis gemacht."],["Buku itu saya beli di Jakarta.","Das Buch habe ich in Jakarta gekauft."],["Pertemuan ditunda sampai minggu depan.","Das Treffen wurde auf nächste Woche verschoben."],["Tas saya dicuri.","Meine Tasche wurde gestohlen."],["Rapat dibatalkan karena hujan.","Die Besprechung wurde wegen Regen abgesagt."],["Di sini dijual berbagai oleh-oleh.","Hier werden verschiedene Mitbringsel verkauft."],["Menara itu yang tertinggi di kota ini.","Der Turm ist der höchste in dieser Stadt."],["Kami kehujanan di jalan.","Wir wurden unterwegs vom Regen überrascht."]],
+ dlg:{t:"Etwas verloren",lines:[["A","Permisi, tas saya hilang.","Entschuldigung, meine Tasche ist verschwunden."],["B","Di mana terakhir kali Anda melihatnya?","Wo haben Sie sie zuletzt gesehen?"],["A","Di kafe tadi. Mungkin dicuri.","Vorhin im Café. Vielleicht wurde sie gestohlen."],["B","Apa isi tasnya?","Was war in der Tasche?"],["A","Paspor dan dompet saya.","Mein Pass und meine Geldbörse."],["B","Baik, kami akan mencarinya. Tolong tulis nomor ponsel Anda.","Gut, wir suchen sie. Bitte schreiben Sie Ihre Handynummer auf."]]},
+ ex:[["Surat itu ___ oleh Ibu. (wurde geschrieben)","ditulis",["ditulis","menulis","tulisan","penulis"],"di- + Wurzel = Passiv"],["Buku itu ___ baca. (habe ich)","saya",["saya","oleh","di","yang"],"Objektpassiv: Pronomen + Wurzel"],["___ merokok! (Rauchen verboten)","Dilarang",["Dilarang","Melarang","Larangan","Terlarang"],""],["Menara itu yang ___ di kota. (höchste)","tertinggi",["tertinggi","paling tinggi","setinggi","meninggi"],"ter- = Superlativ"],["Tas saya ___. (wurde gestohlen)","dicuri",["dicuri","mencuri","pencuri","kecurian"],""]]
+});
+
+U({id:"b1-21",lvl:"B1",e:"🧩",t:"Wortbildung: -kan, -i, pe-, -an, ke-an",
+ intro:"Aus einer Wurzel entstehen im Indonesischen viele Wörter. Wer die Bausteine kennt, versteht neue Wörter sofort.",
+ grammar:{t:"Die wichtigsten Affixe",html:`
+<table class="g"><tr><th>Affix</th><th>Funktion</th><th>Beispiel</th></tr>
+<tr><td><b>-kan</b></td><td>veranlassen / für jemanden tun</td><td><i>membuka</i> → <i>membukakan</i> (für jmd. öffnen), <i>menyelesaikan</i> (beenden)</td></tr>
+<tr><td><b>-i</b></td><td>Ort/Ziel, Wiederholung</td><td><i>mengunjungi</i> (besuchen), <i>menyukai</i> (mögen), <i>memasuki</i> (betreten)</td></tr>
+<tr><td><b>pe-</b></td><td>Person / Gerät, die etwas tut</td><td><i>penulis</i> (Autor), <i>pembaca</i> (Leser), <i>pemain</i> (Spieler), <i>penjual</i> (Verkäufer), <i>pembeli</i> (Käufer)</td></tr>
+<tr><td><b>pe-…-an</b></td><td>Vorgang / Ergebnis</td><td><i>pendidikan</i> (Bildung), <i>pengalaman</i> (Erfahrung), <i>pembicaraan</i> (Gespräch)</td></tr>
+<tr><td><b>per-…-an</b></td><td>Vorgang / Bereich</td><td><i>perjalanan</i> (Reise), <i>pertemuan</i> (Treffen), <i>perusahaan</i> (Firma)</td></tr>
+<tr><td><b>ke-…-an</b></td><td>abstrakte Eigenschaft</td><td><i>kesehatan</i> (Gesundheit), <i>kebersihan</i> (Sauberkeit), <i>kebahagiaan</i> (Glück)</td></tr>
+<tr><td><b>-an</b></td><td>Ergebnis / Ding</td><td><i>makanan</i> (Essen), <i>minuman</i> (Getränk), <i>tulisan</i> (Text)</td></tr></table>
+<p>Dieselben Lautregeln wie bei meN- gelten bei <b>peN-</b>: <i>baca → pembaca</i>, <i>tulis → penulis</i>, <i>kirim → pengirim</i>, <i>jual → penjual</i>, <i>sapu → penyapu</i>.</p>
+<p><b>Tipp:</b> Lerne Wörter als Familien: <i>ajar</i> → <i>belajar</i> (lernen), <i>mengajar</i> (unterrichten), <i>pelajar</i> (Schüler), <i>pengajar</i> (Lehrer), <i>pelajaran</i> (Unterricht), <i>pengajaran</i> (Lehre).</p>`},
+ vocab:[["penulis","Autor"],["pembaca","Leser"],["penjual","Verkäufer"],["pembeli","Käufer"],["pemain","Spieler"],["pelajar","Schüler"],["pengajar","Lehrer / Dozent"],["pekerja","Arbeiter"],["pedagang","Händler"],["pendidikan","Bildung"],["pengalaman","Erfahrung"],["perjalanan","Reise"],["pertemuan","Treffen"],["pembicaraan","Gespräch"],["pekerjaan","Arbeit"],["pelajaran","Lektion / Unterricht"],["perusahaan","Firma"],["kesehatan","Gesundheit"],["kebersihan","Sauberkeit"],["kebahagiaan","Glück"],["kesempatan","Gelegenheit"],["kebebasan","Freiheit"],["keindahan","Schönheit"],["pemerintah","Regierung"],["masyarakat","Gesellschaft"],["makanan","Essen"],["minuman","Getränk"],["tulisan","Text / Schrift"],["menyelesaikan","beenden"],["membukakan","aufmachen für"],["mengunjungi","besuchen"],["memasuki","betreten"],["pembangunan","Aufbau / Entwicklung"],["kemajuan","Fortschritt"]],
+ sent:[["Penulis buku itu berasal dari Yogyakarta.","Der Autor dieses Buches stammt aus Yogyakarta."],["Pengalaman kerja saya sudah lima tahun.","Meine Arbeitserfahrung beträgt schon fünf Jahre."],["Perjalanan ke Bali memakan waktu dua jam.","Die Reise nach Bali dauert zwei Stunden."],["Pendidikan sangat penting bagi masa depan.","Bildung ist sehr wichtig für die Zukunft."],["Kesehatan lebih penting daripada uang.","Gesundheit ist wichtiger als Geld."],["Pembeli itu menawar harga dengan ramah.","Der Käufer feilschte freundlich um den Preis."],["Terima kasih atas kesempatan ini.","Danke für diese Gelegenheit."],["Kebersihan kota ini sangat baik.","Die Sauberkeit dieser Stadt ist sehr gut."],["Saya ingin mengunjungi nenek di desa.","Ich möchte meine Oma im Dorf besuchen."],["Dia menyukai musik tradisional.","Er/Sie mag traditionelle Musik."],["Dia membukakan pintu untuk saya.","Er/Sie hat mir die Tür aufgemacht."],["Pemerintah akan membangun jalan baru.","Die Regierung wird eine neue Straße bauen."]],
+ dlg:{t:"Über Bildung und Arbeit",lines:[["A","Bagaimana pendidikan Anda?","Wie ist Ihre Ausbildung?"],["B","Saya lulusan teknik. Pengalaman kerja saya sudah lima tahun.","Ich bin Ingenieursabsolvent. Meine Berufserfahrung beträgt fünf Jahre."],["A","Wah, bagus. Apakah Anda suka perjalanan dinas?","Super. Mögen Sie Dienstreisen?"],["B","Ya, saya senang bertemu orang baru.","Ja, ich treffe gern neue Leute."],["A","Kesehatan Anda baik?","Ist Ihre Gesundheit gut?"],["B","Ya, terima kasih, saya sehat.","Ja, danke, ich bin gesund."]]},
+ ex:[["tulis → ___ (Autor)","penulis",["penulis","pentulis","menulis","tulisan"],"t fällt weg: pen-ulis"],["baca → ___ (Leser)","pembaca",["pembaca","penbaca","membaca","bacaan"],""],["sehat → ___ (Gesundheit)","kesehatan",["kesehatan","pesehatan","sehatan","kesehatnya"],"ke-…-an"],["jalan → ___ (Reise)","perjalanan",["perjalanan","penjalan","berjalan","kejalanan"],"per-…-an"],["selesai → ___ (beenden)","menyelesaikan",["menyelesaikan","menyelesai","diselesaikan","pelesaian"],"s fällt weg + -kan"]]
+});
+
+U({id:"b1-22",lvl:"B1",e:"🔗",t:"Konnektoren & Nebensätze",
+ intro:"Jetzt wird aus Einzelsätzen echtes Sprechen: Gründe geben, Gegensätze, Bedingungen, Zeitfolgen. Die Konnektoren sind der Schlüssel zu Flüssigkeit.",
+ grammar:{t:"Satzverbindungen",html:`
+<table class="g"><tr><th>Funktion</th><th>Wörter</th><th>Beispiel</th></tr>
+<tr><td>Grund</td><td><i>karena, sebab</i></td><td><i>Saya pulang karena lelah.</i></td></tr>
+<tr><td>Folge</td><td><i>jadi, sehingga, makanya</i></td><td><i>Macet, jadi saya terlambat.</i></td></tr>
+<tr><td>Gegensatz</td><td><i>tetapi / tapi, namun, sedangkan</i></td><td><i>Mahal, tetapi bagus.</i></td></tr>
+<tr><td>Einräumung</td><td><i>meskipun, walaupun</i></td><td><i>Meskipun hujan, kami pergi.</i></td></tr>
+<tr><td>Bedingung</td><td><i>kalau, jika, apabila</i></td><td><i>Kalau cerah, kita berenang.</i></td></tr>
+<tr><td>Zeit</td><td><i>ketika, saat, sambil, sebelum, setelah / sesudah, sampai</i></td><td><i>Ketika kecil, saya tinggal di desa.</i></td></tr>
+<tr><td>Zweck</td><td><i>supaya, agar, untuk</i></td><td><i>Saya belajar supaya lancar.</i></td></tr>
+<tr><td>Inhaltssatz</td><td><i>bahwa</i></td><td><i>Dia berkata bahwa dia sibuk.</i></td></tr>
+<tr><td>Relativsatz</td><td><i>yang</i></td><td><i>Orang yang tinggal di sebelah ramah.</i></td></tr></table>
+<p><b>yang</b> ist vielseitig: <i>yang</i> + Adjektiv/Verb ersetzt „der/die/das, welche(r)“: <i>buku yang saya baca</i> (das Buch, das ich lese), <i>orang yang datang</i> (der Mensch, der kommt).</p>
+<p><b>Wortstellung bleibt SVO</b> und der Nebensatz kann vor oder hinter dem Hauptsatz stehen. Kein Verb wandert ans Satzende – das macht lange Sätze leicht.</p>`},
+ vocab:[["karena","weil"],["sebab","denn / weil"],["jadi","also / daher"],["sehingga","sodass"],["tetapi","aber"],["tapi","aber (umgspr.)"],["namun","jedoch"],["sedangkan","während (Gegensatz)"],["meskipun","obwohl"],["walaupun","obwohl"],["kalau","wenn"],["jika","falls"],["ketika","als / wenn"],["saat","zu dem Zeitpunkt"],["sambil","während (gleichzeitig)"],["sebelum","bevor"],["setelah","nachdem"],["sesudah","nachdem"],["sampai","bis"],["supaya","damit"],["agar","damit"],["untuk","für / um zu"],["bahwa","dass"],["yang","der/die/das (Relativ)"],["dengan","mit"],["tanpa","ohne"],["atau","oder"],["serta","sowie"],["lalu","dann"],["kemudian","danach"],["padahal","obwohl (doch)"],["walau","obwohl (kurz)"],["bahkan","sogar"],["apalagi","erst recht"]],
+ sent:[["Saya belajar bahasa Indonesia karena saya ingin bekerja di Jakarta.","Ich lerne Indonesisch, weil ich in Jakarta arbeiten möchte."],["Meskipun hujan, kami tetap pergi ke pantai.","Obwohl es regnet, gehen wir trotzdem zum Strand."],["Kalau besok cerah, kita akan berenang.","Wenn es morgen klar ist, schwimmen wir."],["Saya akan menelepon Anda setelah rapat selesai.","Ich rufe Sie an, nachdem die Besprechung zu Ende ist."],["Dia berkata bahwa dia akan datang terlambat.","Er/Sie sagte, dass er/sie später kommt."],["Orang yang tinggal di sebelah saya sangat ramah.","Die Person, die neben mir wohnt, ist sehr freundlich."],["Saya makan sambil menonton televisi.","Ich esse und schaue dabei Fernsehen."],["Tolong datang lebih awal supaya kita bisa mulai tepat waktu.","Bitte kommen Sie früher, damit wir pünktlich anfangen können."],["Harganya mahal, tetapi kualitasnya bagus.","Der Preis ist hoch, aber die Qualität ist gut."],["Jalannya macet, jadi saya terlambat.","Auf der Straße war Stau, deshalb war ich zu spät."],["Sebelum berangkat, periksa semua barang Anda.","Prüfen Sie vor der Abfahrt Ihr ganzes Gepäck."],["Ketika saya masih kecil, saya tinggal di desa.","Als ich klein war, wohnte ich auf dem Dorf."]],
+ dlg:{t:"Verspätung erklären",lines:[["A","Kenapa kamu terlambat?","Warum bist du zu spät?"],["B","Maaf, jalannya macet sekali, jadi saya terlambat.","Entschuldigung, es war so viel Stau, deshalb bin ich zu spät."],["A","Kamu tidak naik kereta?","Bist du nicht mit dem Zug gefahren?"],["B","Tadinya mau naik kereta, tetapi keretanya dibatalkan.","Ich wollte den Zug nehmen, aber er wurde gestrichen."],["A","Oh, begitu. Kalau begitu, kita mulai sekarang.","Ach so. Dann fangen wir jetzt an."],["B","Terima kasih, Bu. Saya akan datang lebih awal besok supaya tidak terlambat lagi.","Danke. Morgen komme ich früher, damit ich nicht wieder zu spät bin."]]},
+ ex:[["Saya pulang ___ lelah. (weil)","karena",["karena","tetapi","supaya","sambil"],""],["___ hujan, kami pergi. (Obwohl)","Meskipun",["Meskipun","Karena","Kalau","Sebelum"],""],["___ besok cerah, kita berenang. (Wenn)","Kalau",["Kalau","Namun","Padahal","Sedangkan"],""],["Saya belajar ___ lancar. (damit ich ... werde)","supaya",["supaya","karena","tetapi","walaupun"],""],["Dia berkata ___ dia sibuk. (dass)","bahwa",["bahwa","yang","jika","atau"],""],["Buku ___ saya baca bagus. (das)","yang",["yang","bahwa","karena","untuk"],""]]
+});
+
+U({id:"b1-23",lvl:"B1",e:"💬",t:"Meinungen & Diskussion",
+ intro:"Zustimmen, widersprechen, abwägen, Vorschläge machen: so diskutierst du auf Indonesisch höflich und überzeugend.",
+ grammar:{t:"Meinung, Modalverben und Höflichkeit",html:`
+<table class="g"><tr><th>Funktion</th><th>Ausdrücke</th></tr>
+<tr><td>Meinung</td><td><i>menurut saya</i> (meiner Meinung nach), <i>saya pikir</i>, <i>saya rasa</i>, <i>pendapat saya</i></td></tr>
+<tr><td>Zustimmung</td><td><i>setuju</i>, <i>benar</i>, <i>betul</i>, <i>saya sependapat</i></td></tr>
+<tr><td>Widerspruch</td><td><i>tidak setuju</i>, <i>kurang setuju</i> (höflich: „weniger einverstanden“), <i>saya tidak sependapat</i></td></tr>
+<tr><td>Vermutung</td><td><i>mungkin</i>, <i>barangkali</i>, <i>sepertinya</i>, <i>pasti</i></td></tr>
+<tr><td>Sollen / Müssen</td><td><i>sebaiknya</i> (am besten/sollte), <i>seharusnya</i> (müsste), <i>harus</i>, <i>wajib</i></td></tr>
+<tr><td>Können / Dürfen</td><td><i>bisa</i> (Fähigkeit/Möglichkeit), <i>dapat</i> (formell), <i>boleh</i> (Erlaubnis)</td></tr></table>
+<p><b>Höflich widersprechen:</b> <i>Saya kurang setuju, karena …</i> oder <i>Memang benar, tetapi …</i> (Das stimmt zwar, aber …). Direktes <i>tidak setuju</i> wirkt hart.</p>
+<p><b>Argumente ordnen:</b> <i>Pertama, …</i> <i>Kedua, …</i> <i>Selain itu, …</i> (außerdem) <i>Namun, …</i> (jedoch) <i>Kesimpulannya, …</i> (Fazit)</p>`},
+ vocab:[["menurut saya","meiner Meinung nach"],["pendapat","Meinung"],["pikir","denken"],["rasa","Gefühl / meinen"],["setuju","einverstanden"],["tidak setuju","nicht einverstanden"],["kurang setuju","eher nicht einverstanden"],["sependapat","gleicher Meinung"],["benar","richtig"],["salah","falsch"],["mungkin","vielleicht"],["barangkali","womöglich"],["sepertinya","anscheinend"],["pasti","sicher"],["tentu","natürlich"],["mustahil","unmöglich"],["sebaiknya","besser / am besten"],["seharusnya","sollte eigentlich"],["harus","müssen"],["wajib","verpflichtet"],["boleh","dürfen"],["bisa","können"],["dapat","können (formell)"],["penting","wichtig"],["perlu","nötig"],["masalah","Problem"],["solusi","Lösung"],["alasan","Grund"],["ide","Idee"],["usul","Vorschlag"],["saran","Rat"],["masuk akal","sinnvoll"],["selain itu","außerdem"],["kesimpulan","Fazit"],["sebenarnya","eigentlich"],["terutama","besonders"]],
+ sent:[["Menurut saya, ide itu sangat bagus.","Meiner Meinung nach ist die Idee sehr gut."],["Saya setuju dengan Anda.","Ich stimme Ihnen zu."],["Saya kurang setuju karena terlalu mahal.","Ich bin eher nicht einverstanden, weil es zu teuer ist."],["Sebaiknya kita berangkat sekarang.","Wir sollten besser jetzt aufbrechen."],["Anda harus membawa paspor.","Sie müssen Ihren Pass mitbringen."],["Mungkin besok hujan.","Vielleicht regnet es morgen."],["Sebenarnya saya tidak suka pedas.","Eigentlich mag ich nicht scharf."],["Apa pendapat Anda tentang masalah ini?","Was ist Ihre Meinung zu diesem Problem?"],["Itu masuk akal.","Das ergibt Sinn."],["Di satu sisi menarik, di sisi lain berisiko.","Einerseits interessant, andererseits riskant."],["Memang benar, tetapi kita perlu waktu.","Das stimmt zwar, aber wir brauchen Zeit."]],
+ dlg:{t:"Eine Diskussion",lines:[["A","Menurut Anda, apakah kita sebaiknya pindah kantor?","Meinen Sie, wir sollten das Büro verlegen?"],["B","Memang benar tempatnya lebih besar, tetapi sewanya terlalu mahal.","Es ist zwar größer, aber die Miete ist zu hoch."],["A","Saya kurang setuju. Lokasinya lebih dekat dengan stasiun.","Ich bin eher anderer Meinung. Es liegt näher am Bahnhof."],["B","Itu masuk akal. Selain itu, karyawan akan lebih senang.","Das ergibt Sinn. Außerdem wären die Mitarbeiter zufriedener."],["A","Jadi, kesimpulannya, kita coba dulu?","Also, Fazit: wir probieren es?"],["B","Setuju. Mari kita bicarakan lagi minggu depan.","Einverstanden. Lass uns nächste Woche weiter reden."]]},
+ ex:[["___ saya, ide itu bagus. (Meiner Meinung nach)","Menurut",["Menurut","Karena","Untuk","Kepada"],""],["Saya ___ setuju karena mahal. (eher nicht)","kurang",["kurang","terlalu","sangat","paling"],"kurang + Adj. = eher nicht"],["___ kita berangkat sekarang. (Wir sollten)","Sebaiknya",["Sebaiknya","Padahal","Namun","Sebenarnya"],""],["Anda ___ membawa paspor. (müssen)","harus",["harus","boleh","bisa","mau"],""],["Itu ___ akal. (sinnvoll)","masuk",["masuk","keluar","buka","ambil"],"masuk akal = sinnvoll"]]
+});
+
+U({id:"b1-24",lvl:"B1",e:"🎎",t:"Kultur, Höflichkeit & Indonesien",
+ intro:"Sprache und Kultur gehören zusammen. Wer Gesten, Feiertage und Werte kennt, wirkt in Indonesien sofort sympathisch.",
+ grammar:{t:"Kleine Kulturkunde für Gespräche",html:`
+<ul>
+<li><b>Rechte Hand:</b> Gib und nimm Dinge mit der rechten Hand (oder beiden). Die linke gilt als unrein.</li>
+<li><b>Schuhe aus:</b> Vor dem Betreten von Häusern und Moscheen: <i>lepas sepatu</i>.</li>
+<li><b>Anrede:</b> Verwende <i>Bapak/Ibu</i> bei Älteren, <i>Mas/Mbak</i> bei Gleichaltrigen. Namen ohne Anrede wirken direkt.</li>
+<li><b>Jam karet</b> („Gummizeit“): Pünktlichkeit ist locker. Ein Treffen kann später starten.</li>
+<li><b>Basa-basi:</b> Höflicher Smalltalk, bevor man zum Punkt kommt. Fragen wie <i>Mau ke mana?</i> (Wohin des Weges?) sind Gesprächseinstieg, keine Neugier.</li>
+<li><b>Nein sagen:</b> Direkt Nein klingt hart. Besser: <i>Nanti saya pikirkan dulu.</i> (Ich überlege es mir.)</li>
+<li><b>Gotong royong:</b> gegenseitige Hilfe in der Gemeinschaft – ein Kernwert.</li>
+<li><b>Mudik:</b> Die große Heimreise zu Lebaran (Idul Fitri) – Millionen reisen ins <i>kampung halaman</i>.</li></ul>
+<p><b>Bahasa Indonesia</b> ist seit 1928 (Sumpah Pemuda) die Sprache der Einheit (<i>bahasa persatuan</i>). Daneben gibt es Hunderte Regionalsprachen (<i>bahasa daerah</i>): Javanisch, Sundanesisch, Balinesisch u. a.</p>`},
+ vocab:[["budaya","Kultur"],["tradisi","Tradition"],["adat","Brauch / Gewohnheitsrecht"],["agama","Religion"],["masjid","Moschee"],["pura","Hindu-Tempel"],["gereja","Kirche"],["upacara","Zeremonie"],["pernikahan","Hochzeit"],["Lebaran","Fest zum Ende des Ramadan"],["puasa","Fasten"],["Ramadan","Ramadan"],["Natal","Weihnachten"],["Nyepi","Balinesischer Tag der Stille"],["batik","Batik"],["wayang","Schattenspiel"],["gamelan","Gamelan-Orchester"],["tari","Tanz"],["suku","Volksgruppe"],["Jawa","Java"],["Bali","Bali"],["Sumatra","Sumatra"],["Kalimantan","Kalimantan (Borneo)"],["Sulawesi","Sulawesi"],["Papua","Papua"],["gotong royong","gegenseitige Hilfe"],["ramah","freundlich"],["sopan","höflich"],["hormat","Respekt"],["menghormati","respektieren"],["tamu","Gast"],["undangan","Einladung"],["mudik","Heimreise zum Fest"],["kampung halaman","Heimatdorf"],["merdeka","unabhängig"],["kemerdekaan","Unabhängigkeit"],["bendera","Flagge"],["bahasa daerah","Regionalsprache"],["warisan","Erbe"]],
+ sent:[["Di Indonesia kita menggunakan tangan kanan untuk memberi dan menerima.","In Indonesien benutzen wir die rechte Hand zum Geben und Nehmen."],["Tolong lepas sepatu sebelum masuk rumah.","Bitte ziehen Sie vor dem Betreten des Hauses die Schuhe aus."],["Orang Indonesia sangat ramah terhadap tamu.","Indonesier sind Gästen gegenüber sehr freundlich."],["Lebaran adalah hari raya umat Islam.","Lebaran ist das große Fest der Muslime."],["Setiap tahun jutaan orang mudik ke kampung halaman.","Jedes Jahr reisen Millionen Menschen in ihr Heimatdorf."],["Batik diakui oleh UNESCO sebagai warisan budaya.","Batik wurde von der UNESCO als Kulturerbe anerkannt."],["Indonesia memiliki lebih dari tujuh belas ribu pulau.","Indonesien hat mehr als siebzehntausend Inseln."],["Bahasa Indonesia dipakai sebagai bahasa persatuan.","Indonesisch wird als Sprache der Einheit verwendet."],["Gotong royong berarti bekerja sama untuk kepentingan bersama.","Gotong royong bedeutet, für das Gemeinwohl zusammenzuarbeiten."],["Hari Kemerdekaan dirayakan setiap tujuh belas Agustus.","Der Unabhängigkeitstag wird jedes Jahr am 17. August gefeiert."]],
+ dlg:{t:"Zu Gast bei einer Familie",lines:[["A","Selamat datang di rumah kami! Silakan masuk.","Willkommen in unserem Haus! Bitte kommen Sie herein."],["B","Terima kasih. Permisi, saya lepas sepatu dulu.","Danke. Entschuldigung, ich ziehe erst die Schuhe aus."],["A","Silakan duduk. Mau minum apa?","Bitte setzen Sie sich. Was möchten Sie trinken?"],["B","Teh saja, terima kasih.","Nur Tee, danke."],["A","Silakan dicicipi kuenya.","Bitte probieren Sie den Kuchen."],["B","Enak sekali! Terima kasih atas undangannya.","Sehr lecker! Danke für die Einladung."]]},
+ ex:[["Orang Indonesia sangat ___ terhadap tamu. (freundlich)","ramah",["ramah","malas","marah","mahal"],""],["Tolong ___ sepatu sebelum masuk. (ausziehen)","lepas",["lepas","pakai","beli","cari"],""],["Millionen Menschen reisen zu Lebaran ins ___ halaman.","kampung",["kampung","kantor","kamar","kapal"],"kampung halaman = Heimatdorf"],["Wir benutzen die ___ Hand zum Geben.","kanan",["kanan","kiri","besar","kecil"],""],["Gotong ___ = gegenseitige Hilfe","royong",["royong","ramai","rumah","ruang"],""]]
+});
+
+U({id:"b1-25",lvl:"B1",e:"😎",t:"Umgangssprache (Bahasa gaul)",
+ intro:"Im echten Alltag sprechen Indonesier ganz anders als im Lehrbuch. Hier lernst du die häufigsten Abkürzungen und Partikeln, damit du Freunde und Filme verstehst.",
+ grammar:{t:"Umgangssprache entschlüsselt",html:`
+<table class="g"><tr><th>Umgangssprache</th><th>Standard</th><th>Bedeutung</th></tr>
+<tr><td><i>nggak / gak / enggak</i></td><td><i>tidak</i></td><td>nicht / nein</td></tr>
+<tr><td><i>udah</i></td><td><i>sudah</i></td><td>schon</td></tr>
+<tr><td><i>banget</i></td><td><i>sekali</i></td><td>sehr</td></tr>
+<tr><td><i>aja</i></td><td><i>saja</i></td><td>nur / einfach</td></tr>
+<tr><td><i>gimana</i></td><td><i>bagaimana</i></td><td>wie</td></tr>
+<tr><td><i>kenapa</i></td><td><i>mengapa</i></td><td>warum</td></tr>
+<tr><td><i>bikin</i></td><td><i>membuat</i></td><td>machen</td></tr>
+<tr><td><i>ngomong</i>, <i>nanya</i>, <i>ngobrol</i></td><td><i>berbicara, bertanya, bercakap</i></td><td>sprechen, fragen, plaudern</td></tr>
+<tr><td><i>lagi + Verb</i></td><td><i>sedang</i></td><td>gerade dabei</td></tr>
+<tr><td><i>gue / lo</i></td><td><i>aku / kamu</i></td><td>ich / du (Jakarta-Slang)</td></tr></table>
+<p><b>Partikeln</b> geben dem Satz Gefühl:</p>
+<ul><li><i>dong</i> – freundliche Bitte / Selbstverständlichkeit: <i>Ayo dong!</i></li>
+<li><i>sih</i> – betont Fragen („denn eigentlich“): <i>Kenapa sih?</i></li>
+<li><i>deh</i> – „na gut / dann halt“: <i>Ya udah deh.</i></li>
+<li><i>kok</i> – Überraschung: <i>Kok bisa?</i> (Wie kann das sein?)</li>
+<li><i>lho</i> – „Oh!“/„Mensch!“: <i>Lho, kamu di sini?</i></li>
+<li><i>kan</i> – „doch / nicht wahr“: <i>Kamu udah tahu, kan?</i></li></ul>
+<p><b>Achtung:</b> Das ist informell! Mit Älteren, Fremden und im Beruf bleibst du bei Standard-Indonesisch und <i>Anda/Bapak/Ibu</i>.</p>`},
+ vocab:[["nggak","nicht (umgspr.)"],["gak","nicht (umgspr.)"],["udah","schon (umgspr.)"],["banget","sehr (umgspr.)"],["aja","nur / einfach"],["dong","doch (bittend)"],["sih","denn / ja eigentlich"],["deh","na gut / dann halt"],["kok","wieso denn"],["lho","Mensch! / Oh!"],["nih","hier (umgspr.)"],["tuh","da (umgspr.)"],["kan","doch / ne?"],["gimana","wie (umgspr.)"],["ngapain","was machen"],["bikin","machen"],["nanya","fragen"],["ngomong","sprechen"],["ngobrol","plaudern"],["nongkrong","abhängen"],["capek","müde"],["bete","genervt / gelangweilt"],["mantap","super"],["keren","cool"],["santai","entspannt"],["cuma","nur"],["emang","tatsächlich / ja"],["kayak","wie"],["biar","damit"],["gue","ich (Jakarta)"],["lo","du (Jakarta)"],["telat","zu spät"],["ribet","kompliziert"],["gratis","kostenlos"],["asyik","toll / spaßig"],["bingung","verwirrt"],["kangen","vermissen"]],
+ sent:[["Aku nggak tahu, deh.","Ich weiß es echt nicht."],["Makanannya enak banget!","Das Essen ist mega lecker!"],["Udah makan belum?","Schon gegessen?"],["Gimana kabarnya?","Wie geht's dir?"],["Ayo dong, jangan lama-lama!","Komm schon, trödel nicht!"],["Kok kamu telat sih?","Wieso bist du denn zu spät?"],["Nanti kita ngobrol aja, ya.","Wir quatschen später einfach, ja?"],["Lagi ngapain?","Was machst du gerade?"],["Aku capek banget hari ini.","Ich bin heute total müde."],["Mantap! Keren banget.","Super! Richtig cool."],["Aku kangen sama kamu.","Ich vermisse dich."]],
+ dlg:{t:"Mit Freunden (WhatsApp-Stil)",lines:[["A","Lagi ngapain?","Was machst du gerade?"],["B","Lagi nongkrong di kafe. Kamu mau ikut?","Ich chille im Café. Kommst du mit?"],["A","Boleh banget! Kafenya di mana?","Auf jeden Fall! Wo ist das Café?"],["B","Deket stasiun. Lo tau nggak?","In der Nähe vom Bahnhof. Kennst du's?"],["A","Tau kok. Aku berangkat sekarang ya.","Klar kenne ich. Ich fahre jetzt los."],["B","Santai aja, nggak usah buru-buru.","Mach ruhig, kein Stress."]]},
+ ex:[["Aku ___ tahu. (nicht, umgspr.)","nggak",["nggak","udah","banget","dong"],""],["Enak ___! (sehr, umgspr.)","banget",["banget","nggak","dong","lho"],""],["___ makan belum? (schon, umgspr.)","Udah",["Udah","Nggak","Biar","Cuma"],""],["Ayo ___, jangan lama-lama! (Komm schon)","dong",["dong","banget","sih","kok"],""],["___ kamu telat sih? (Wieso)","Kok",["Kok","Aja","Deh","Gue"],""],["Lagi ___? (Was machst du)","ngapain",["ngapain","nanya","bikin","capek"],""]]
+});
+
+
+/* ---------- Items ---------- */
+const ITEMS=[],IDX={};
+function addItem(u,k,i,v){const it={id:u.id+":"+k+i,u:u.id,k,idn:v[0],de:v[1],ph:phon(v[0])};ITEMS.push(it);IDX[it.id]=it;}
+UNITS.forEach((u,n)=>{u.n=n+1;(u.vocab||[]).forEach((v,i)=>addItem(u,"v",i,v));(u.sent||[]).forEach((v,i)=>addItem(u,"s",i,v));});
+const UNIT=id=>UNITS.find(u=>u.id===id);
+const LEVELS=["A1","A2","B1"];
+
+const SOUNDS=[
+ ["c","wie „tsch“","cinta, cari, cuci"],["j","wie „dsch“","jalan, jam, kerja"],["ny","wie „nj“ / spanisches ñ","nyamuk, nyanyi, banyak"],
+ ["ng","wie in „Ding“ – auch am Wortanfang!","ngantuk, ngomong, bangun"],["sy","wie „sch“","syukur, syarat"],["kh","wie „ch“ in „Bach“","khusus, akhir"],
+ ["r","kurz gerolltes Zungenspitzen-r","burung, rumah, terbang"],["e","meist unbetont wie in „bitte“ (Schwa), teils wie langes „e“","selamat, besok, kemarin"],
+ ["k (Ende)","kein Hauchlaut: Kehlkopfverschluss","tidak, enak, baik"],["h (Ende)","deutlich gehaucht","kasih, rumah, sepuluh"],
+ ["ai / au","Doppellaute wie „ei“ / „au“ am Wortende","pakai, pulau, damai"],["aa / ua / ia","Vokale getrennt sprechen (zwei Silben)","maaf, buah, saat"],
+ ["s / z / f / v","s stimmlos wie „ß“; v klingt wie f","sama, zaman, vitamin"],
+ ["Betonung","flach, meist leicht auf der vorletzten Silbe; keine Töne","bahasa, belajar, selamat"]
+];
+
+/* ---------- Speicher ---------- */
+let S={box:{},due:{},xp:0,last:"",streak:0,bestStreak:0,best:{},hist:{},day:null,goal:60,newPerDay:10,cmode:"id2de",ckinds:"vs",totalCards:0,totalSpeak:0};
+try{const r=localStorage.getItem("belajar_v2");if(r)Object.assign(S,JSON.parse(r));}catch(e){}
+function ds(dt){return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");}
+const today=()=>ds(new Date());
+const yesterday=()=>ds(new Date(Date.now()-864e5));
+function D(){const t=today();if(!S.day||S.day.d!==t)S.day={d:t,cards:0,speak:0,dict:0,ex:0,newc:0};return S.day;}
+let STORE_OK=false;
+try{localStorage.setItem("__t","1");STORE_OK=localStorage.getItem("__t")==="1";localStorage.removeItem("__t");}catch(e){}
+function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open("belajar",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}});}
+async function idbPut(){try{const db=await idbOpen();db.transaction("kv","readwrite").objectStore("kv").put(JSON.stringify(S),"S");}catch(e){}}
+async function idbLoad(){try{const db=await idbOpen();return await new Promise(res=>{const q=db.transaction("kv").objectStore("kv").get("S");q.onsuccess=()=>res(q.result);q.onerror=()=>res(null);});}catch(e){return null;}}
+function save(){S.ts=Date.now();try{localStorage.setItem("belajar_v2",JSON.stringify(S));}catch(e){}idbPut();header();}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function storageWarn(){
+  let h="";
+  if(!STORE_OK)h+=`<div class="warn">⚠️ <b>Dein Browser speichert hier nichts dauerhaft</b> (privater Modus, Vorschau oder lokale Datei). Dein Fortschritt geht beim Schließen verloren. Lösung: Öffne die App über eine https-Adresse in Safari und lege sie auf den Home-Bildschirm (Anleitung im Tab „Fortschritt“) – oder sichere regelmäßig per „Fortschritt → Sicherung“.</div>`;
+  else if(isIOS&&!S.hideIos)h+=`<div class="warn">📱 <b>iPhone-Tipp:</b> Safari löscht Daten lokaler Dateien oft nach einiger Zeit. Sicher ist es so: App auf einer https-Seite öffnen → Teilen → „Zum Home-Bildschirm“. Und mache gelegentlich eine Sicherung (Tab „Fortschritt“). <button class="btn sm" data-act="hideIos">Verstanden</button></div>`;
+  if(S.xp>=50&&(!S.lastBackup||Date.now()-S.lastBackup>7*864e5))h+=`<div class="warn">💾 Deine letzte Sicherung ist ${S.lastBackup?Math.round((Date.now()-S.lastBackup)/864e5)+" Tage alt":"noch nicht gemacht"}. <button class="btn sm" data-act="go" data-tab="prog">Jetzt sichern</button></div>`;
+  return h;
+}
+function addXp(n){
+  const t=today();
+  if(S.last!==t){S.streak=(S.last===yesterday())?S.streak+1:1;S.last=t;}
+  S.bestStreak=Math.max(S.bestStreak||0,S.streak);
+  S.xp+=n;S.hist[t]=(S.hist[t]||0)+n;D();save();
+}
+function header(){
+  const e1=document.getElementById("sXp"),e2=document.getElementById("sStreak");if(!e1)return;
+  e1.textContent="⭐ "+S.xp+" XP";
+  const live=S.last===today()||S.last===yesterday();
+  e2.textContent="🔥 "+(live?S.streak:0)+" Tage";
+}
+
+/* ---------- Hilfsfunktionen ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const sample=(a,n)=>shuffle(a).slice(0,n);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
+const sim=(a,b)=>(!a.length&&!b.length)?1:1-lev(a,b)/Math.max(a.length,b.length);
+const NUMW={"0":"nol","1":"satu","2":"dua","3":"tiga","4":"empat","5":"lima","6":"enam","7":"tujuh","8":"delapan","9":"sembilan","10":"sepuluh","100":"seratus","1000":"seribu"};
+const heardNorm=s=>norm(s).split(" ").map(w=>NUMW[w]||w).join(" ");
+
+/* ---------- Scopes ---------- */
+function unitsIn(scope){
+  if(scope==="all")return UNITS;
+  if(scope.startsWith("lvl:"))return UNITS.filter(u=>u.lvl===scope.slice(4));
+  return UNITS.filter(u=>u.id===scope.slice(2));
+}
+function itemsIn(scope,kinds){const ids=new Set(unitsIn(scope).map(u=>u.id));return ITEMS.filter(x=>ids.has(x.u)&&(!kinds||kinds.includes(x.k)));}
+function scopeSelect(){
+  return `<select data-sel="scope"><option value="all">Alle Lektionen</option>${LEVELS.map(l=>`<option value="lvl:${l}" ${V.scope==="lvl:"+l?"selected":""}>Stufe ${l}</option>`).join("")}${UNITS.map(u=>`<option value="u:${u.id}" ${V.scope==="u:"+u.id?"selected":""}>${u.lvl} · ${u.n}. ${esc(u.t)}</option>`).join("")}</select>`;
+}
+function mastery(u){const it=ITEMS.filter(x=>x.u===u.id);if(!it.length)return 0;return Math.round(100*it.filter(x=>(S.box[x.id]||0)>=3).length/it.length);}
+function lvlPct(l){const us=UNITS.filter(u=>u.lvl===l);return Math.round(us.reduce((a,u)=>a+mastery(u),0)/us.length);}
+function dueCount(){const n=Date.now();return ITEMS.filter(x=>S.due[x.id]&&S.due[x.id]<=n).length;}
+function nextUnit(){return UNITS.find(u=>mastery(u)<60)||UNITS[UNITS.length-1];}
+
+/* ---------- Sprachausgabe ---------- */
+let voices=[],playTok=0;
+function loadVoices(){try{voices=speechSynthesis.getVoices();}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+const idVoice=()=>voices.find(v=>/^id[-_]/i.test(v.lang))||voices.find(v=>/^(id|in)$/i.test(v.lang));
+function stopAudio(){playTok++;try{speechSynthesis.cancel();}catch(e){}}
+function speak(text,rate,pitch){
+  return new Promise(res=>{
+    if(!("speechSynthesis" in window)){res();return;}
+    try{speechSynthesis.cancel();}catch(e){}
+    const u=new SpeechSynthesisUtterance(text);u.lang="id-ID";
+    const v=idVoice();if(v)u.voice=v;u.rate=rate||.95;u.pitch=pitch||1;
+    u.onend=u.onerror=()=>res();speechSynthesis.speak(u);
+  });
+}
+async function playDialog(u,cb){
+  const my=++playTok,L=u.dlg.lines;
+  for(let i=0;i<L.length;i++){
+    if(my!==playTok)return;cb&&cb(i);
+    await speak(L[i][1],.9,L[i][0]==="A"?1:1.18);
+    if(my!==playTok)return;await sleep(250);
+  }
+  cb&&cb(-1);
+}
+function voiceWarning(){
+  if(!("speechSynthesis" in window))return '<div class="warn">Dieser Browser hat keine Sprachausgabe. Bitte Chrome, Edge oder Safari nutzen.</div>';
+  if(!idVoice())return '<div class="warn">⚠️ Auf diesem Gerät wurde keine <b>indonesische Stimme</b> gefunden – das Vorbild klingt dann falsch. Installiere sie in den Systemeinstellungen (Windows: Sprache → Indonesisch → Sprachpaket mit Sprachausgabe; macOS: Bedienungshilfen → Gesprochene Inhalte → Systemstimme → Indonesisch; Android/iOS: Text-to-Speech-Einstellungen). Chrome und Edge laden Online-Stimmen oft automatisch.</div>';
+  return "";
+}
+
+/* ---------- Aufnahme & Bewertung ---------- */
+const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+const SP={target:"",res:null,url:null,status:""};
+function spReset(t){SP.target=t;SP.res=null;if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}SP.url=null;SP.status="";}
+function evaluate(target,alts){
+  const tw=norm(target).split(" ").filter(Boolean);let best=null;
+  for(const a of (alts.length?alts:[""])){
+    const hw=heardNorm(a).split(" ").filter(Boolean);
+    const words=tw.map(w=>({w,s:hw.length?Math.max(...hw.map(h=>sim(w,h))):0}));
+    let sc=words.reduce((x,y)=>x+y.s,0)/Math.max(1,words.length);
+    if(hw.length>tw.length)sc*=Math.max(.7,tw.length/hw.length);
+    if(!best||sc>best.sc)best={sc,words,heard:a};
+  }
+  return {score:Math.round(best.sc*100),words:best.words,heard:best.heard};
+}
+const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,
+ async start(cb){
+  if(this.active)return;
+  const gen=++this.gen;this.cb=cb;this.fin=false;this.alts=[];this.chunks=[];this.srErr=null;
+  try{speechSynthesis.cancel();}catch(e){}
+  if(!navigator.mediaDevices||!window.MediaRecorder){SP.status="Aufnahme wird von diesem Browser nicht unterstützt.";render();return;}
+  try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
+  catch(e){SP.status="Mikrofon blockiert – bitte Zugriff erlauben (Schloss-Symbol in der Adressleiste). Falls die Datei lokal geöffnet ist und der Browser nicht fragt: im Ordner der Datei „python3 -m http.server“ starten und http://localhost:8000 öffnen.";render();return;}
+  this.mr=new MediaRecorder(this.stream);this.mrDone=false;
+  this.mr.ondataavailable=e=>{if(e.data.size)this.chunks.push(e.data);};
+  this.mr.onstop=()=>{if(gen!==this.gen)return;this.mrDone=true;this.blob=new Blob(this.chunks,{type:this.mr.mimeType||"audio/webm"});this.tryFinish();};
+  this.mr.start();this.active=true;
+  try{
+    this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=this.ctx.createMediaStreamSource(this.stream),an=this.ctx.createAnalyser();an.fftSize=1024;src.connect(an);
+    const data=new Uint8Array(an.fftSize);
+    const draw=()=>{const cv=document.getElementById("meter");if(!this.active)return;
+      if(cv){const g=cv.getContext("2d");an.getByteTimeDomainData(data);g.clearRect(0,0,cv.width,cv.height);g.strokeStyle="#c8102e";g.lineWidth=2;g.beginPath();
+        for(let i=0;i<data.length;i++){const x=i/data.length*cv.width,y=data[i]/255*cv.height;i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}
+      this.raf=requestAnimationFrame(draw);};
+    draw();
+  }catch(e){}
+  this.srDone=true;
+  if(SRC){
+    try{
+      const sr=new SRC();sr.lang="id-ID";sr.interimResults=false;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;
+      sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);};
+      sr.onerror=e=>{this.srErr=e.error;};
+      sr.onend=()=>{if(gen!==this.gen)return;this.srDone=true;if(this.active)this.stop();else this.tryFinish();};
+      sr.start();this.sr=sr;
+    }catch(e){this.srDone=true;}
+  }
+  SP.status="● Aufnahme läuft … sprich jetzt (stoppt automatisch).";
+  clearTimeout(this.timer);this.timer=setTimeout(()=>this.stop(),9000);
+  render();
+ },
+ stop(silent){
+  clearTimeout(this.timer);cancelAnimationFrame(this.raf);
+  const was=this.active;this.active=false;
+  try{if(this.sr&&!this.srDone)this.sr.stop();}catch(e){}
+  try{if(this.mr&&this.mr.state!=="inactive")this.mr.stop();}catch(e){}
+  try{this.stream&&this.stream.getTracks().forEach(t=>t.stop());}catch(e){}
+  try{this.ctx&&this.ctx.close();}catch(e){}
+  this.ctx=null;
+  if(silent){this.gen++;this.fin=true;this.srDone=true;this.mrDone=true;return;}
+  if(was){SP.status="Auswertung …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){this.srDone=true;this.tryFinish();}},2500);}
+ },
+ tryFinish(){
+  if(this.active||!this.srDone||!this.mrDone||this.fin)return;
+  this.fin=true;
+  const alts=this.alts.slice(),err=this.srErr;
+  if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}
+  SP.url=this.blob?URL.createObjectURL(this.blob):null;
+  S.totalSpeak=(S.totalSpeak||0)+1;D().speak++;
+  if(SRC&&alts.length){
+    SP.res=evaluate(SP.target,alts);
+    const key="t:"+norm(SP.target);S.best[key]=Math.max(S.best[key]||0,SP.res.score);
+    addXp(Math.max(1,Math.round(SP.res.score/10)));
+    SP.status="Fertig – höre deine Aufnahme und vergleiche mit dem Vorbild.";
+  }else if(SRC){
+    SP.res=null;addXp(1);
+    SP.status="Es wurde nichts erkannt"+(err?" ("+err+")":"")+". Sprich lauter/näher am Mikrofon. Die Spracherkennung braucht Internet. Du kannst deine Aufnahme zum Selbstvergleich anhören.";
+  }else{SP.res=null;addXp(1);SP.status="Aufnahme gespeichert – vergleiche sie selbst mit dem Vorbild.";}
+  if(this.cb)this.cb(SP.res);
+  render();
+ }
+};
+function playMine(){if(!SP.url)return Promise.resolve();const a=new Audio(SP.url);return new Promise(r=>{a.onended=a.onerror=r;a.play().catch(r);});}
+async function compareAudio(){await speak(SP.target,.9);await sleep(350);await playMine();}
+function resultHtml(r){
+  const col=r.score>=85?"var(--ok)":r.score>=60?"var(--mid)":"var(--bad)";
+  return `<div class="row" style="justify-content:space-between"><div><div class="small">Erkannt:</div><div style="font-size:17px">„${esc(r.heard||"–")}“</div></div><div class="score" style="color:${col}">${r.score}%</div></div>
+  <div style="margin:8px 0">${r.words.map(w=>`<span class="word ${w.s>=.85?"g":w.s>=.6?"m":"r"}">${esc(w.w)}</span>`).join("")}</div>
+  <div class="small">${r.score>=85?"Sehr gut! 🎉":r.score>=60?"Fast – achte auf die orangen/roten Wörter und höre das Vorbild noch einmal.":"Noch nicht ganz – langsam anhören und Silbe für Silbe nachsprechen."} (Bewertung per Spracherkennung = Richtwert.)</div>`;
+}
+function speakBox(target,ph,hideTarget){
+  const supp=!navigator.mediaDevices?'<div class="warn">Kein Mikrofonzugriff möglich. Öffne die Datei direkt in Chrome/Edge/Safari (nicht in einer Vorschau).</div>':"";
+  const noSR=!SRC?'<div class="warn">Keine Spracherkennung in diesem Browser (z. B. Firefox). Aufnahme & Vergleich gehen, die automatische Bewertung braucht Chrome, Edge oder Safari.</div>':"";
+  return `${supp}${noSR}
+  <div class="card" style="text-align:center">
+   ${hideTarget?`<div class="small">Text verdeckt – sprich aus dem Gedächtnis.</div>`:`<div class="big" style="font-size:26px">${esc(target)}</div>`}
+   ${ph&&!hideTarget?`<div class="ph">${esc(ph)}</div>`:""}
+   <div class="row" style="justify-content:center;margin:12px 0">
+    <button class="btn" data-act="saySP">🔊 Vorbild</button><button class="btn" data-act="saySP" data-slow="1">🐢 Langsam</button></div>
+   <canvas id="meter" width="700" height="50"></canvas>
+   <div class="row" style="justify-content:center;margin-top:10px">
+    <button class="btn ${Rec.active?"rec":"pri"}" data-act="toggleRec">${Rec.active?"⏹ Stopp":"🎙 Aufnehmen"}</button>
+    <button class="btn" data-act="playMine" ${SP.url?"":"disabled"}>▶ Meine Aufnahme</button>
+    <button class="btn" data-act="compare" ${SP.url?"":"disabled"}>⇄ Vergleich</button></div>
+   <div class="small" style="margin-top:8px">${esc(SP.status||"Tipp: Erst Vorbild anhören, dann nachsprechen.")}</div>
+  </div>
+  ${SP.res?`<div class="card">${resultHtml(SP.res)}</div>`:""}`;
+}
+
+/* ---------- Zustand ---------- */
+const V={tab:"today",scope:"all",unit:null,utab:"intro",cards:null,
+ sp:{mode:"item",unit:"a1-01",kind:"s",i:0},rp:null,
+ hear:{mode:"dict",q:null},ex:null,exType:"mix",q:"",showDe:true,showId:true,hideT:false};
+const TABS=[["today","Heute"],["path","Lernpfad"],["cards","Karten"],["speak","Sprechen"],["hear","Hören"],["ex","Üben"],["gram","Grammatik"],["dict","Wörterbuch"],["sounds","Laute"],["prog","Fortschritt"]];
+function tabsHtml(){$("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" class="${V.tab===k?"on":""}">${n}</button>`).join("");}
+function go(t){Rec.stop(true);stopAudio();V.tab=t;if(t==="path")V.unit=null;render();window.scrollTo(0,0);}
+function render(){
+  tabsHtml();
+  ({today:vToday,path:vPath,cards:vCards,speak:vSpeak,hear:vHear,ex:vEx,gram:vGram,dict:vDict,sounds:vSounds,prog:vProg})[V.tab]();
+  header();
+}
+
+/* ===================== HEUTE ===================== */
+function vToday(){
+  const d=D(),xp=S.hist[today()]||0,pct=Math.min(100,Math.round(100*xp/S.goal));
+  const next=nextUnit(),due=dueCount();
+  const plan=[["Karteikarten wiederholen","cards",d.cards,20,"cards"],["Sätze laut sprechen (mit Aufnahme)","speak",d.speak,5,"speak"],["Diktat schreiben","dict",d.dict,3,"hear"],["Übungsaufgaben lösen","ex",d.ex,10,"ex"]];
+  $("#view").innerHTML=`
+  <h2>Selamat datang! 👋</h2>${storageWarn()}
+  <div class="card"><div class="row" style="justify-content:space-between"><b>Tagesziel: ${xp} / ${S.goal} XP</b>
+   <select data-sel="goal">${[30,60,100,150].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></div>
+   <div class="bar" style="margin-top:8px;height:12px"><i style="width:${pct}%"></i></div>
+   <div class="small" style="margin-top:6px">🔥 ${S.streak||0} Tage Serie · ${due} Karten fällig</div></div>
+  <div class="card"><h3 style="margin-top:0">Dein Tagesplan (ca. 25–30 Min.)</h3>
+   ${plan.map(p=>`<div class="row" style="margin:7px 0"><span class="check">${p[2]>=p[3]?"✅":"⬜"}</span><div style="flex:1"><b>${p[0]}</b><div class="small">${Math.min(p[2],p[3])}/${p[3]}</div></div><button class="btn sm" data-act="go" data-tab="${p[4]}">Los</button></div>`).join("")}
+   <div class="row" style="margin:7px 0"><span class="check">📘</span><div style="flex:1"><b>Neue Lektion: ${next.n}. ${esc(next.t)}</b><div class="small">${next.lvl} · ${mastery(next)}% gelernt</div></div><button class="btn pri sm" data-act="openUnit" data-u="${next.id}">Öffnen</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Fortschritt nach Stufe</h3>
+   ${LEVELS.map(l=>`<div style="margin:8px 0"><b>${l}</b> <span class="small">${lvlPct(l)}%</span><div class="bar"><i style="width:${lvlPct(l)}%"></i></div></div>`).join("")}</div>
+  <details class="card tip"><summary>🎯 So wirst du wirklich fließend</summary><ul>
+   <li><b>Täglich statt selten:</b> 25 Minuten jeden Tag schlagen 3 Stunden am Wochenende. Der Tagesplan oben ist darauf ausgelegt.</li>
+   <li><b>Laut sprechen:</b> Sprich jeden Satz mehrmals laut nach (Shadowing im Tab „Sprechen“). Flüssigkeit ist Muskeltraining für den Mund.</li>
+   <li><b>Sätze statt Einzelwörter:</b> Die Karten mischen Wörter und ganze Sätze. Ganze Sätze zeigen dir Wortstellung und Partikeln.</li>
+   <li><b>Rollenspiel wiederholen:</b> Spiele jeden Dialog mit beiden Rollen, bis du ohne Text sprechen kannst („Text verdecken“).</li>
+   <li><b>Echte Menschen:</b> Suche Sprachpartner (z. B. über Tandem-Apps oder Sprachcafés) und sprich ab Lektion 5 wöchentlich mit Muttersprachlern. Nichts ersetzt echte Gespräche.</li>
+   <li><b>Hören im Alltag:</b> Höre indonesische Podcasts, YouTube und Musik. Beginne mit Untertiteln, dann ohne.</li>
+   <li><b>Fehler sind gut:</b> Indonesier sind sehr nachsichtig und freuen sich, wenn du ihre Sprache sprichst.</li></ul></details>`;
+}
+
+/* ===================== LERNPFAD ===================== */
+function vPath(){
+  if(V.unit)return vUnit();
+  $("#view").innerHTML=`<h2>Lernpfad</h2>`+LEVELS.map(l=>`<h3><span class="lvl">${l}</span>${l==="A1"?"Anfänger – erste Gespräche":l==="A2"?"Grundlagen – Alltag meistern":"Mittelstufe – flüssig & natürlich"} <span class="small">· ${lvlPct(l)}%</span></h3>
+   <div class="grid">${UNITS.filter(u=>u.lvl===l).map(u=>`<div class="card" style="cursor:pointer;margin:0" data-act="openUnit" data-u="${u.id}">
+    <div style="font-size:26px">${u.e}</div><b>${u.n}. ${esc(u.t)}</b>
+    <div class="small">${(u.vocab||[]).length} Wörter · ${(u.sent||[]).length} Sätze · Dialog</div>
+    <div class="bar" style="margin-top:8px"><i style="width:${mastery(u)}%"></i></div></div>`).join("")}</div>`).join("");
+}
+function dlgHtml(u,rev){
+  return u.dlg.lines.map((l,i)=>`<div class="bub ${l[0]}" id="bub${i}"><b>${V.showId||rev?esc(l[1]):"…"}</b>${V.showDe?`<span>${esc(l[2])}</span>`:""}
+   <div><button class="btn sm" data-act="sayLine" data-u="${u.id}" data-l="${i}">🔊</button></div></div>`).join("");
+}
+function vUnit(){
+  const u=UNIT(V.unit),t=V.utab;
+  const tabs=[["intro","Überblick"],["vocab","Vokabeln"],["sent","Sätze"],["dlg","Dialog"]];
+  let body="";
+  if(t==="intro")body=`<div class="card"><p>${esc(u.intro)}</p></div><div class="card"><h3 style="margin-top:0">📖 ${esc(u.grammar.t)}</h3>${u.grammar.html}</div>
+   <div class="row"><button class="btn pri" data-act="startCards" data-scope="u:${u.id}">🃏 Karten dieser Lektion</button><button class="btn" data-act="startEx" data-scope="u:${u.id}">✍️ Üben</button></div>`;
+  if(t==="vocab"||t==="sent"){
+    const k=t==="vocab"?"v":"s",its=ITEMS.filter(x=>x.u===u.id&&x.k===k);
+    body=`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="sayAll" data-u="${u.id}" data-k="${k}">▶ Alle vorlesen</button><button class="btn" data-act="startCards" data-scope="u:${u.id}">🃏 Karten</button></div>
+    <div class="card"><table>${its.map(x=>`<tr><td style="width:46%"><b>${esc(x.idn)}</b><div class="ph" style="font-size:13px">${esc(x.ph)}</div></td><td>${esc(x.de)}</td>
+     <td style="white-space:nowrap"><button class="btn sm" data-act="say" data-i="${x.id}">🔊</button> <button class="btn sm" data-act="goSpeakItem" data-i="${x.id}">🎙</button></td></tr>`).join("")}</table></div>`;
+  }
+  if(t==="dlg")body=`<div class="card"><h3 style="margin-top:0">🗣️ ${esc(u.dlg.t)}</h3>
+   <div class="row" style="margin-bottom:8px"><button class="btn pri" data-act="playDlg" data-u="${u.id}">▶ Anhören</button>
+    <button class="btn" data-act="toggleDe">${V.showDe?"Übersetzung ausblenden":"Übersetzung zeigen"}</button>
+    <button class="btn" data-act="toggleId">${V.showId?"Text verdecken (Hörtest)":"Text zeigen"}</button>
+    <button class="btn" data-act="startRp" data-u="${u.id}" data-role="B">🎭 Rollenspiel</button></div>${dlgHtml(u)}</div>`;
+  $("#view").innerHTML=`<div class="row"><button class="btn sm" data-act="back">← Lernpfad</button><span class="lvl">${u.lvl}</span><h2 style="margin:0">${u.e} ${u.n}. ${esc(u.t)}</h2></div>
+   ${voiceWarning()}<div class="tabs2">${tabs.map(([k,n])=>`<button data-act="utab" data-t="${k}" class="${t===k?"on":""}">${n}</button>`).join("")}</div>${body}`;
+}
+
+/* ===================== KARTEN (SRS) ===================== */
+function buildCards(free){
+  const kinds=S.ckinds.split(""),pool=itemsIn(V.scope,kinds),now=Date.now();
+  let q=[],isFree=!!free;
+  if(!free){
+    const rev=pool.filter(x=>S.due[x.id]&&S.due[x.id]<=now);
+    const left=Math.max(0,S.newPerDay-D().newc);
+    const nw=pool.filter(x=>!S.due[x.id]&&!S.box[x.id]).slice(0,left);
+    q=shuffle(rev).slice(0,30).map(x=>x.id).concat(nw.map(x=>x.id));
+    if(!q.length)isFree=true;
+  }
+  if(isFree){q=shuffle(pool).sort((a,b)=>(S.box[a.id]||0)-(S.box[b.id]||0)).slice(0,15).map(x=>x.id);q=shuffle(q);}
+  V.cards={q,i:0,flip:false,free:isFree,again:{},spoken:false,right:0};
+}
+const CM=[["id2de","Indonesisch → Deutsch"],["de2id","Deutsch → Indonesisch"],["listen","Hören → Bedeutung"]];
+function vCards(){
+  if(!V.cards)buildCards();
+  const c=V.cards;
+  const cfg=`<div class="row" style="margin-bottom:10px">${scopeSelect()}
+   <select data-sel="cmode">${CM.map(m=>`<option value="${m[0]}" ${S.cmode===m[0]?"selected":""}>${m[1]}</option>`).join("")}</select>
+   <select data-sel="ckinds"><option value="vs" ${S.ckinds==="vs"?"selected":""}>Wörter + Sätze</option><option value="v" ${S.ckinds==="v"?"selected":""}>nur Wörter</option><option value="s" ${S.ckinds==="s"?"selected":""}>nur Sätze</option></select></div>`;
+  if(c.i>=c.q.length){
+    $("#view").innerHTML=`<h2>Karteikarten</h2>${cfg}<div class="card">${c.q.length?`<p>🎉 Runde fertig! ${c.q.length} Karten geübt.</p>`:`<p>In diesem Bereich ist nichts zu üben.</p>`}
+     <div class="row"><button class="btn pri" data-act="newCards">Neue Runde</button><button class="btn" data-act="freeCards">Freies Üben</button></div>
+     <div class="small" style="margin-top:8px">${dueCount()} Karten insgesamt fällig · ${Math.max(0,S.newPerDay-D().newc)} neue Karten heute noch möglich.</div></div>`;
+    return;
+  }
+  const it=IDX[c.q[c.i]],m=S.cmode;let front="",back="";
+  const idBlock=`<div class="big">${esc(it.idn)}</div><div class="ph">${esc(it.ph)}</div>`;
+  if(m==="id2de"){front=idBlock;back=`<div class="de" style="margin-top:14px;font-size:22px">${esc(it.de)}</div>`;}
+  if(m==="de2id"){front=`<div class="small">Wie sagt man auf Indonesisch?</div><div class="big" style="font-size:26px">${esc(it.de)}</div>`;back=`<div style="margin-top:14px">${idBlock}</div>`;}
+  if(m==="listen"){front=`<div class="small">Was hörst du?</div><div style="font-size:48px">🔊</div>`;back=`<div style="margin-top:12px">${idBlock}<div class="de" style="font-size:20px">${esc(it.de)}</div></div>`;}
+  const u=UNIT(it.u);
+  $("#view").innerHTML=`<h2>Karteikarten</h2>${voiceWarning()}${cfg}
+   <div class="small" style="margin-bottom:6px">Karte ${c.i+1}/${c.q.length}${c.free?" · freies Üben":""} · ${u.lvl} ${u.n}. ${esc(u.t)}</div>
+   <div class="card flip" data-act="flip">${front}${c.flip?`<div>${back}</div>`:`<div class="small" style="margin-top:14px">Tippen / Leertaste zum Umdrehen</div>`}</div>
+   <div class="row" style="margin-bottom:12px"><button class="btn" data-act="say" data-i="${it.id}">🔊 Normal</button><button class="btn" data-act="say" data-i="${it.id}" data-slow="1">🐢 Langsam</button><button class="btn" data-act="goSpeakItem" data-i="${it.id}">🎙 Sprechen üben</button></div>
+   ${c.flip?`<div class="row"><button class="btn" data-act="rate" data-r="0" style="border-color:var(--bad)">❌ Nicht gewusst (1)</button><button class="btn" data-act="rate" data-r="1" style="border-color:var(--mid)">😐 Schwer (2)</button><button class="btn pri" data-act="rate" data-r="2">✅ Gewusst (3)</button></div>`:""}`;
+  if(!c.spoken&&(m==="id2de"||m==="listen")){c.spoken=true;speak(it.idn);}
+  if(c.flip&&m==="de2id"&&!c.spoken2){c.spoken2=true;speak(it.idn);}
+}
+function rateCard(r){
+  const c=V.cards,id=c.q[c.i],isNew=!S.box[id];let b=S.box[id]||0;const days=[0,1,2,4,8,16,32];
+  if(isNew)D().newc++;
+  if(r===0){b=1;S.due[id]=Date.now()+10*60000;if(!c.again[id]){c.again[id]=1;c.q.push(id);}}
+  else if(r===1){b=Math.max(1,b);S.due[id]=Date.now()+864e5;}
+  else{b=Math.min(6,b+1);S.due[id]=Date.now()+days[b]*864e5;c.right++;}
+  S.box[id]=b;D().cards++;S.totalCards=(S.totalCards||0)+1;
+  addXp(r===2?3:r===1?2:1);
+  c.i++;c.flip=false;c.spoken=false;c.spoken2=false;render();
+}
+
+/* ===================== SPRECHEN ===================== */
+function vSpeak(){
+  const s=V.sp;
+  const modes=`<div class="tabs2"><button data-act="spMode" data-m="item" class="${s.mode==="item"?"on":""}">Wörter & Sätze</button><button data-act="spMode" data-m="role" class="${s.mode==="role"?"on":""}">Rollenspiel & Shadowing</button></div>`;
+  if(s.mode==="role"){vRp(modes);return;}
+  const u=UNIT(s.unit),list=ITEMS.filter(x=>x.u===u.id&&x.k===s.kind),it=list[Math.min(s.i,list.length-1)];
+  if(SP.target!==it.idn)spReset(it.idn);
+  const best=S.best["t:"+norm(it.idn)];
+  $("#view").innerHTML=`<h2>Sprechen & Aussprache</h2>${voiceWarning()}${modes}
+   <div class="row" style="margin-bottom:10px"><select data-sel="spunit">${UNITS.map(x=>`<option value="${x.id}" ${x.id===s.unit?"selected":""}>${x.lvl} · ${x.n}. ${esc(x.t)}</option>`).join("")}</select>
+   <select data-sel="spkind"><option value="v" ${s.kind==="v"?"selected":""}>Wörter</option><option value="s" ${s.kind==="s"?"selected":""}>Sätze</option></select>
+   <span class="small">${s.i+1}/${list.length}${best!=null?" · Bestwert "+best+"%":""}</span></div>
+   <div class="card" style="text-align:center;padding:10px"><span class="de">${esc(it.de)}</span></div>
+   ${speakBox(it.idn,it.ph)}
+   <div class="row" style="justify-content:space-between"><button class="btn" data-act="spPrev">← Zurück</button><button class="btn" data-act="spRand">🎲 Zufall</button><button class="btn" data-act="spNext">Weiter →</button></div>`;
+}
+function vRp(modes){
+  const roleUnits=UNITS;
+  if(!V.rp)V.rp={u:V.sp.unit,role:"B",i:0,scores:[],played:{},done:false};
+  const r=V.rp,u=UNIT(r.u),L=u.dlg.lines;
+  const cfg=`<div class="row" style="margin-bottom:10px"><select data-sel="rpunit">${roleUnits.map(x=>`<option value="${x.id}" ${x.id===r.u?"selected":""}>${x.lvl} · ${x.n}. ${esc(x.t)} – ${esc(x.dlg.t)}</option>`).join("")}</select>
+   <select data-sel="rprole"><option value="A" ${r.role==="A"?"selected":""}>Ich bin Person A</option><option value="B" ${r.role==="B"?"selected":""}>Ich bin Person B</option><option value="both" ${r.role==="both"?"selected":""}>Shadowing (alle Zeilen nachsprechen)</option></select>
+   <label class="small"><input type="checkbox" data-chk="hideT" ${V.hideT?"checked":""}> Text verdecken</label></div>`;
+  if(r.i>=L.length){
+    const sc=r.scores.filter(x=>x!=null),avg=sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):null;
+    $("#view").innerHTML=`<h2>Sprechen & Aussprache</h2>${modes}${cfg}<div class="card"><h3 style="margin-top:0">🎉 Dialog geschafft!</h3>${avg!=null?`<div class="score">${avg}%</div><div class="small">Durchschnitt über ${sc.length} Zeilen</div>`:`<p>Wiederhole den Dialog, bis du ihn flüssig sprichst.</p>`}
+     <div class="row" style="margin-top:10px"><button class="btn pri" data-act="rpRestart">Nochmal</button><button class="btn" data-act="rpSwap">Rolle tauschen</button></div></div>`;
+    if(avg!=null&&!r.rewarded){r.rewarded=true;addXp(10);}
+    return;
+  }
+  const line=L[r.i],mine=r.role==="both"||line[0]===r.role;
+  let hist="";for(let k=0;k<=r.i;k++){const l=L[k];const hide=(l[0]===r.role||r.role==="both")&&V.hideT&&k===r.i;hist+=`<div class="bub ${l[0]}"><b>${hide?"…":esc(l[1])}</b><span>${k===r.i&&hide?"":esc(l[2])}</span></div>`;}
+  let body="";
+  if(!mine){
+    body=`<div class="card"><div class="small">Dein Gegenüber spricht … 🔊</div><div class="row" style="margin-top:8px"><button class="btn" data-act="rpNext">Weiter ⏭</button></div></div>`;
+    if(!r.played[r.i]){r.played[r.i]=true;const my=++playTok,idx=r.i;speak(line[1],.9,line[0]==="A"?1:1.18).then(async()=>{await sleep(300);if(my===playTok&&V.rp===r&&r.i===idx){r.i++;render();}});}
+  }else{
+    if(SP.target!==line[1]&&!(SP._rpIdx===r.i&&SP._rpU===r.u)){spReset(line[1]);SP._rpIdx=r.i;SP._rpU=r.u;}
+    body=`<div class="small" style="margin:6px 0">Du bist dran – ${esc(line[2])}</div>${speakBox(line[1],phon(line[1]),V.hideT)}
+     <div class="row"><button class="btn pri" data-act="rpNext">${SP.res||SP.url?"Weiter →":"Überspringen →"}</button></div>`;
+    if(r.role==="both"&&!r.played[r.i]){r.played[r.i]=true;speak(line[1],.9,line[0]==="A"?1:1.18);}
+  }
+  $("#view").innerHTML=`<h2>Sprechen & Aussprache</h2>${voiceWarning()}${modes}${cfg}<div class="small" style="margin-bottom:4px">Zeile ${r.i+1}/${L.length} · ${esc(u.dlg.t)}</div>${hist}${body}`;
+}
+
+/* ===================== HÖREN ===================== */
+function buildDict(){
+  const pool=itemsIn(V.scope,["s"]);
+  V.hear.q={qs:shuffle(pool).slice(0,8).map(x=>x.id),i:0,res:null,typed:"",score:0,played:false};
+}
+function vHear(){
+  const h=V.hear;
+  const modes=`<div class="tabs2"><button data-act="hMode" data-m="dict" class="${h.mode==="dict"?"on":""}">Diktat</button><button data-act="hMode" data-m="dlg" class="${h.mode==="dlg"?"on":""}">Dialog-Hörtest</button></div>`;
+  if(h.mode==="dlg"){
+    const us=UNITS,u=UNIT(h.dlgU||"a1-01");
+    $("#view").innerHTML=`<h2>Hören</h2>${voiceWarning()}${modes}
+     <div class="row" style="margin-bottom:10px"><select data-sel="hdlg">${us.map(x=>`<option value="${x.id}" ${x.id===u.id?"selected":""}>${x.lvl} · ${x.n}. ${esc(x.dlg.t)}</option>`).join("")}</select>
+     <button class="btn pri" data-act="playDlg" data-u="${u.id}">▶ Anhören</button>
+     <button class="btn" data-act="toggleId">${V.showId?"Text verdecken":"Text zeigen"}</button>
+     <button class="btn" data-act="toggleDe">${V.showDe?"Übersetzung aus":"Übersetzung an"}</button></div>
+     <div class="card">${dlgHtml(u)}</div><div class="small">Tipp: Erst ohne Text anhören und verstehen, was du kannst. Dann Text einblenden und gezielt nachhören.</div>`;
+    return;
+  }
+  if(!h.q)buildDict();
+  const q=h.q;
+  const head=`<h2>Hören</h2>${voiceWarning()}${modes}<div class="row" style="margin-bottom:10px">${scopeSelect()}<span class="small">Diktat ${Math.min(q.i+1,q.qs.length)}/${q.qs.length}</span></div>`;
+  if(q.i>=q.qs.length){
+    $("#view").innerHTML=`${head}<div class="card"><div class="score">${q.score}/${q.qs.length}</div><p>${q.score>=q.qs.length*.8?"Sehr starkes Hörverstehen! 🌟":"Weiter üben – Hören ist Training."}</p><button class="btn pri" data-act="newDict">Neues Diktat</button></div>`;return;
+  }
+  const it=IDX[q.qs[q.i]];
+  let res="";
+  if(q.res){
+    res=`<div class="card"><div style="margin:4px 0">${q.res.words.map(w=>`<span class="word ${w.s>=.99?"g":w.s>=.7?"m":"r"}">${esc(w.w)}</span>`).join("")}</div>
+     <div class="small">Richtig: <b>${esc(it.idn)}</b> – ${esc(it.de)}</div><div class="row" style="margin-top:8px"><button class="btn pri" data-act="dNext">Weiter →</button></div></div>`;
+  }
+  $("#view").innerHTML=`${head}<div class="card"><p>Höre den Satz und schreibe ihn auf Indonesisch.</p>
+   <div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="dPlay">🔊 Abspielen</button><button class="btn" data-act="dPlay" data-slow="1">🐢 Langsam</button>
+   <button class="btn" data-act="dHint">💡 Hinweis (Deutsch)</button></div>
+   <div id="dhint" class="small" style="display:none;margin-bottom:8px">${esc(it.de)}</div>
+   <input type="text" id="din" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res?"disabled":""} value="${esc(q.typed||"")}" placeholder="Schreibe, was du hörst …">
+   ${q.res?"":`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="dCheck">Prüfen</button></div>`}</div>${res}`;
+  if(!q.played){q.played=true;speak(it.idn,.8);}
+  const inp=$("#din");if(inp&&!q.res){inp.focus();inp.onkeydown=e=>{if(e.key==="Enter")dictCheck();};}
+}
+function dictCheck(){
+  const q=V.hear.q,it=IDX[q.qs[q.i]],val=($("#din")||{}).value||"";
+  const tw=norm(it.idn).split(" "),uw=norm(val).split(" ").filter(Boolean);
+  const words=tw.map(w=>({w,s:uw.length?Math.max(...uw.map(u=>sim(w,u))):0}));
+  const all=words.every(w=>w.s>=.99);
+  q.typed=val;q.res={words,ok:all};if(all)q.score++;
+  D().dict++;addXp(all?5:1);render();
+}
+
+/* ===================== ÜBEN ===================== */
+const EXT=[["mix","Gemischt"],["cloze","Lückentext (Grammatik)"],["build","Satzbau"],["trans","Übersetzen"],["hear","Hörverstehen"],["vocab","Vokabel-Quiz"]];
+function genEx(scope,type,n){
+  const sents=itemsIn(scope,["s"]),words=itemsIn(scope,["v"]);
+  const cl=[];unitsIn(scope).forEach(u=>(u.ex||[]).forEach(c=>cl.push(c)));
+  const allS=ITEMS.filter(x=>x.k==="s"),allW=ITEMS.filter(x=>x.k==="v");
+  const mk={
+   cloze(){const c=pick(cl);return {key:"c"+c[0],t:"cloze",p:c[0],a:c[1],o:shuffle(c[2]),n:c[3]};},
+   build(){const it=pick(sents);return {key:"b"+it.id,t:"build",it,pool:shuffle(it.idn.split(" ").map((w,i)=>({w,i}))),ans:[]};},
+   trans(){const it=pick(sents.concat(words));return {key:"t"+it.id,t:"trans",it};},
+   hear(){const it=pick(sents);const o=shuffle([it,...sample(allS.filter(x=>x.de!==it.de),3)]);return {key:"h"+it.id,t:"hear",it,o};},
+   vocab(){const it=pick(words);const dir=Math.random()<.5?"id2de":"de2id";const o=shuffle([it,...sample(allW.filter(x=>x.de!==it.de&&x.idn!==it.idn),3)]);return {key:"v"+it.id+dir,t:"vocab",it,dir,o};}
+  };
+  const cnt={cloze:cl.length,build:sents.length,trans:sents.length+words.length,hear:sents.length,vocab:words.length};
+  const avail=Object.keys(mk).filter(k=>cnt[k]>0);
+  const types=type==="mix"?avail:avail.filter(k=>k===type);
+  const qs=[],seen=new Set();
+  for(let i=0;i<n&&types.length;i++){
+    for(let tries=0;tries<6;tries++){const q=mk[types[i%types.length]]();if(!seen.has(q.key)){seen.add(q.key);qs.push(q);break;}}
+  }
+  return shuffle(qs);
+}
+function newEx(){V.ex={scope:V.scope,type:V.exType,qs:genEx(V.scope,V.exType,10),i:0,score:0};}
+function vEx(){
+  if(!V.ex)newEx();
+  const e=V.ex;
+  const cfg=`<div class="row" style="margin-bottom:10px">${scopeSelect()}<select data-sel="extype">${EXT.map(t=>`<option value="${t[0]}" ${V.exType===t[0]?"selected":""}>${t[1]}</option>`).join("")}</select><button class="btn" data-act="newEx">🔄 Neu</button></div>`;
+  if(!e.qs.length){$("#view").innerHTML=`<h2>Üben</h2>${cfg}<div class="card">Für diese Auswahl gibt es keine Aufgaben dieser Art.</div>`;return;}
+  if(e.i>=e.qs.length){
+    $("#view").innerHTML=`<h2>Üben</h2>${cfg}<div class="card"><div class="score">${e.score}/${e.qs.length}</div><p>${e.score>=e.qs.length*.8?"Ausgezeichnet! 🌟":"Gut gemacht – Wiederholung macht den Meister."}</p><button class="btn pri" data-act="newEx">Neue Runde</button></div>`;
+    if(!e.rewarded){e.rewarded=true;D().ex+=e.qs.length;addXp(5+e.score);}
+    return;
+  }
+  const q=e.qs[e.i];let body="";
+  const fb=()=>q.res===undefined?"":`<div class="card" style="margin-top:10px">${q.res?"✅ Richtig!":"❌ Nicht ganz."} ${q.fb||""}<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exNext">Weiter →</button></div></div>`;
+  const optBtn=(label,i,ok,picked)=>`<button class="btn opt${q.res!==undefined?(ok?" ok":(picked?" no":"")):""}" data-act="exOpt" data-i="${i}" ${q.res!==undefined?"disabled":""}>${esc(label)}</button>`;
+  if(q.t==="cloze"){
+    body=`<div class="small">Lückentext</div><div class="big" style="font-size:22px">${esc(q.p)}</div>${q.o.map((o,i)=>optBtn(o,i,o===q.a,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.a)}</b>${q.n?" – "+esc(q.n):""}`;
+  }
+  if(q.t==="vocab"){
+    const lbl=x=>q.dir==="id2de"?x.de:x.idn;
+    body=`<div class="small">Vokabel-Quiz</div><div class="big">${esc(q.dir==="id2de"?q.it.idn:q.it.de)}</div>${q.dir==="id2de"?`<div class="ph">${esc(q.it.ph)}</div>`:""}${q.o.map((o,i)=>optBtn(lbl(o),i,o.id===q.it.id,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> = ${esc(q.it.de)}`;
+  }
+  if(q.t==="hear"){
+    body=`<div class="small">Hörverstehen – was bedeutet der Satz?</div><div class="row" style="margin:8px 0"><button class="btn pri" data-act="exPlay">🔊 Abspielen</button><button class="btn" data-act="exPlay" data-slow="1">🐢 Langsam</button></div>${q.o.map((o,i)=>optBtn(o.de,i,o.id===q.it.id,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b>`;
+    if(!q.played){q.played=true;speak(q.it.idn);}
+  }
+  if(q.t==="build"){
+    body=`<div class="small">Satzbau – tippe die Wörter in die richtige Reihenfolge</div><div class="big" style="font-size:22px">${esc(q.it.de)}</div>
+     <div class="ans">${q.ans.map((c,k)=>`<span class="chip" data-act="exDrop" data-k="${k}">${esc(c.w)}</span>`).join("")}</div>
+     <div>${q.pool.map((c,k)=>`<span class="chip" data-act="exTake" data-k="${k}">${esc(c.w)}</span>`).join("")}</div>
+     ${q.res===undefined?`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exBuildCheck" ${q.pool.length?"disabled":""}>Prüfen</button></div>`:""}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> <button class="btn sm" data-act="exPlay">🔊</button>`;
+  }
+  if(q.t==="trans"){
+    body=`<div class="small">Übersetze ins Indonesische</div><div class="big" style="font-size:24px">${esc(q.it.de)}</div>
+     <input type="text" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res!==undefined?"disabled":""} value="${esc(q.typed||"")}" placeholder="Auf Indonesisch …">
+     ${q.res===undefined?`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exTransCheck">Prüfen</button><button class="btn" data-act="exSkip">Weiß nicht</button></div>`:""}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> <button class="btn sm" data-act="exPlay">🔊</button>`;
+  }
+  $("#view").innerHTML=`<h2>Üben</h2>${voiceWarning()}${cfg}<div class="small" style="margin-bottom:6px">Aufgabe ${e.i+1}/${e.qs.length} · Punkte ${e.score}</div><div class="card">${body}</div>${fb()}`;
+  const inp=$("#tin");if(inp&&q.res===undefined){inp.focus();inp.onkeydown=ev=>{if(ev.key==="Enter")exTransCheck();};}
+}
+function exFinish(q,ok){q.res=!!ok;if(ok)V.ex.score++;addXp(ok?2:0);render();}
+function exTransCheck(){
+  const q=V.ex.qs[V.ex.i],v=($("#tin")||{}).value||"";q.typed=v;
+  const a=norm(q.it.idn),b=norm(v);exFinish(q,b===a||(b.length>3&&sim(a,b)>=.93));
+}
+
+/* ===================== GRAMMATIK ===================== */
+function vGram(){
+  const quick=`<details class="card tip" open><summary>⚡ Die 10 wichtigsten Regeln auf einen Blick</summary><ol>
+   <li><b>Keine Artikel, keine Beugung:</b> <i>Saya makan, dia makan.</i></li>
+   <li><b>Satz = Subjekt – Verb – Objekt:</b> <i>Saya membaca buku.</i></li>
+   <li><b>Nomen vor Adjektiv, Besitzer hinter dem Nomen:</b> <i>rumah besar saya</i> (mein großes Haus).</li>
+   <li><b>Zeit durch Wörter:</b> <i>sudah</i> (schon), <i>belum</i> (noch nicht), <i>sedang</i> (gerade), <i>akan</i> (werden).</li>
+   <li><b>Vier Verneinungen:</b> <i>tidak</i> (Verb/Adj.), <i>bukan</i> (Nomen), <i>belum</i> (noch nicht), <i>jangan</i> (Verbot).</li>
+   <li><b>Fragewörter bleiben vorn oder hinten:</b> <i>Siapa nama Anda?</i> / <i>Anda dari mana?</i></li>
+   <li><b>di / ke / dari:</b> Ort / Richtung / Herkunft.</li>
+   <li><b>Mehrzahl durch Doppelung</b> (nur bei Bedarf): <i>anak-anak</i>; nach Zahlen nicht: <i>dua anak</i>.</li>
+   <li><b>Zählwörter:</b> <i>dua orang, tiga buah, lima ekor</i>.</li>
+   <li><b>Präfixe me-, ber-, di-, ter-, pe-:</b> ändern Rolle und Bedeutung – das Wortbildungssystem ist dein Hebel für großen Wortschatz.</li></ol></details>`;
+  $("#view").innerHTML=`<h2>Grammatik</h2>${quick}`+LEVELS.map(l=>`<h3><span class="lvl">${l}</span></h3>`+UNITS.filter(u=>u.lvl===l).map(u=>`<details class="card"><summary>${u.e} ${u.n}. ${esc(u.grammar.t)}</summary>${u.grammar.html}<div class="row"><button class="btn sm" data-act="openUnit" data-u="${u.id}">Zur Lektion</button><button class="btn sm" data-act="startEx" data-scope="u:${u.id}" data-type="cloze">Lückentext üben</button></div></details>`).join("")).join("");
+}
+
+/* ===================== WÖRTERBUCH ===================== */
+function dictResults(q){
+  const n=norm(q);if(!n)return `<div class="small">Tippe ein indonesisches oder deutsches Wort. ${ITEMS.length} Einträge durchsuchbar.</div>`;
+  const r=ITEMS.filter(x=>norm(x.idn).includes(n)||norm(x.de).includes(n)).slice(0,80);
+  if(!r.length)return `<div class="small">Nichts gefunden.</div>`;
+  return `<div class="card"><table>${r.map(x=>{const u=UNIT(x.u);return `<tr><td style="width:44%"><b>${esc(x.idn)}</b><div class="ph" style="font-size:13px">${esc(x.ph)}</div></td><td>${esc(x.de)}<div class="small">${u.lvl} · ${u.n}. ${esc(u.t)}</div></td><td style="white-space:nowrap"><button class="btn sm" data-act="say" data-i="${x.id}">🔊</button></td></tr>`;}).join("")}</table></div>`;
+}
+function vDict(){
+  $("#view").innerHTML=`<h2>Wörterbuch</h2>${voiceWarning()}<input type="text" id="dq" placeholder="Suche (Indonesisch oder Deutsch) …" value="${esc(V.q)}" autocomplete="off"><div id="dres" style="margin-top:12px">${dictResults(V.q)}</div>`;
+  const i=$("#dq");i.oninput=()=>{V.q=i.value;$("#dres").innerHTML=dictResults(V.q);};
+}
+
+/* ===================== LAUTE ===================== */
+function vSounds(){
+  $("#view").innerHTML=`<h2>Aussprache-Guide</h2>${voiceWarning()}
+  <div class="card"><p>Indonesisch wird fast so gesprochen, wie es geschrieben wird – <b>jeder Buchstabe hat (fast) immer denselben Laut</b>. Es gibt keine Töne. Klicke auf die Beispiele, um sie zu hören, und übe sie dann im Tab „Sprechen“.</p>
+  <table><tr><th>Schreibung</th><th>Aussprache</th><th>Beispiele</th></tr>${SOUNDS.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${r[2].split(", ").map(w=>`<button class="btn sm" style="margin:2px" data-act="sayw" data-w="${esc(w)}">🔊 ${esc(w)}</button>`).join("")}</td></tr>`).join("")}</table></div>
+  <div class="card"><b>Mini-Zungenbrecher</b><p class="small">Erst langsam, dann schneller. Nimm dich auf und vergleiche!</p>
+  ${["Kakak kaya kaya raya.","Saya suka makan ikan bakar.","Burung itu terbang tinggi.","Cinta tanah air.","Ayam goreng enak sekali."].map(w=>`<div class="row" style="margin:6px 0"><button class="btn sm" data-act="sayw" data-w="${esc(w)}">🔊</button><span>${esc(w)}</span><span class="ph" style="font-size:13px">${esc(phon(w))}</span></div>`).join("")}</div>`;
+}
+
+/* ===================== FORTSCHRITT ===================== */
+function vProg(){
+  const known=ITEMS.filter(x=>(S.box[x.id]||0)>=3).length,seen=ITEMS.filter(x=>S.box[x.id]).length;
+  const days=[];for(let k=13;k>=0;k--)days.push(ds(new Date(Date.now()-k*864e5)));
+  const vals=days.map(d=>S.hist[d]||0),mx=Math.max(10,...vals);
+  $("#view").innerHTML=`<h2>Fortschritt</h2>
+  <div class="grid">
+   <div class="card"><div class="small">Gelernte Einträge</div><div class="big">${known}</div><div class="small">von ${ITEMS.length} (${seen} gesehen)</div></div>
+   <div class="card"><div class="small">XP gesamt</div><div class="big">${S.xp}</div></div>
+   <div class="card"><div class="small">Serie</div><div class="big">${S.streak||0} 🔥</div><div class="small">Rekord: ${S.bestStreak||0}</div></div>
+   <div class="card"><div class="small">Karten / Aufnahmen</div><div class="big">${S.totalCards||0} / ${S.totalSpeak||0}</div></div></div>
+  <div class="card"><b>XP der letzten 14 Tage</b><div class="chart" style="margin-top:10px">${vals.map((v,k)=>`<div title="${days[k]}: ${v} XP" style="height:${Math.max(2,Math.round(90*v/mx))}px"></div>`).join("")}</div></div>
+  <div class="card"><b>Stufen</b>${LEVELS.map(l=>`<div style="margin:8px 0">${l} <span class="small">${lvlPct(l)}%</span><div class="bar"><i style="width:${lvlPct(l)}%"></i></div></div>`).join("")}</div>
+  <div class="card"><b>Einstellungen</b><div class="row" style="margin-top:8px"><span>Neue Karten pro Tag:</span><select data-sel="newpd">${[5,10,15,20,30].map(n=>`<option value="${n}" ${S.newPerDay===n?"selected":""}>${n}</option>`).join("")}</select></div></div>
+  <div class="card"><b>💾 Sicherung & Wiederherstellung</b>
+   <p class="small">Dein Fortschritt liegt im Speicher des Browsers (${STORE_OK?"Speicher funktioniert ✅":"Speicher NICHT verfügbar ⚠️"}). Letzte Sicherung: ${S.lastBackup?new Date(S.lastBackup).toLocaleDateString("de-DE"):"noch keine"}.</p>
+   <div class="row"><button class="btn pri" data-act="bkCopy">📋 In Zwischenablage kopieren</button><button class="btn" data-act="bkFile">⬇️ Als Datei sichern</button>
+    <label class="btn" style="cursor:pointer">📂 Aus Datei laden<input type="file" accept=".json,.txt,application/json,text/plain" data-file="bk" style="display:none"></label></div>
+   <details style="margin-top:8px"><summary class="small">Sicherungstext anzeigen / einfügen</summary>
+   <textarea id="bk" spellcheck="false">${esc(JSON.stringify(S))}</textarea>
+   <div class="row" style="margin-top:8px"><button class="btn" data-act="bkImport">Text importieren</button><button class="btn" data-act="reset" style="border-color:var(--bad);color:var(--bad)">Zurücksetzen</button></div></details>
+   <div class="small" id="bkmsg" style="margin-top:6px"></div></div>
+  <details class="card"><summary>📱 So bleibt dein Fortschritt auf dem iPhone sicher</summary><ol>
+   <li>Lege die Datei auf einen kostenlosen Webspace mit https (z. B. GitHub Pages, Netlify Drop oder Cloudflare Pages) und rufe die Adresse <b>in Safari</b> auf.</li>
+   <li>Tippe auf <b>Teilen → „Zum Home-Bildschirm“</b>. Als Home-Bildschirm-App behält iOS die Daten dauerhaft.</li>
+   <li>Nur über https funktioniert auf dem iPhone auch das <b>Mikrofon</b> zuverlässig.</li>
+   <li>Bis dahin: regelmäßig „Als Datei sichern“ oder „In Zwischenablage kopieren“ (z. B. in Notizen einfügen).</li></ol></details>`;
+}
+
+/* ===================== EVENTS ===================== */
+function openUnit(id){V.unit=id;V.utab="intro";V.tab="path";Rec.stop(true);stopAudio();render();window.scrollTo(0,0);}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-tab],[data-act]");if(!t)return;
+  const dsx=t.dataset;
+  if(dsx.tab&&!dsx.act){go(dsx.tab);return;}
+  const a=dsx.act;
+  switch(a){
+   case"go":go(dsx.tab);break;
+   case"openUnit":openUnit(dsx.u);break;
+   case"back":V.unit=null;render();break;
+   case"utab":V.utab=dsx.t;stopAudio();render();break;
+   case"say":speak(IDX[dsx.i].idn,dsx.slow?.55:.95);break;
+   case"sayw":speak(dsx.w,.9);break;
+   case"saySP":speak(SP.target,dsx.slow?.55:.9);break;
+   case"sayLine":{const u=UNIT(dsx.u);speak(u.dlg.lines[+dsx.l][1],.9,u.dlg.lines[+dsx.l][0]==="A"?1:1.18);break;}
+   case"sayAll":{const its=ITEMS.filter(x=>x.u===dsx.u&&x.k===dsx.k);const my=++playTok;(async()=>{for(const x of its){if(my!==playTok)return;await speak(x.idn,.9);await sleep(400);}})();break;}
+   case"playDlg":{const u=UNIT(dsx.u);playDlg(u);break;}
+   case"toggleDe":V.showDe=!V.showDe;render();break;
+   case"toggleId":V.showId=!V.showId;render();break;
+   case"startCards":V.scope=dsx.scope;V.cards=null;go("cards");break;
+   case"startEx":V.scope=dsx.scope;if(dsx.type)V.exType=dsx.type;V.ex=null;go("ex");break;
+   case"newCards":buildCards();render();break;
+   case"freeCards":buildCards(true);render();break;
+   case"flip":V.cards.flip=true;render();break;
+   case"rate":rateCard(+dsx.r);break;
+   case"goSpeakItem":{const it=IDX[dsx.i];const l=ITEMS.filter(x=>x.u===it.u&&x.k===it.k);V.sp={mode:"item",unit:it.u,kind:it.k,i:l.indexOf(it)};go("speak");break;}
+   case"spMode":V.sp.mode=dsx.m;Rec.stop(true);stopAudio();render();break;
+   case"spNext":case"spPrev":case"spRand":{const l=ITEMS.filter(x=>x.u===V.sp.unit&&x.k===V.sp.kind);const n=l.length;V.sp.i=a==="spRand"?Math.floor(Math.random()*n):(V.sp.i+(a==="spNext"?1:n-1))%n;Rec.stop(true);render();break;}
+   case"toggleRec":Rec.active?Rec.stop():Rec.start();break;
+   case"playMine":playMine();break;
+   case"compare":compareAudio();break;
+   case"startRp":V.rp={u:dsx.u,role:dsx.role||"B",i:0,scores:[],played:{},done:false};V.sp.mode="role";go("speak");break;
+   case"rpNext":{const r=V.rp;if(SP.res)r.scores[r.i]=SP.res.score;Rec.stop(true);stopAudio();r.i++;SP._rpIdx=-1;render();break;}
+   case"rpRestart":V.rp={u:V.rp.u,role:V.rp.role,i:0,scores:[],played:{},done:false};SP._rpIdx=-1;render();break;
+   case"rpSwap":V.rp={u:V.rp.u,role:V.rp.role==="A"?"B":"A",i:0,scores:[],played:{},done:false};SP._rpIdx=-1;render();break;
+   case"hMode":V.hear.mode=dsx.m;stopAudio();render();break;
+   case"newDict":buildDict();render();break;
+   case"dPlay":{const q=V.hear.q;speak(IDX[q.qs[q.i]].idn,dsx.slow?.5:.85);break;}
+   case"dHint":{const h=document.getElementById("dhint");if(h)h.style.display="block";break;}
+   case"dCheck":dictCheck();break;
+   case"dNext":{const q=V.hear.q;q.i++;q.res=null;q.typed="";q.played=false;render();break;}
+   case"newEx":newEx();render();break;
+   case"exPlay":{const q=V.ex.qs[V.ex.i];speak(q.it.idn,dsx.slow?.55:.9);break;}
+   case"exOpt":{const q=V.ex.qs[V.ex.i];if(q.res!==undefined)break;const i=+dsx.i;q.pick=i;let ok=false;
+     if(q.t==="cloze")ok=q.o[i]===q.a;else ok=q.o[i].id===q.it.id;exFinish(q,ok);break;}
+   case"exTake":{const q=V.ex.qs[V.ex.i];const c=q.pool.splice(+dsx.k,1)[0];q.ans.push(c);render();break;}
+   case"exDrop":{const q=V.ex.qs[V.ex.i];if(q.res!==undefined)break;const c=q.ans.splice(+dsx.k,1)[0];q.pool.push(c);render();break;}
+   case"exBuildCheck":{const q=V.ex.qs[V.ex.i];exFinish(q,norm(q.ans.map(c=>c.w).join(" "))===norm(q.it.idn));break;}
+   case"exTransCheck":exTransCheck();break;
+   case"exSkip":{const q=V.ex.qs[V.ex.i];q.typed="";exFinish(q,false);break;}
+   case"exNext":V.ex.i++;render();break;
+   case"hideIos":S.hideIos=true;save();render();break;
+   case"bkCopy":{const txt=JSON.stringify(S),msg=document.getElementById("bkmsg");
+     const ok=()=>{S.lastBackup=Date.now();save();msg.textContent="✅ Kopiert. Füge den Text z. B. in Notizen ein und bewahre ihn auf.";};
+     const fallback=()=>{const b=document.getElementById("bk");try{b.value=txt;b.focus();b.select();b.setSelectionRange(0,txt.length);document.execCommand("copy")?ok():(msg.textContent="Bitte den markierten Text unter „Sicherungstext anzeigen“ manuell kopieren.");}catch(x){msg.textContent="Bitte den Text unter „Sicherungstext anzeigen“ manuell kopieren.";}};
+     try{navigator.clipboard.writeText(txt).then(ok,fallback);}catch(x){fallback();}break;}
+   case"bkFile":{try{const blob=new Blob([JSON.stringify(S)],{type:"application/json"}),u=URL.createObjectURL(blob),a=document.createElement("a");
+     a.href=u;a.download="belajar-sicherung-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},1500);
+     S.lastBackup=Date.now();save();document.getElementById("bkmsg").textContent="✅ Datei wird gespeichert (auf dem iPhone: in „Dateien“ sichern).";}catch(x){document.getElementById("bkmsg").textContent="Download nicht möglich – nutze „In Zwischenablage kopieren“.";}break;}
+   case"bkImport":{try{const o=JSON.parse(document.getElementById("bk").value);if(!o||typeof o!=="object"||!o.box)throw 0;S=Object.assign(S,o);save();document.getElementById("bkmsg").textContent="✅ Importiert.";render();}catch(x){document.getElementById("bkmsg").textContent="❌ Ungültige Sicherung.";}break;}
+   case"reset":{if(dsx.sure){S={box:{},due:{},xp:0,last:"",streak:0,bestStreak:0,best:{},hist:{},day:null,goal:60,newPerDay:10,cmode:"id2de",ckinds:"vs",totalCards:0,totalSpeak:0};save();render();}else{t.dataset.sure="1";t.textContent="Wirklich löschen? (nochmal klicken)";}break;}
+  }
+});
+function playDlg(u){
+  playDialog(u,i=>{document.querySelectorAll(".bub").forEach((b,k)=>b.classList.toggle("on",k===i));});
+}
+document.addEventListener("change",e=>{
+  const k=e.target.dataset.sel,c=e.target.dataset.chk,v=e.target.value;
+  if(e.target.dataset.file==="bk"){
+    const f=e.target.files&&e.target.files[0];if(!f)return;const fr=new FileReader();
+    fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!o||typeof o!=="object"||!o.box)throw 0;S=Object.assign(S,o);save();render();const m=document.getElementById("bkmsg");if(m)m.textContent="✅ Sicherung geladen.";}catch(x){const m=document.getElementById("bkmsg");if(m)m.textContent="❌ Datei ist keine gültige Sicherung.";}};
+    fr.readAsText(f);return;
+  }
+  if(c==="hideT"){V.hideT=e.target.checked;render();return;}
+  if(!k)return;
+  if(k==="scope"){V.scope=v;V.cards=null;V.ex=null;V.hear.q=null;render();}
+  if(k==="cmode"){S.cmode=v;save();V.cards&&(V.cards.spoken=false,V.cards.flip=false);render();}
+  if(k==="ckinds"){S.ckinds=v;save();V.cards=null;render();}
+  if(k==="extype"){V.exType=v;V.ex=null;render();}
+  if(k==="spunit"){V.sp.unit=v;V.sp.i=0;Rec.stop(true);render();}
+  if(k==="spkind"){V.sp.kind=v;V.sp.i=0;Rec.stop(true);render();}
+  if(k==="rpunit"){V.rp={u:v,role:V.rp.role,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
+  if(k==="rprole"){V.rp={u:V.rp.u,role:v,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
+  if(k==="hdlg"){V.hear.dlgU=v;stopAudio();render();}
+  if(k==="goal"){S.goal=+v;save();render();}
+  if(k==="newpd"){S.newPerDay=+v;save();}
+});
+document.addEventListener("keydown",e=>{
+  if(V.tab!=="cards"||!V.cards||V.cards.i>=V.cards.q.length)return;
+  if(/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||""))return;
+  if(e.key===" "||e.key==="Enter"){e.preventDefault();if(!V.cards.flip){V.cards.flip=true;render();}}
+  else if(V.cards.flip&&["1","2","3"].includes(e.key))rateCard(+e.key-1);
+});
+window.addEventListener("beforeunload",()=>{try{speechSynthesis.cancel();}catch(e){}});
+header();render();
+idbLoad().then(raw=>{if(!raw)return;try{const o=JSON.parse(raw);if((o.ts||0)>(S.ts||0)&&o.box){S=Object.assign(S,o);header();render();}}catch(e){}});
+
+</script>
+</body>
+</html>
