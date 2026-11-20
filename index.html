@@ -800,11 +800,12 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   this.wantSR=mode!=="rec"&&!!SRC;
   if(wantRec&&!this.wantSR)SP.res=null;
   this.cb=cb;this.fin=false;this.alts=[];this.chunks=[];this.srErr=null;this.blob=null;this.mr=null;this.stream=null;
-  unlockAudio();
+  playTok++;try{AUD.onended=null;AUD.onerror=null;AUD.pause();}catch(e){}   // laufende Wiedergabe beenden, Mikrofon braucht freie Audio-Session
   try{speechSynthesis.cancel();}catch(e){}
   if(mode==="sr"&&!SRC){SP.status="Keine Spracherkennung in diesem Browser – wähle oben „Nur Aufnahme“.";render();return;}
   if(wantRec){
     if(!navigator.mediaDevices||!window.MediaRecorder){SP.status="Aufnahme wird von diesem Browser nicht unterstützt (Tab „Laute“ → Diagnose).";render();return;}
+    try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
     try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
     catch(e){SP.status="Mikrofon blockiert ("+((e&&e.name)||"Fehler")+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon, oder Hinweis in der Adressleiste). Lokale Dateien (file://) funktionieren oft nicht – nutze die https-Adresse.";render();return;}
     try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
@@ -837,7 +838,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
     }catch(e){this.srDone=true;this.srErr="aborted";}
   }
   SP.status="● Aufnahme läuft … sprich jetzt (stoppt automatisch).";
-  clearTimeout(this.timer);this.timer=setTimeout(()=>this.stop(),9000);
+  clearTimeout(this.timer);this.timer=setTimeout(()=>this.stop(),12000);
   render();
  },
  stop(silent){
