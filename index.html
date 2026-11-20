@@ -680,34 +680,37 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>/^id[-_]/i.test(v.lang))||voices.find(isIdLang)||voices.find(v=>/^ms([-_]|$)/i.test(v.lang))||null;
 };
+const TTSLOG=[];
+function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
   try{let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";document.body.appendChild(t);}
   t.textContent=msg;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none";},ms||7000);}catch(e){}
 }
 function stopAudio(){playTok++;try{speechSynthesis.cancel();}catch(e){}}
-function speak(text,rate,pitch){
+function speak(text,rate,pitch,forceDefault){
   return new Promise(res=>{
-    if(!("speechSynthesis" in window)){toast("Dieser Browser hat keine Sprachausgabe.");res();return;}
+    if(!("speechSynthesis" in window)){toast("Dieser Browser hat keine Sprachausgabe.");tlog("keine speechSynthesis");res();return;}
     try{loadVoices();}catch(e){}
     let done=false,started=false,tries=0;
     const fin=()=>{if(!done){done=true;res();}};
     const say=()=>{
       tries++;
-      const u=new SpeechSynthesisUtterance(text),v=idVoice();
+      const u=new SpeechSynthesisUtterance(text),v=forceDefault?null:idVoice();
+      tlog("sprich \""+text.slice(0,28)+"\" – Stimme: "+(v?v.name+" ("+v.lang+")":"Standard")+" – Versuch "+tries+" (Stimmen: "+voices.length+")");
       if(v){u.voice=v;u.lang=v.lang;}      // ohne passende Stimme: Standardstimme nutzen, damit es wenigstens hörbar ist
       u.rate=rate||.95;u.pitch=pitch||1;u.volume=1;
-      u.onstart=()=>{started=true;};
-      u.onend=()=>{started=true;fin();};
-      u.onerror=ev=>{const c=ev&&ev.error;if(c&&c!=="canceled"&&c!=="interrupted")toast("Sprachausgabe-Fehler: "+c+". Prüfe Stumm-Schalter/Lautstärke und wähle unter „Laute → Audio-Diagnose“ eine Stimme.");fin();};
+      u.onstart=()=>{started=true;tlog("→ gestartet");};
+      u.onend=()=>{started=true;tlog("→ beendet");fin();};
+      u.onerror=ev=>{const c=ev&&ev.error;tlog("→ FEHLER: "+c);if(c&&c!=="canceled"&&c!=="interrupted")toast("Sprachausgabe-Fehler: "+c+". Prüfe Stumm-Schalter/Lautstärke und wähle unter „Laute → Audio-Diagnose“ eine Stimme.");fin();};
       try{speechSynthesis.resume();}catch(e){}
       try{speechSynthesis.speak(u);}catch(e){fin();}
     };
     if(speechSynthesis.speaking||speechSynthesis.pending){try{speechSynthesis.cancel();}catch(e){}}
     say();                                   // synchron, damit iOS den Fingertipp noch erkennt
     setTimeout(()=>{ // Watchdog: wurde die Äußerung verschluckt, einmal neu versuchen
-      if(!done&&!started&&!speechSynthesis.speaking&&tries<2){try{speechSynthesis.cancel();}catch(e){}say();}
+      if(!done&&!started&&!speechSynthesis.speaking&&tries<2){tlog("nicht gestartet – neuer Versuch");try{speechSynthesis.cancel();}catch(e){}say();}
     },700);
-    setTimeout(()=>{if(!done&&!started&&!speechSynthesis.speaking){toast("Keine Sprachausgabe zu hören? Stumm-Schalter aus, Lautstärke hoch, dann unter „Laute → Audio-Diagnose“ eine Stimme wählen.");}fin();},Math.max(6000,text.length*300));
+    setTimeout(()=>{if(!done&&!started&&!speechSynthesis.speaking){tlog("→ nie gestartet (Timeout)");toast("Keine Sprachausgabe zu hören? Stumm-Schalter aus, Lautstärke hoch, dann unter „Laute → Audio-Diagnose“ eine Stimme wählen.");}fin();},Math.max(6000,text.length*300));
   });
 }
 async function playDialog(u,cb){
@@ -748,6 +751,7 @@ const AUD=typeof Audio!=="undefined"?new Audio():{play(){return Promise.resolve(
 let audUnlocked=false;
 function unlockAudio(){
   try{loadVoices();}catch(e){}
+  try{if(navigator.audioSession&&navigator.audioSession.type!=="play-and-record")navigator.audioSession.type="playback";}catch(e){}
   try{AUD.src=SILENT;const p=AUD.play();p&&p.catch&&p.catch(()=>{});}catch(e){}
   if(audUnlocked)return;audUnlocked=true;
   try{if("speechSynthesis" in window){const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u);}}catch(e){}
@@ -768,6 +772,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
     if(!navigator.mediaDevices||!window.MediaRecorder){SP.status="Aufnahme wird von diesem Browser nicht unterstützt (Tab „Laute“ → Diagnose).";render();return;}
     try{this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
     catch(e){SP.status="Mikrofon blockiert ("+((e&&e.name)||"Fehler")+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon, oder Hinweis in der Adressleiste). Lokale Dateien (file://) funktionieren oft nicht – nutze die https-Adresse.";render();return;}
+    try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
     const mime=pickMime();
     try{this.mr=new MediaRecorder(this.stream,mime?{mimeType:mime}:undefined);}catch(e){this.mr=new MediaRecorder(this.stream);}
     this.mrDone=false;
@@ -808,6 +813,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   try{this.stream&&this.stream.getTracks().forEach(t=>t.stop());}catch(e){}
   try{this.ctx&&this.ctx.close();}catch(e){}
   this.ctx=null;
+  try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}
   if(silent){this.gen++;this.fin=true;this.srDone=true;this.mrDone=true;return;}
   if(was){SP.status="Auswertung …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){this.srDone=true;this.mrDone=true;this.tryFinish();}},2500);}
  },
@@ -1200,11 +1206,13 @@ const DIAG={url:null};
 function diagHtml(){
   const yes=b=>b?"✅":"❌",standalone=!!(navigator.standalone||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches));
   const v=idVoice(),nv=voices.length;
-  const rows=[["Sprachausgabe",yes("speechSynthesis" in window)],["Stimmen gefunden",nv+""],["Gewählte Stimme",v?("✅ "+esc(v.name)+" ("+esc(v.lang)+")"):"❌ keine – Standardstimme"],["Spracherkennung",yes(!!SRC)],["Aufnahme (MediaRecorder)",window.MediaRecorder?("✅ "+esc(pickMime()||"Standardformat")):"❌"],["Mikrofon-Zugriff möglich",yes(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))],["Sichere Verbindung (https)",yes(window.isSecureContext)],["Als Home-Bildschirm-App",standalone?"ja":"nein"],["Speicher funktioniert",yes(STORE_OK)],["Aufnahmemodus",esc(recMode())]];
+  const rows=[["Sprachausgabe",yes("speechSynthesis" in window)],["Stimmen gefunden",nv+""],["Gewählte Stimme",v?("✅ "+esc(v.name)+" ("+esc(v.lang)+")"):"❌ keine – Standardstimme"],["Spracherkennung",yes(!!SRC)],["Aufnahme (MediaRecorder)",window.MediaRecorder?("✅ "+esc(pickMime()||"Standardformat")):"❌"],["Mikrofon-Zugriff möglich",yes(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))],["Sichere Verbindung (https)",yes(window.isSecureContext)],["Als Home-Bildschirm-App",standalone?"ja":"nein"],["Speicher funktioniert",yes(STORE_OK)],["Aufnahmemodus",esc(recMode())],["Audio-Session-API (iOS 16.4+)",yes(!!navigator.audioSession)]];
   return `<div class="card"><b>🔧 Audio-Diagnose</b><p class="small">Zeigt, was dein Gerät kann. Teste hier zuerst Ton und Mikrofon.</p>
    <table>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>
-   <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">🔊 Sprachtest</button><button class="btn" data-act="diagMic">🎙 Mikrofon-Test (3 Sek.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Test-Aufnahme abspielen</button></div>
+   <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">🔊 Test 1: Indonesisch</button><button class="btn" data-act="diagSpeakDef">🔊 Test 2: Standardstimme (Englisch)</button><button class="btn" data-act="diagMic">🎙 Mikrofon-Test (3 Sek.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Test-Aufnahme abspielen</button></div>
    <div class="row" style="margin-top:10px"><span class="small">Stimme:</span><select data-sel="voice"><option value="">Automatisch (Indonesisch → Malaiisch → Standard)</option>${voices.slice().sort((x,y)=>(isIdLang(y)-isIdLang(x))||((/^ms/i.test(y.lang)-/^ms/i.test(x.lang)))||x.name.localeCompare(y.name)).map(x=>`<option value="${esc(x.voiceURI)}" ${S.voiceURI===x.voiceURI?"selected":""}>${esc(x.name)} – ${esc(x.lang)}</option>`).join("")}</select></div>
+   <div class="small" style="margin-top:10px"><b>Protokoll der Sprachausgabe</b> (zeigt, was passiert):</div>
+   <pre id="ttslog" style="background:var(--soft);padding:8px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:200px;overflow:auto;margin:4px 0">${esc(TTSLOG.join("\n")||"– noch nichts –")}</pre>
    <div class="small" id="diagmsg" style="margin-top:8px">iPhone: Stumm-Schalter aus und Lautstärke hoch! Die Sprachausgabe ist bei aktivem Stumm-Schalter oft lautlos.</div></div>`;
 }
 async function diagMic(){
@@ -1313,6 +1321,7 @@ document.addEventListener("click",e=>{
    case"exTransCheck":exTransCheck();break;
    case"exSkip":{const q=V.ex.qs[V.ex.i];q.typed="";exFinish(q,false);break;}
    case"exNext":V.ex.i++;render();break;
+   case"diagSpeakDef":unlockAudio();speak("Hello. This is a test of the speech output.",1,1,true);break;
    case"diagSpeak":unlockAudio();speak("Selamat pagi. Apa kabar?",.9);break;
    case"diagMic":diagMic();break;
    case"diagPlay":if(DIAG.url)playAud(DIAG.url);break;
