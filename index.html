@@ -11,72 +11,80 @@
 <meta name="referrer" content="no-referrer">
 <title>Belajar – Indonesisch lernen (A1–B1)</title>
 <style>
-:root{--bg:#faf7f2;--card:#fff;--ink:#1f2933;--mute:#6b7280;--line:#e7e1d6;--red:#c8102e;--redd:#9b0c24;--ok:#2e8b57;--mid:#d9930d;--bad:#c0392b;--soft:#f3ece0}
-@media(prefers-color-scheme:dark){:root{--bg:#16181c;--card:#1f2228;--ink:#eceae5;--mute:#9aa1ab;--line:#2d3138;--soft:#262a31}}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-header{background:var(--red);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 18px 12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-header h1{margin:0;font-size:19px;letter-spacing:.3px}
-header .stats{margin-left:auto;display:flex;gap:14px;font-size:14px}
-nav{display:flex;gap:2px;padding:6px 8px;background:var(--card);border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;z-index:5}
-nav button{border:0;background:none;color:var(--mute);font-size:14px;padding:9px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
-nav button.on{background:var(--soft);color:var(--red);font-weight:600}
-main{max-width:920px;margin:0 auto;padding:16px 14px calc(70px + env(safe-area-inset-bottom))}
-h2{margin:6px 0 12px;font-size:21px}
-h3{margin:14px 0 8px;font-size:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 13px;border-radius:10px;font-size:14.5px;cursor:pointer;font-family:inherit}
+:root{--bg:#f6f4f1;--bg2:#efebe6;--card:#ffffff;--ink:#1b1f27;--mute:#6a7280;--line:#e9e4dc;--red:#e11d48;--redd:#be123c;--rg:linear-gradient(135deg,#f43f5e 0%,#e11d48 55%,#be123c 100%);--ok:#16a34a;--mid:#d97706;--bad:#dc2626;--soft:#f5eff0;--sh:0 1px 2px rgba(20,20,40,.04),0 8px 24px -8px rgba(20,20,40,.10);--r:20px}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--bg2:#14171c;--card:#1a1d24;--ink:#f1efec;--mute:#9aa3b0;--line:#272b33;--soft:#232730;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 28px -10px rgba(0,0,0,.6)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(1200px 500px at 50% -10%,rgba(244,63,94,.10),transparent 60%),var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+header{background:var(--rg);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 20px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-radius:0 0 28px 28px;box-shadow:0 10px 30px -12px rgba(190,18,60,.55)}
+header h1{margin:0;font-size:20px;font-weight:800;letter-spacing:.2px}
+header .stats{margin-left:auto;display:flex;gap:8px;font-size:13.5px;font-weight:600}
+header .stats>*{background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px;backdrop-filter:blur(6px)}
+nav{display:flex;gap:4px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);border-top:1px solid var(--line);overflow-x:auto;position:fixed;left:0;right:0;bottom:0;z-index:20;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{border:0;background:none;color:var(--mute);font-size:13.5px;font-family:inherit;padding:9px 13px;border-radius:14px;cursor:pointer;white-space:nowrap;transition:.15s}
+nav button.on{background:var(--rg);color:#fff;font-weight:700;box-shadow:0 6px 16px -6px rgba(225,29,72,.6)}
+main{max-width:860px;margin:0 auto;padding:20px 16px calc(96px + env(safe-area-inset-bottom))}
+h2{margin:8px 0 14px;font-size:24px;font-weight:800;letter-spacing:-.3px}
+h3{margin:16px 0 8px;font-size:16.5px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 16px;border-radius:999px;font-size:14.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform .08s,background .15s,box-shadow .15s}
 .btn:hover{background:var(--soft)}
-.btn.pri{background:var(--red);border-color:var(--red);color:#fff}
-.btn.pri:hover{background:var(--redd)}
-.btn.rec{background:var(--bad);border-color:var(--bad);color:#fff}
-.btn.sm{padding:4px 9px;font-size:13px}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:active{transform:scale(.96)}
+.btn.pri{background:var(--rg);border-color:transparent;color:#fff;box-shadow:0 8px 18px -8px rgba(225,29,72,.7)}
+.btn.pri:hover{filter:brightness(1.05)}
+.btn.rec{background:var(--bad);border-color:var(--bad);color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,.5)}100%{box-shadow:0 0 0 14px rgba(220,38,38,0)}}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.bar{height:8px;background:var(--soft);border-radius:6px;overflow:hidden}
-.bar>i{display:block;height:100%;background:var(--ok)}
-.big{font-size:30px;font-weight:700;margin:8px 0 2px;word-break:break-word}
+.bar{height:10px;background:var(--soft);border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#34d399,#16a34a);border-radius:999px;transition:width .4s}
+.big{font-size:32px;font-weight:800;margin:8px 0 2px;word-break:break-word;letter-spacing:-.4px}
 .de{color:var(--mute);font-size:17px}
-.ph{font-size:15px;color:var(--red);font-weight:600}
+.ph{font-size:15px;color:var(--red);font-weight:700}
 .small{font-size:13px;color:var(--mute)}
-.lvl{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;background:var(--soft);color:var(--red);margin-right:6px}
-.warn{background:#fff4d6;color:#6b4e00;border:1px solid #f0d58a;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+.lvl{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--rg);color:#fff;margin-right:6px}
+.warn{background:#fff7e0;color:#6b4e00;border:1px solid #f3dd9a;border-radius:14px;padding:11px 14px;font-size:14px;margin-bottom:12px}
 @media(prefers-color-scheme:dark){.warn{background:#3a3016;color:#f1d98a;border-color:#5a4a1d}}
-.word{display:inline-block;padding:3px 9px;border-radius:8px;margin:2px;font-weight:600;font-size:17px}
+.word{display:inline-block;padding:4px 11px;border-radius:999px;margin:2px;font-weight:700;font-size:17px}
 .word.g{background:#d9f2e3;color:#14532d}.word.m{background:#fdecc0;color:#7a4b00}.word.r{background:#fbd5d1;color:#7f1d1d}
-.score{font-size:40px;font-weight:800}
-canvas{width:100%;height:50px;background:var(--soft);border-radius:10px;display:block}
-.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:11px 14px}
+.score{font-size:46px;font-weight:900;background:var(--rg);-webkit-background-clip:text;background-clip:text;color:transparent}
+canvas{width:100%;height:50px;background:var(--soft);border-radius:14px;display:block}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px 18px;border-radius:16px}
 .opt.ok{background:#d9f2e3;border-color:var(--ok);color:#14532d}
 .opt.no{background:#fbd5d1;border-color:var(--bad);color:#7f1d1d}
-input[type=text],textarea{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;font-family:inherit}
+input[type=text],textarea{width:100%;padding:14px 16px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+input[type=text]:focus,textarea:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(225,29,72,.12)}
 textarea{font-size:13px;min-height:90px}
 table{border-collapse:collapse;width:100%}
-td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14.5px;vertical-align:top}
+td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14.5px;vertical-align:top}
+tr:last-child td{border-bottom:0}
 table.g th{background:var(--soft)}
-select{padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:14.5px;max-width:100%}
-.flip{min-height:200px;text-align:center;display:flex;flex-direction:column;justify-content:center;cursor:pointer}
-.chip{display:inline-block;padding:7px 12px;margin:3px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer;font-size:16px;user-select:none}
+select{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:14.5px;font-family:inherit;max-width:100%}
+.flip{min-height:240px;text-align:center;display:flex;flex-direction:column;justify-content:center;cursor:pointer;border-radius:26px;background:linear-gradient(160deg,var(--card),var(--soft));padding:26px 20px}
+.chip{display:inline-block;padding:9px 15px;margin:4px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;font-size:16px;font-weight:600;user-select:none;box-shadow:var(--sh)}
 .chip:hover{background:var(--soft)}
-.ans{min-height:52px;padding:8px;border:2px dashed var(--line);border-radius:12px;margin:8px 0}
-.bub{max-width:88%;padding:9px 13px;border-radius:14px;margin:7px 0;background:var(--soft)}
-.bub.A{margin-right:auto;border-bottom-left-radius:4px}
-.bub.B{margin-left:auto;background:#fde4e8;color:#3b0a14;border-bottom-right-radius:4px}
-.bub.on{outline:2px solid var(--red)}
+.ans{min-height:56px;padding:8px;border:2px dashed var(--line);border-radius:18px;margin:10px 0}
+.bub{max-width:88%;padding:11px 15px;border-radius:20px;margin:8px 0;background:var(--soft)}
+.bub.A{margin-right:auto;border-bottom-left-radius:6px}
+.bub.B{margin-left:auto;background:var(--rg);color:#fff;border-bottom-right-radius:6px}
+.bub.B span{color:rgba(255,255,255,.8)}
+.bub.on{outline:2px solid var(--red);outline-offset:2px}
 .bub b{display:block}
-.bub span{color:#6b7280;font-size:13px}
-.tabs2{display:flex;gap:4px;margin:10px 0;overflow-x:auto}
-.tabs2 button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:9px;cursor:pointer;font-size:14px;white-space:nowrap}
-.tabs2 button.on{background:var(--red);color:#fff;border-color:var(--red)}
+.bub span{color:var(--mute);font-size:13px}
+.tabs2{display:flex;gap:6px;margin:12px 0;overflow-x:auto;scrollbar-width:none}
+.tabs2 button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 15px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;white-space:nowrap}
+.tabs2 button.on{background:var(--rg);color:#fff;border-color:transparent}
 details{margin-bottom:8px}
-summary{cursor:pointer;font-weight:600;padding:8px 2px}
-.chart{display:flex;align-items:flex-end;gap:5px;height:90px}
-.chart div{flex:1;background:var(--red);border-radius:4px 4px 0 0;min-height:2px;opacity:.85}
+summary{cursor:pointer;font-weight:700;padding:8px 2px}
+.chart{display:flex;align-items:flex-end;gap:6px;height:90px}
+.chart div{flex:1;background:var(--rg);border-radius:8px 8px 3px 3px;min-height:3px}
 .ring{display:flex;align-items:center;gap:12px}
 .check{font-size:20px;margin-right:6px}
 .tip li{margin:5px 0}
-.toast{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));background:#1f2933;color:#fff;padding:12px 14px;border-radius:12px;z-index:50;font-size:14px;display:none;box-shadow:0 4px 18px rgba(0,0,0,.3)}
+.toast{position:fixed;left:14px;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));background:rgba(27,31,39,.94);color:#fff;padding:13px 16px;border-radius:18px;z-index:50;font-size:14px;display:none;box-shadow:0 12px 30px rgba(0,0,0,.35)}
 
 </style>
 </head>
@@ -649,7 +657,7 @@ const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const sample=(a,n)=>shuffle(a).slice(0,n);
-const APPVER="3.1";
+const APPVER="3.2";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
 function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);
@@ -841,18 +849,31 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   }else{this.mrDone=true;}
   this.active=true;
   this.srDone=true;
-  if(this.wantSR){
-    try{
-      const sr=new SRC();sr.lang="id-ID";sr.interimResults=false;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;
-      sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);};
-      sr.onerror=e=>{this.srErr=e.error;};
-      sr.onend=()=>{if(gen!==this.gen)return;this.srDone=true;if(this.active)this.stop();else this.tryFinish();};
-      sr.start();this.sr=sr;
-    }catch(e){this.srDone=true;this.srErr="aborted";}
-  }
+  this.interim="";this.srTries=0;this.t0=Date.now();
+  if(this.wantSR)this.startSR(gen);
   SP.status="● Aufnahme läuft … sprich jetzt (stoppt automatisch).";
-  clearTimeout(this.timer);this.timer=setTimeout(()=>this.stop(),12000);
+  clearTimeout(this.timer);this.timer=setTimeout(()=>this.stop(),14000);
   render();
+ },
+ startSR(gen){
+  try{
+    const sr=new SRC();sr.lang="id-ID";sr.interimResults=true;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;this.srTries++;
+    let gotFinal=false;
+    sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal){gotFinal=true;for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);}
+      else this.interim=e.results[i][0].transcript;}};
+    sr.onerror=e=>{this.srErr=e.error;};
+    sr.onend=()=>{
+      if(gen!==this.gen)return;
+      // Zu früh beendet, noch nichts erkannt, Nutzer hat nicht gestoppt → neu starten (iOS bricht gern ab)
+      const el=Date.now()-this.t0,soft=!this.srErr||this.srErr==="no-speech"||this.srErr==="aborted";
+      if(this.active&&!gotFinal&&!this.alts.length&&soft&&this.srTries<4&&el<10500){
+        this.srErr=null;try{this.startSR(gen);return;}catch(e){}
+      }
+      if(!this.alts.length&&this.interim)this.alts.push(this.interim);   // Zwischenergebnis retten
+      this.srDone=true;if(this.active)this.stop();else this.tryFinish();};
+    sr.start();this.sr=sr;
+  }catch(e){this.srDone=true;this.srErr="aborted";}
  },
  stop(silent){
   clearTimeout(this.timer);cancelAnimationFrame(this.raf);
@@ -864,7 +885,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   this.ctx=null;
   try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}
   if(silent){this.gen++;this.fin=true;this.srDone=true;this.mrDone=true;return;}
-  if(was){SP.status="Auswertung …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){this.srDone=true;this.mrDone=true;this.tryFinish();}},2500);}
+  if(was){SP.status="Auswertung …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){if(!this.alts.length&&this.interim)this.alts.push(this.interim);this.srDone=true;this.mrDone=true;this.tryFinish();}},3200);}
  },
  tryFinish(){
   if(this.active||!this.srDone||!this.mrDone||this.fin)return;
@@ -1022,10 +1043,12 @@ function buildCards(free){
     const rev=pool.filter(x=>S.due[x.id]&&S.due[x.id]<=now);
     const left=Math.max(0,S.newPerDay-D().newc);
     const nw=pool.filter(x=>!S.due[x.id]&&!S.box[x.id]).slice(0,left);
-    q=shuffle(rev).slice(0,30).map(x=>x.id).concat(nw.map(x=>x.id));
+    const uo={};UNITS.forEach((u,i)=>uo[u.id]=i);
+    nw.sort((a,b)=>(uo[a.u]-uo[b.u])||((a.k==="v"?0:1)-(b.k==="v"?0:1)));   // Reihenfolge: Lektion → Vokabeln → Sätze
+    q=shuffle(rev).sort((a,b)=>(a.k==="v"?0:1)-(b.k==="v"?0:1)).slice(0,30).map(x=>x.id).concat(nw.map(x=>x.id));
     if(!q.length)isFree=true;
   }
-  if(isFree){q=shuffle(pool).sort((a,b)=>(S.box[a.id]||0)-(S.box[b.id]||0)).slice(0,15).map(x=>x.id);q=shuffle(q);}
+  if(isFree){q=shuffle(pool).sort((a,b)=>(S.box[a.id]||0)-(S.box[b.id]||0)).slice(0,15).map(x=>x.id);q=shuffle(q).sort((a,b)=>(IDX[a].k==="v"?0:1)-(IDX[b].k==="v"?0:1));}
   V.cards={q,i:0,flip:false,free:isFree,again:{},spoken:false,right:0};
 }
 const CM=[["id2de","Indonesisch → Deutsch"],["de2id","Deutsch → Indonesisch"],["listen","Hören → Bedeutung"]];
@@ -1048,7 +1071,7 @@ function vCards(){
   if(m==="listen"){front=`<div class="small">Was hörst du?</div><div style="font-size:48px">🔊</div>`;back=`<div style="margin-top:12px">${idBlock}<div class="de" style="font-size:20px">${esc(it.de)}</div></div>`;}
   const u=UNIT(it.u);
   $("#view").innerHTML=`<h2>Karteikarten</h2>${voiceWarning()}${cfg}
-   <div class="small" style="margin-bottom:6px">Karte ${c.i+1}/${c.q.length}${c.free?" · freies Üben":""} · ${u.lvl} ${u.n}. ${esc(u.t)}</div>
+   <div class="small" style="margin-bottom:6px">Karte ${c.i+1}/${c.q.length}${c.free?" · freies Üben":""} · ${it.k==="v"?"📘 Wort":"💬 Satz"} · ${u.lvl} ${u.n}. ${esc(u.t)}</div>
    <div class="card flip" data-act="flip">${front}${c.flip?`<div>${back}</div>`:`<div class="small" style="margin-top:14px">Tippen / Leertaste zum Umdrehen</div>`}</div>
    <div class="row" style="margin-bottom:12px"><button class="btn" data-act="say" data-i="${it.id}">🔊 Normal</button><button class="btn" data-act="say" data-i="${it.id}" data-slow="1">🐢 Langsam</button><button class="btn" data-act="goSpeakItem" data-i="${it.id}">🎙 Sprechen üben</button></div>
    ${c.flip?`<div class="row"><button class="btn" data-act="rate" data-r="0" style="border-color:var(--bad)">❌ Nicht gewusst (1)</button><button class="btn" data-act="rate" data-r="1" style="border-color:var(--mid)">😐 Schwer (2)</button><button class="btn pri" data-act="rate" data-r="2">✅ Gewusst (3)</button></div>`:""}`;
@@ -1160,7 +1183,37 @@ function dictCheck(){
 }
 
 /* ===================== ÜBEN ===================== */
-const EXT=[["mix","Gemischt"],["cloze","Lückentext (Grammatik)"],["build","Satzbau"],["trans","Übersetzen"],["hear","Hörverstehen"],["vocab","Vokabel-Quiz"]];
+const EXT=[["mix","Gemischt"],["gram","Grammatik: Wörter einsetzen"],["cloze","Lückentext (Grammatik)"],["build","Satzbau"],["trans","Übersetzen"],["hear","Hörverstehen"],["vocab","Vokabel-Quiz"]];
+
+const GCATS=[
+ ["Verneinung",["tidak","bukan","belum","jangan"],"<b>tidak</b> verneint Verben/Adjektive, <b>bukan</b> Nomen, <b>belum</b> = noch nicht, <b>jangan</b> = verbietet (Imperativ)."],
+ ["Zeitformen",["sudah","sedang","akan","belum"],"Keine Verbformen: <b>sudah</b> (schon/Vergangenheit), <b>sedang</b> (gerade), <b>akan</b> (Zukunft)."],
+ ["Präpositionen",["di","ke","dari","untuk","dengan","pada","dalam"],"<b>di</b> = in/an (Ort), <b>ke</b> = nach/zu (Richtung), <b>dari</b> = von/aus, <b>untuk</b> = für/um zu, <b>dengan</b> = mit."],
+ ["Pronomen",["saya","aku","kamu","Anda","dia","kami","kita","mereka"],"<b>kami</b> = wir (ohne dich), <b>kita</b> = wir (mit dir), <b>Anda</b> = höfliches Sie."],
+ ["Zeigewörter",["ini","itu"],"<b>ini</b> = dieser/hier, <b>itu</b> = jener/dort. Sie stehen <i>hinter</i> dem Nomen."],
+ ["Verbindungswörter",["dan","atau","tetapi","karena","kalau","yang"],"<b>dan</b> und, <b>atau</b> oder, <b>tetapi</b> aber, <b>karena</b> weil, <b>kalau</b> wenn, <b>yang</b> = der/die/das (Relativsatz)."],
+ ["Steigerung",["sangat","lebih","paling","sekali","agak"],"<b>sangat</b>/<b>sekali</b> = sehr, <b>lebih</b> = mehr/-er, <b>paling</b> = am meisten/-ste."],
+ ["Fragewörter",["apa","siapa","kapan","di mana","mengapa","bagaimana","berapa"],"<b>apa</b> was, <b>siapa</b> wer, <b>kapan</b> wann, <b>mengapa</b> warum, <b>bagaimana</b> wie, <b>berapa</b> wie viel."]
+];
+function gramPool(scope){
+  const L=[];
+  unitsIn(scope).forEach(u=>{
+    (u.sent||[]).forEach(v=>L.push(v));
+    ((u.dlg&&u.dlg.lines)||[]).forEach(l=>L.push([l[1],l[2]]));
+  });
+  const out=[];
+  L.forEach(v=>{
+    const toks=v[0].replace(/[.,!?]/g,"").split(" ");
+    GCATS.forEach((c,ci)=>{
+      toks.forEach((w,wi)=>{
+        const lw=w.toLowerCase();
+        const hit=c[1].find(x=>x.toLowerCase()===lw);
+        if(hit&&!(c[0]==="Pronomen"&&wi>0&&false))out.push({idn:v[0],de:v[1],ci,wi,ans:hit,w});
+      });
+    });
+  });
+  return out;
+}
 function genEx(scope,type,n){
   const sents=itemsIn(scope,["s"]),words=itemsIn(scope,["v"]);
   const cl=[];unitsIn(scope).forEach(u=>(u.ex||[]).forEach(c=>cl.push(c)));
@@ -1172,7 +1225,15 @@ function genEx(scope,type,n){
    hear(){const it=pick(sents);const o=shuffle([it,...sample(allS.filter(x=>x.de!==it.de),3)]);return {key:"h"+it.id,t:"hear",it,o};},
    vocab(){const it=pick(words);const dir=Math.random()<.5?"id2de":"de2id";const o=shuffle([it,...sample(allW.filter(x=>x.de!==it.de&&x.idn!==it.idn),3)]);return {key:"v"+it.id+dir,t:"vocab",it,dir,o};}
   };
-  const cnt={cloze:cl.length,build:sents.length,trans:sents.length+words.length,hear:sents.length,vocab:words.length};
+  const gp=gramPool(scope);
+  mk.gram=function(){const g=pick(gp);const c=GCATS[g.ci];const toks=g.idn.replace(/[.,!?]/g,"").split(" ");const raw=g.idn.split(" ");
+    const q=raw.map((t,i)=>i===g.wi?"_____":t).join(" ");
+    const SYN=[["saya","aku","Anda","kamu"],["kami","kita"],["di","pada","dalam"],["dari","ke"],["sangat","sekali","agak"],["tidak","bukan"]];
+    const bl=new Set();SYN.forEach(gr=>{if(gr.includes(g.ans)&&["saya","aku","kami","kita","di","pada","dalam","sangat","sekali","agak"].includes(g.ans))gr.forEach(x=>bl.add(x));});bl.delete(g.ans);
+    let cand=c[1].filter(x=>x!==g.ans&&!bl.has(x));if(cand.length<3)cand=c[1].filter(x=>x!==g.ans);
+    const o=shuffle([g.ans,...sample(cand,3)]);
+    return {key:"g"+g.idn+g.wi+g.ci,t:"gram",p:q,a:g.ans,o,n:c[0]+": "+c[2],de:g.de,idn:g.idn};};
+  const cnt={gram:gp.length,cloze:cl.length,build:sents.length,trans:sents.length+words.length,hear:sents.length,vocab:words.length};
   const avail=Object.keys(mk).filter(k=>cnt[k]>0);
   const types=type==="mix"?avail:avail.filter(k=>k===type);
   const qs=[],seen=new Set();
@@ -1198,6 +1259,10 @@ function vEx(){
   if(q.t==="cloze"){
     body=`<div class="small">Lückentext</div><div class="big" style="font-size:22px">${esc(q.p)}</div>${q.o.map((o,i)=>optBtn(o,i,o===q.a,q.pick===i)).join("")}`;
     if(q.res!==undefined)q.fb=`<b>${esc(q.a)}</b>${q.n?" – "+esc(q.n):""}`;
+  }
+  if(q.t==="gram"){
+    body=`<div class="small">Grammatik – welches Wort passt?</div><div class="big" style="font-size:22px">${esc(q.p)}</div><div class="de" style="margin-bottom:6px">${esc(q.de)}</div>${q.o.map((o,i)=>optBtn(o,i,o===q.a,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.idn)}</b> <button class="btn sm" data-act="exPlayText" data-x="${esc(q.idn)}">🔊</button><div class="small" style="margin-top:6px">${q.n}</div>`;
   }
   if(q.t==="vocab"){
     const lbl=x=>q.dir==="id2de"?x.de:x.idn;
@@ -1385,8 +1450,9 @@ document.addEventListener("click",e=>{
    case"dNext":{const q=V.hear.q;q.i++;q.res=null;q.typed="";q.played=false;render();break;}
    case"newEx":newEx();render();break;
    case"exPlay":{const q=V.ex.qs[V.ex.i];speak(q.it.idn,dsx.slow?.55:.9);break;}
+   case"exPlayText":speak(dsx.x,.9);break;
    case"exOpt":{const q=V.ex.qs[V.ex.i];if(q.res!==undefined)break;const i=+dsx.i;q.pick=i;let ok=false;
-     if(q.t==="cloze")ok=q.o[i]===q.a;else ok=q.o[i].id===q.it.id;exFinish(q,ok);break;}
+     if(q.t==="cloze"||q.t==="gram")ok=q.o[i]===q.a;else ok=q.o[i].id===q.it.id;exFinish(q,ok);break;}
    case"exTake":{const q=V.ex.qs[V.ex.i];const c=q.pool.splice(+dsx.k,1)[0];q.ans.push(c);render();break;}
    case"exDrop":{const q=V.ex.qs[V.ex.i];if(q.res!==undefined)break;const c=q.ans.splice(+dsx.k,1)[0];q.pool.push(c);render();break;}
    case"exBuildCheck":{const q=V.ex.qs[V.ex.i];exFinish(q,norm(q.ans.map(c=>c.w).join(" "))===norm(q.it.idn));break;}
