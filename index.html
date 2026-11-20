@@ -75,6 +75,7 @@ summary{cursor:pointer;font-weight:600;padding:8px 2px}
 .ring{display:flex;align-items:center;gap:12px}
 .check{font-size:20px;margin-right:6px}
 .tip li{margin:5px 0}
+.toast{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));background:#1f2933;color:#fff;padding:12px 14px;border-radius:12px;z-index:50;font-size:14px;display:none;box-shadow:0 4px 18px rgba(0,0,0,.3)}
 
 </style>
 </head>
@@ -674,23 +675,39 @@ function nextUnit(){return UNITS.find(u=>mastery(u)<60)||UNITS[UNITS.length-1];}
 let voices=[],playTok=0;
 function loadVoices(){try{voices=speechSynthesis.getVoices();}catch(e){}}
 if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
-const idVoice=()=>voices.find(v=>/^id[-_]/i.test(v.lang))||voices.find(v=>/^(id|in)$/i.test(v.lang));
+const isIdLang=v=>/^(id|in)([-_]|$)/i.test(v.lang||"");
+const idVoice=()=>{
+  if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
+  return voices.find(v=>/^id[-_]/i.test(v.lang))||voices.find(isIdLang)||voices.find(v=>/^ms([-_]|$)/i.test(v.lang))||null;
+};
+function toast(msg,ms){
+  try{let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";document.body.appendChild(t);}
+  t.textContent=msg;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none";},ms||7000);}catch(e){}
+}
 function stopAudio(){playTok++;try{speechSynthesis.cancel();}catch(e){}}
 function speak(text,rate,pitch){
   return new Promise(res=>{
-    if(!("speechSynthesis" in window)){res();return;}
+    if(!("speechSynthesis" in window)){toast("Dieser Browser hat keine Sprachausgabe.");res();return;}
     try{loadVoices();}catch(e){}
-    const go=()=>{
-      const u=new SpeechSynthesisUtterance(text);u.lang="id-ID";
-      const v=idVoice();if(v)u.voice=v;u.rate=rate||.95;u.pitch=pitch||1;u.volume=1;
-      let done=false;const fin=()=>{if(!done){done=true;res();}};
-      u.onend=u.onerror=fin;
+    let done=false,started=false,tries=0;
+    const fin=()=>{if(!done){done=true;res();}};
+    const say=()=>{
+      tries++;
+      const u=new SpeechSynthesisUtterance(text),v=idVoice();
+      if(v){u.voice=v;u.lang=v.lang;}      // ohne passende Stimme: Standardstimme nutzen, damit es wenigstens hörbar ist
+      u.rate=rate||.95;u.pitch=pitch||1;u.volume=1;
+      u.onstart=()=>{started=true;};
+      u.onend=()=>{started=true;fin();};
+      u.onerror=ev=>{const c=ev&&ev.error;if(c&&c!=="canceled"&&c!=="interrupted")toast("Sprachausgabe-Fehler: "+c+". Prüfe Stumm-Schalter/Lautstärke und wähle unter „Laute → Audio-Diagnose“ eine Stimme.");fin();};
       try{speechSynthesis.resume();}catch(e){}
       try{speechSynthesis.speak(u);}catch(e){fin();}
-      setTimeout(fin,Math.max(5000,text.length*300));
     };
-    // iOS verschluckt Äußerungen direkt nach cancel(): kurz warten
-    if(speechSynthesis.speaking||speechSynthesis.pending){try{speechSynthesis.cancel();}catch(e){}setTimeout(go,120);}else go();
+    if(speechSynthesis.speaking||speechSynthesis.pending){try{speechSynthesis.cancel();}catch(e){}}
+    say();                                   // synchron, damit iOS den Fingertipp noch erkennt
+    setTimeout(()=>{ // Watchdog: wurde die Äußerung verschluckt, einmal neu versuchen
+      if(!done&&!started&&!speechSynthesis.speaking&&tries<2){try{speechSynthesis.cancel();}catch(e){}say();}
+    },700);
+    setTimeout(()=>{if(!done&&!started&&!speechSynthesis.speaking){toast("Keine Sprachausgabe zu hören? Stumm-Schalter aus, Lautstärke hoch, dann unter „Laute → Audio-Diagnose“ eine Stimme wählen.");}fin();},Math.max(6000,text.length*300));
   });
 }
 async function playDialog(u,cb){
@@ -703,8 +720,10 @@ async function playDialog(u,cb){
   cb&&cb(-1);
 }
 function voiceWarning(){
-  if(!("speechSynthesis" in window))return '<div class="warn">Dieser Browser hat keine Sprachausgabe. Bitte Chrome, Edge oder Safari nutzen.</div>';
-  if(!idVoice())return '<div class="warn">⚠️ Auf diesem Gerät wurde keine <b>indonesische Stimme</b> gefunden – das Vorbild klingt dann falsch. Installiere sie in den Systemeinstellungen (Windows: Sprache → Indonesisch → Sprachpaket mit Sprachausgabe; macOS: Bedienungshilfen → Gesprochene Inhalte → Systemstimme → Indonesisch; Android/iOS: Text-to-Speech-Einstellungen). Chrome und Edge laden Online-Stimmen oft automatisch.</div>';
+  if(!("speechSynthesis" in window))return '<div class="warn">Dieser Browser hat keine Sprachausgabe. Bitte Safari, Chrome oder Edge nutzen.</div>';
+  const v=idVoice();
+  if(!v)return '<div class="warn">⚠️ Keine <b>indonesische (oder malaiische) Stimme</b> gefunden – es wird die Standardstimme genutzt, das klingt falsch. iPhone: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Indonesisch laden. Windows: Sprache → Indonesisch → Sprachausgabe. Danach hier unter „Laute → Audio-Diagnose“ auswählen. <button class="btn sm" data-act="go" data-tab="sounds">Diagnose</button></div>';
+  if(!isIdLang(v)&&!S.voiceURI)return '<div class="small" style="margin-bottom:8px">ℹ️ Es wird die Stimme „'+esc(v.name)+'“ ('+esc(v.lang)+') als Ersatz genutzt. Sie klingt ähnlich, ist aber nicht perfekt. Bessere Auswahl: Laute → Audio-Diagnose.</div>';
   return "";
 }
 
@@ -728,6 +747,7 @@ const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQAC
 const AUD=typeof Audio!=="undefined"?new Audio():{play(){return Promise.resolve();},pause(){}};
 let audUnlocked=false;
 function unlockAudio(){
+  try{loadVoices();}catch(e){}
   try{AUD.src=SILENT;const p=AUD.play();p&&p.catch&&p.catch(()=>{});}catch(e){}
   if(audUnlocked)return;audUnlocked=true;
   try{if("speechSynthesis" in window){const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u);}}catch(e){}
@@ -1180,10 +1200,11 @@ const DIAG={url:null};
 function diagHtml(){
   const yes=b=>b?"✅":"❌",standalone=!!(navigator.standalone||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches));
   const v=idVoice(),nv=voices.length;
-  const rows=[["Sprachausgabe",yes("speechSynthesis" in window)],["Stimmen gefunden",nv+""],["Indonesische Stimme",v?("✅ "+esc(v.name)):"❌ keine (Vorbild klingt evtl. falsch)"],["Spracherkennung",yes(!!SRC)],["Aufnahme (MediaRecorder)",window.MediaRecorder?("✅ "+esc(pickMime()||"Standardformat")):"❌"],["Mikrofon-Zugriff möglich",yes(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))],["Sichere Verbindung (https)",yes(window.isSecureContext)],["Als Home-Bildschirm-App",standalone?"ja":"nein"],["Speicher funktioniert",yes(STORE_OK)],["Aufnahmemodus",esc(recMode())]];
+  const rows=[["Sprachausgabe",yes("speechSynthesis" in window)],["Stimmen gefunden",nv+""],["Gewählte Stimme",v?("✅ "+esc(v.name)+" ("+esc(v.lang)+")"):"❌ keine – Standardstimme"],["Spracherkennung",yes(!!SRC)],["Aufnahme (MediaRecorder)",window.MediaRecorder?("✅ "+esc(pickMime()||"Standardformat")):"❌"],["Mikrofon-Zugriff möglich",yes(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))],["Sichere Verbindung (https)",yes(window.isSecureContext)],["Als Home-Bildschirm-App",standalone?"ja":"nein"],["Speicher funktioniert",yes(STORE_OK)],["Aufnahmemodus",esc(recMode())]];
   return `<div class="card"><b>🔧 Audio-Diagnose</b><p class="small">Zeigt, was dein Gerät kann. Teste hier zuerst Ton und Mikrofon.</p>
    <table>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>
    <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">🔊 Sprachtest</button><button class="btn" data-act="diagMic">🎙 Mikrofon-Test (3 Sek.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Test-Aufnahme abspielen</button></div>
+   <div class="row" style="margin-top:10px"><span class="small">Stimme:</span><select data-sel="voice"><option value="">Automatisch (Indonesisch → Malaiisch → Standard)</option>${voices.slice().sort((x,y)=>(isIdLang(y)-isIdLang(x))||((/^ms/i.test(y.lang)-/^ms/i.test(x.lang)))||x.name.localeCompare(y.name)).map(x=>`<option value="${esc(x.voiceURI)}" ${S.voiceURI===x.voiceURI?"selected":""}>${esc(x.name)} – ${esc(x.lang)}</option>`).join("")}</select></div>
    <div class="small" id="diagmsg" style="margin-top:8px">iPhone: Stumm-Schalter aus und Lautstärke hoch! Die Sprachausgabe ist bei aktivem Stumm-Schalter oft lautlos.</div></div>`;
 }
 async function diagMic(){
@@ -1328,6 +1349,7 @@ document.addEventListener("change",e=>{
   if(k==="rpunit"){V.rp={u:v,role:V.rp.role,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
   if(k==="rprole"){V.rp={u:V.rp.u,role:v,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
   if(k==="hdlg"){V.hear.dlgU=v;stopAudio();render();}
+  if(k==="voice"){S.voiceURI=v||undefined;save();unlockAudio();speak("Selamat pagi. Apa kabar?",.9);}
   if(k==="recmode"){Rec.stop(true);S.recMode=v;save();render();}
   if(k==="goal"){S.goal=+v;save();render();}
   if(k==="newpd"){S.newPerDay=+v;save();}
