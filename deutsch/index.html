@@ -925,7 +925,9 @@ function deviceSpeak(text,rate,pitch,forceDefault,lang){
     setTimeout(()=>fin(started),Math.max(7000,text.length*320));
   });
 }
+let micBusy=false;
 async function speak(text,rate,pitch,forceDefault){
+  if(micBusy)return;   // während das Microphone lauscht, nichts abspielen (sonst verliert iOS die Aufnahme)
   if(S.ttsV!==2){S.ttsV=2;S.ttsMode="online";save();}   // einmalig: Online-Stimme als Standard für alle Lektionen
   const mode=S.ttsMode||"online";
   if(!forceDefault&&(mode==="online"||(mode==="auto"&&(S.ttsAutoOnline||!idVoice())))){
@@ -942,6 +944,7 @@ async function speak(text,rate,pitch,forceDefault){
 /* Erklärungen in der Muttersprache der App vorlesen (z. B. Deutsch in der Indonesisch-/Englisch-App) */
 const natLang=()=>LT.nname==="German"?"de":"en";
 async function speakNative(text){
+  if(micBusy)return;
   const my=++playTok,l=natLang();
   const clean=String(text).replace(/[„“”"]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF▶✅❓]/gu,"").replace(/\s+/g," ").trim();
   const parts=(clean.match(/[^.!?:;]+[.!?:;]*/g)||[clean]).map(x=>x.trim()).filter(Boolean),chunks=[];
@@ -991,7 +994,7 @@ const AUD=typeof Audio!=="undefined"?new Audio():{play(){return Promise.resolve(
 let audUnlocked=false;
 function unlockAudio(){
   try{loadVoices();}catch(e){}
-  try{if(navigator.audioSession&&navigator.audioSession.type!=="play-and-record")navigator.audioSession.type="playback";}catch(e){}
+  try{if(navigator.audioSession&&navigator.audioSession.type!=="play-and-record")navigator.audioSession.type="auto";}catch(e){}
   try{AUD.src=SILENT;const p=AUD.play();p&&p.catch&&p.catch(()=>{});}catch(e){}
   if(audUnlocked)return;audUnlocked=true;
 }
@@ -1083,7 +1086,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   try{this.stream&&this.stream.getTracks().forEach(t=>t.stop());}catch(e){}
   try{this.ctx&&this.ctx.close();}catch(e){}
   this.ctx=null;
-  try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}
+  try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
   if(silent){this.gen++;this.fin=true;this.srDone=true;this.mrDone=true;return;}
   if(was){SP.status="Evaluating …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){if(!this.alts.length&&this.interim)this.alts.push(this.interim);this.srDone=true;this.mrDone=true;this.tryFinish();}},3200);}
  },
@@ -1544,7 +1547,7 @@ async function diagMic(){
     const st=await getMic({audio:true}),mime=pickMime();
     let mr;try{mr=new MediaRecorder(st,mime?{mimeType:mime}:undefined);}catch(e){mr=new MediaRecorder(st);}
     const ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data);};
-    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}const b=new Blob(ch,{type:mr.mimeType||mime||"audio/mp4"});
+    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}const b=new Blob(ch,{type:mr.mimeType||mime||"audio/mp4"});
       if(DIAG.url){try{URL.revokeObjectURL(DIAG.url);}catch(e){}}DIAG.url=b.size?URL.createObjectURL(b):null;
       m.textContent=b.size?("✅ Recorded ("+Math.round(b.size/1024)+" KB). Tap “Play test recording”."):"⚠️ No sound arrived – check the microphone.";
       const bt=document.getElementById("diagplay");if(bt)bt.disabled=!DIAG.url;};
@@ -1805,19 +1808,21 @@ function chatSend(txt,spoken){tchHandle(txt,spoken);}
 let chatSR=null,chatSRgen=0;
 async function chatListen(retryIdx){
   if(!SRC){V.chat.err=LT.srUnsup;render();return;}
-  if(chatSR){try{chatSR.abort();}catch(e){}chatSR=null;chatSRgen++;const st0=$("#cstat");if(st0)st0.textContent="";return;}   // zweiter Tipp = abbrechen
+  if(chatSR&&Date.now()-(chatSR._t0||0)>900){try{chatSR.abort();}catch(e){}chatSR=null;micBusy=false;chatSRgen++;const st0=$("#cstat");if(st0)st0.textContent="";return;}   // zweiter Tipp = abbrechen
+  if(chatSR){try{chatSR.abort();}catch(e){}chatSR=null;}
   const gen=++chatSRgen;
-  Rec.stop(true);stopAudio();releaseAudio();V.chat.err="";
+  micBusy=true;Rec.stop(true);stopAudio();releaseAudio();V.chat.err="";
   try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
-  await sleep(isIOS?400:60);if(gen!==chatSRgen)return;
+  await sleep(isIOS?650:60);if(gen!==chatSRgen){return;}
+  stopAudio();releaseAudio();
   const st=()=>$("#cstat"),say=t=>{const e=st();if(e)e.textContent=t;};
   const alts=[];let interim="",srErr=null,tries=0,t0=Date.now(),finished=false;
   const finish=()=>{
-    if(finished)return;finished=true;chatSR=null;
-    try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}
+    if(finished)return;finished=true;chatSR=null;micBusy=false;
+    try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
     if(!alts.length&&interim)alts.push(interim);
     if(!alts.length){
-      V.chat.err=(srErr&&SRERR[srErr])?SRERR[srErr]:"Nothing recognised. Tap 🎙, wait until “I'm listening” appears and then speak clearly. You can also type. (Speech recognition needs internet.)";
+      V.chat.err=((srErr&&SRERR[srErr])?SRERR[srErr]:"Nothing recognised. Tap 🎙, wait until “I'm listening” appears and then speak clearly. You can also type. (Speech recognition needs internet.)")+" [Code: "+(srErr||"leer")+", Versuche: "+tries+"]";
       say("");render();return;
     }
     say("");
@@ -1827,7 +1832,7 @@ async function chatListen(retryIdx){
   const run=()=>{
     tries++;
     let r;try{r=new SRC();}catch(e){srErr="aborted";finish();return;}
-    chatSR=r;r.lang=CFG.sr;r.interimResults=true;r.maxAlternatives=5;r.continuous=false;
+    chatSR=r;r._t0=Date.now();r.lang=CFG.sr;r.interimResults=true;r.maxAlternatives=5;r.continuous=false;
     let got=false;
     r.onstart=()=>say("🎙 I'm listening – speak now …");
     r.onresult=e=>{
@@ -1839,14 +1844,14 @@ async function chatListen(retryIdx){
     r.onend=()=>{
       if(gen!==chatSRgen||finished)return;
       const soft=!srErr||srErr==="no-speech"||srErr==="aborted";
-      if(!got&&!alts.length&&!interim&&soft&&tries<3&&Date.now()-t0<9000){srErr=null;setTimeout(()=>{if(gen===chatSRgen&&!finished)run();},150);return;}
+      if(!got&&!alts.length&&!interim&&soft&&tries<3&&Date.now()-t0<9000){srErr=null;setTimeout(()=>{if(gen===chatSRgen&&!finished)run();},tries>1?500:250);return;}
       finish();
     };
     try{r.start();}catch(e){srErr="aborted";finish();}
   };
   say("🎙 Preparing the microphone …");
   run();
-  setTimeout(()=>{if(gen===chatSRgen&&!finished&&chatSR){try{chatSR.stop();}catch(e){}}},12000);   // Sicherheits-Stopp
+  setTimeout(()=>{if(gen===chatSRgen&&!finished){if(chatSR){try{chatSR.stop();}catch(e){}}setTimeout(()=>{if(gen===chatSRgen&&!finished)finish();},1500);}},12000);   // Sicherheits-Stopp
 }
 function cmpHtml(m,i){
   if(!m.cmp)return "";
