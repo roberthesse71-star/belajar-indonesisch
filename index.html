@@ -974,7 +974,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 08:58";
+const BUILD="21.11.2026 09:06";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -1110,14 +1110,10 @@ function pickMime(){const c=["audio/mp4","audio/webm;codecs=opus","audio/webm","
 const SRERR={"not-allowed":"Spracherkennung nicht erlaubt (Mikrofon-Berechtigung prüfen).","service-not-allowed":"Spracherkennung hier nicht erlaubt. iPhone: Einstellungen → Allgemein → Tastatur → „Diktierfunktion“ einschalten und die Seite im Safari-Tab statt als Home-Bildschirm-App testen.","no-speech":"Es wurde keine Sprache gehört.","audio-capture":"Kein Mikrofon gefunden.","network":"Keine Internetverbindung für die Spracherkennung.","language-not-supported":LT.srUnsup,"aborted":"Erkennung abgebrochen."};
 async function getMic(opts){
   releaseAudio();
-  const as=t=>{try{if(navigator.audioSession)navigator.audioSession.type=t;}catch(e){}};
   let last;
-  for(const t of ["play-and-record","auto",null]){
-    if(t)as(t);
-    for(let k=0;k<2;k++){
-      try{return await navigator.mediaDevices.getUserMedia(opts||{audio:true});}
-      catch(e){last=e;if(e&&(e.name==="NotAllowedError"||e.name==="NotFoundError"||e.name==="SecurityError"))throw e;await sleep(250);}
-    }
+  for(let k=0;k<3;k++){
+    try{return await navigator.mediaDevices.getUserMedia(opts||{audio:true});}
+    catch(e){last=e;if(e&&(e.name==="NotAllowedError"||e.name==="NotFoundError"||e.name==="SecurityError"))throw e;await sleep(250);}
   }
   throw last;
 }
@@ -2036,9 +2032,8 @@ async function vmToggle(test){
   if(Vm.on){vmStop();return;}
   liveStop();stopAudio();releaseAudio();V.chat.err="";
   if(!navigator.mediaDevices||!window.MediaRecorder){V.chat.err="Aufnahme wird von diesem Browser nicht unterstützt. Nutze ⌨️ Tastatur-Diktat.";render();return;}
-  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
   await sleep(isIOS?400:60);
-  try{Vm.stream=await getMic({audio:{echoCancellation:true,noiseSuppression:true}});}
+  try{Vm.stream=await getMic({audio:true});}
   catch(e){V.chat.err="Mikrofon blockiert ("+((e&&e.name)||"Fehler")+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon).";tlog("Mikrofon blockiert: "+(e&&e.name));render();return;}
   Vm.test=test===true;Vm.max=0;
   try{const tr=Vm.stream.getAudioTracks()[0];

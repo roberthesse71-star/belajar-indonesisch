@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mikrofon-Test</title>
+<style>body{font:16px system-ui;margin:14px;max-width:560px}button{display:block;width:100%;padding:14px;margin:8px 0;font-size:16px;border-radius:10px;border:1px solid #888;background:#eef}pre{background:#111;color:#8f8;padding:8px;white-space:pre-wrap;font-size:12px}audio{width:100%}</style></head><body>
+<h2>Mikrofon-Test (ohne Lern-App)</h2>
+<p>Tippe nacheinander auf die Tests und sprich jeweils 3 Sekunden lang laut. Danach Aufnahme abspielen. Am Ende „Kopieren“ und mir schicken.</p>
+<button onclick="run('A: einfach',{audio:true})">A: einfaches Mikrofon</button>
+<button onclick="run('B: mit Echo-/Rauschfilter',{audio:{echoCancellation:true,noiseSuppression:true}})">B: mit Filtern</button>
+<button onclick="run('C: ohne Filter',{audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})">C: ohne Filter</button>
+<button onclick="run('D: einfach + Pegelmesser',{audio:true},true)">D: mit Pegelmesser (AudioContext)</button>
+<button onclick="sr()">E: Spracherkennung (Safari-Diktat)</button>
+<div id="o"></div><pre id="l"></pre><button onclick="navigator.clipboard.writeText(document.getElementById('l').textContent).then(()=>alert('Kopiert'))">Kopieren</button>
+<script>
+const L=document.getElementById('l'),O=document.getElementById('o');
+function log(t){L.textContent+=new Date().toLocaleTimeString()+' '+t+'\n';}
+log(navigator.userAgent);
+async function run(name,c,an){
+ log('--- '+name);
+ let st;try{st=await navigator.mediaDevices.getUserMedia(c);}catch(e){log('FEHLER '+e.name+' '+e.message);return;}
+ const tr=st.getAudioTracks()[0];log('Track: '+tr.label+' | '+tr.readyState+' | muted='+tr.muted+' | '+JSON.stringify(tr.getSettings()));
+ tr.onmute=()=>log('Track MUTED');tr.onunmute=()=>log('Track unmuted');
+ let max=0,iv,ctx;
+ if(an){try{ctx=new (window.AudioContext||window.webkitAudioContext)();await ctx.resume();const a=ctx.createAnalyser();ctx.createMediaStreamSource(st).connect(a);const d=new Uint8Array(a.fftSize);iv=setInterval(()=>{a.getByteTimeDomainData(d);for(const v of d)max=Math.max(max,Math.abs(v-128));},100);}catch(e){log('Analyser: '+e)}}
+ const mime=MediaRecorder.isTypeSupported('audio/mp4')?'audio/mp4':'';const ch=[];const mr=new MediaRecorder(st,mime?{mimeType:mime}:{});
+ mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
+ mr.onstop=()=>{clearInterval(iv);ctx&&ctx.close();st.getTracks().forEach(t=>t.stop());const b=new Blob(ch,{type:mr.mimeType});log(name+' → '+Math.round(b.size/1024*10)/10+' KB'+(an?', Pegel '+max+'/128':''));const a=document.createElement('audio');a.controls=true;a.src=URL.createObjectURL(b);O.prepend(a);};
+ mr.start(250);log('Aufnahme 3 s … sprich jetzt');setTimeout(()=>mr.stop(),3000);
+}
+function sr(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){log('Keine SR');return;}
+ const r=new S();r.lang='de-DE';r.interimResults=true;
+ ['audiostart','soundstart','speechstart','end','nomatch'].forEach(n=>r['on'+n]=()=>log('SR '+n));
+ r.onerror=e=>log('SR Fehler '+e.error);r.onresult=e=>log('SR Text: '+e.results[0][0].transcript);
+ log('--- E: SR, sprich jetzt');r.start();setTimeout(()=>{try{r.stop()}catch(e){}},6000);}
+</script></body></html>
