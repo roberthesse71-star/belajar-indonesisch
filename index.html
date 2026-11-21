@@ -857,7 +857,7 @@ const CFG={
  gsyn:[["saya","aku","Anda","kamu"],["kami","kita"],["di","pada","dalam"],["sangat","sekali","agak"]],
  tongue:["Kakak kaya kaya raya.","Saya suka makan ikan bakar.","Burung itu terbang tinggi.","Cinta tanah air.","Ayam goreng enak sekali."],
  t:{
-  lname:"Indonesian",nname:"German",greet:()=>{const h=new Date().getHours();return (h<4?"Selamat malam":h<11?"Selamat pagi":h<15?"Selamat siang":h<18?"Selamat sore":"Selamat malam")+"! 👋";},hintBtn:"💡 Hinweis (Deutsch)",transPh:"Auf Indonesisch …",testSent:"Selamat pagi. Apa kabar?",
+  tp:{ok:["Bagus!","Betul!","Hebat!","Sempurna!","Pintar!"],cmd:"Ulangi setelah saya.",again:"Coba lagi.",start:"Mari kita mulai!",end:"Pelajaran selesai!",q:"Apa artinya?"},lname:"Indonesian",nname:"German",greet:()=>{const h=new Date().getHours();return (h<4?"Selamat malam":h<11?"Selamat pagi":h<15?"Selamat siang":h<18?"Selamat sore":"Selamat malam")+"! 👋";},hintBtn:"💡 Hinweis (Deutsch)",transPh:"Auf Indonesisch …",testSent:"Selamat pagi. Apa kabar?",
   srUnsup:"Indonesisch wird von der Spracherkennung dieses Geräts nicht unterstützt.",
   lvl:{A1:"Anfänger – erste Gespräche",A2:"Grundlagen – Alltag meistern",B1:"Mittelstufe – flüssig & natürlich",B2:"Fortgeschritten – souverän & differenziert"},
   quick:`<details class="card tip" open><summary>⚡ Die 10 wichtigsten Regeln auf einen Blick</summary><ol>
@@ -1681,71 +1681,216 @@ function vProg(){
 }
 
 
-/* ===================== TUTOR (KI-Gespräch mit Abgleich) ===================== */
-const AK_KEY=CFG.key+"_apikey";
-function getAK(){try{return localStorage.getItem(AK_KEY)||"";}catch(e){return "";}}
-function setAK(v){try{if(v)localStorage.setItem(AK_KEY,v);else localStorage.removeItem(AK_KEY);}catch(e){}}
-const CHAT_TOPICS=[["tutor","Geführter Tutor (aktuelle Lektion)","a guided tutoring session"],["free","Freies Gespräch","a relaxed free conversation about everyday topics"],["cafe","Im Café bestellen","a role-play: you are a waiter in a café and the learner is the guest"],["intro","Sich vorstellen","a role-play: you meet the learner for the first time at a party and chat"],["travel","Reise & Wegbeschreibung","a role-play: the learner is travelling and asks you for directions and tips"],["work","Arbeit & Alltag","a conversation about work, daily routine and hobbies"],["opinion","Meinungen austauschen","a conversation where you and the learner exchange opinions on a simple topic"]];
+/* ===================== TUTOR = LEHRER (ohne KI, ohne Internet) ===================== */
+/* Der Lehrer führt durch eine Lektion: Basics → Wörter → Sätze → Grammatik → Dialog → Abfrage.
+   Er erklärt, spricht vor, lässt nachsprechen (Abgleich), fragt ab, wiederholt Schwaches und beantwortet Fragen. */
 V.chat={msgs:[],level:(S.level||"A2"),topic:"tutor",busy:false,err:"",auto:true,goal:null};
-function chatUnit(){return UNIT(V.unit||nextUnit().id);}
-function placeSystem(){
-  const n=V.chat.msgs.filter(m=>m.role==="user").length;
-  return "You are a friendly placement examiner for a learner of "+CFG.lname+" whose native language is "+CFG.nname+". Goal: find out the learner's CEFR level (A1, A2, B1 or B2) with about 7 short questions asked ONE at a time in a chat. Start with a very easy question in simple "+CFG.lname+" (A1: name, where from). Make each next question a little harder or easier depending on how well the learner answered (A2: yesterday, daily routine, shopping; B1: plans, experiences, a simple 'if' situation; B2: opinion with reasons, hypothetical situations, abstract topics). Do NOT correct mistakes during the test and give no teaching. Write only 1-2 short sentences per message. The learner has answered "+n+" question(s) so far. "+(n>=7?"Now stop asking: write in "+CFG.nname+" a short friendly verdict (2 sentences, mention strengths), and put on the very last line exactly 'LEVEL: X' where X is A1, A2, B1 or B2.":"Do not write 'LEVEL:' yet.")+" If the learner writes in "+CFG.nname+" or says they know nothing, treat it as A1 and give the verdict after at most 3 questions.";
+const stripG=t=>String(t).split(" – ")[0].trim();
+function otUnit(){return UNIT(V.unit||nextUnit().id);}
+const TCH_PH=["Basics","Wörter","Sätze","Grammatik","Dialog","Abfrage"];
+function tchMark(id,ok){
+  if(!id)return;const days=[0,1,2,4,8,16,32];let b=S.box[id]||0;
+  if(ok){b=Math.min(6,Math.max(1,b+1));S.due[id]=Date.now()+days[b]*864e5;}
+  else{b=1;S.due[id]=Date.now()+10*60000;}
+  S.box[id]=b;save();
 }
-function chatSystem(){
-  if(needPlace())return placeSystem();
-  const t=CHAT_TOPICS.find(x=>x[0]===V.chat.topic)||CHAT_TOPICS[0];
-  let topic="Topic: "+t[2]+".";
-  if(t[0]==="tutor"){
-    const u=chatUnit();
-    topic="Mode: GUIDED TUTOR. You guide the learner step by step through this lesson: \""+u.t+"\" (grammar: "+u.grammar.t+"). Key words: "+u.vocab.slice(0,14).map(v=>v[0]+" = "+v[1]).join("; ")+". Model sentences: "+u.sent.slice(0,6).map(v=>v[0]+" = "+v[1]).join("; ")+". Procedure: first greet briefly and say in "+CFG.nname+" what you will practise; then introduce ONE phrase at a time (give it on a 🎯 line), ask the learner to say it, react to what they said, correct it kindly, then move on to the next phrase or a small question that makes them build their own sentence from the lesson words. Praise progress. Keep every turn short.";
+function tchDistract(it,n,field){
+  const pool=ITEMS.filter(x=>x.k===it.k&&x.id!==it.id&&x[field]!==it[field]);
+  const same=pool.filter(x=>x.u===it.u),rest=pool.filter(x=>x.u!==it.u);
+  const out=[];const seen=new Set([norm(it[field])]);
+  for(const x of shuffle(same).concat(shuffle(rest))){const k=norm(x[field]);if(!k||seen.has(k))continue;seen.add(k);out.push(x[field]);if(out.length>=n)break;}
+  return out;
+}
+function tchBuild(u){
+  const vit=ITEMS.filter(x=>x.u===u.id&&x.k==="v").slice(0,12),sit=ITEMS.filter(x=>x.u===u.id&&x.k==="s").slice(0,6);
+  const st=[];
+  let g=stripHtml(u.grammar.html);if(g.length>650)g=g.slice(0,650).replace(/\s\S*$/,"")+" …";
+  st.push({ph:0,t:"info",text:LT.greet().replace(/[!👋\s]+$/,"").trim()+"! "+LT.tp.start+"\n\nHeute lernen wir Lektion "+u.n+": „"+u.t+"“. Ich führe dich Schritt für Schritt: erst die Basics, dann die Wörter, dann Sätze daraus, eine kurze Übung, ein Dialog und zum Schluss eine Abfrage. Du kannst mich jederzeit etwas fragen.\n\n"+u.intro});
+  st.push({ph:0,t:"info",text:"Die Grundlagen – "+u.grammar.t+":\n"+g});
+  for(let i=0;i<vit.length;i+=3){
+    const blk=vit.slice(i,i+3);
+    blk.forEach((it,k)=>st.push({ph:1,t:"rep",it,new:true,hdr:(i===0&&k===0?"Jetzt die Wörter. ":"")+"Neues Wort:"}));
+    shuffle(blk).forEach(it=>st.push({ph:1,t:"mc",it,dir:"toNative",mark:true}));
+    st.push({ph:1,t:"tr",it:pick(blk),mark:true});
   }
-  return "You are a friendly, patient "+(t[0]==="tutor"?"tutor and ":"")+"conversation partner for a learner of "+CFG.lname+". The learner's native language is "+CFG.nname+" and their level is "+V.chat.level+". "+topic+" Rules: Answer in "+CFG.lname+" with vocabulary and grammar suited to the level, 1-3 short sentences, ending with a short question or task so the conversation continues (explanations of the lesson in tutor mode may use "+CFG.nname+" in one short sentence). After your answer you may add extra lines, each on its own line at the very end and each starting with its symbol: '🎯 ' + one short phrase in "+CFG.lname+" that the learner should repeat or say next (always in tutor mode); '✏️ ' + the learner's last message corrected in "+CFG.lname+" (ONLY if it contained mistakes); '💡 ' + a brief tip in "+CFG.nname+" (max 2 sentences, only if useful). No markdown, no lists, no other emojis.";
+  for(let i=0;i<sit.length;i+=3){
+    const blk=sit.slice(i,i+3);
+    blk.forEach((it,k)=>st.push({ph:2,t:"rep",it,new:true,hdr:(i===0&&k===0?"Jetzt bauen wir Sätze aus den Wörtern von eben. ":"")+"Neuer Satz:"}));
+    st.push({ph:2,t:"mc",it:pick(blk),dir:"toNative",mark:true});
+    st.push({ph:2,t:"tr",it:pick(blk),mark:true});
+  }
+  shuffle((u.ex||[]).slice()).slice(0,4).forEach((c,k)=>st.push({ph:3,t:"cl",p:c[0],a:c[1],o:shuffle(c[2].slice()),n:c[3],hdr:k===0?"Jetzt die Regel in der Praxis – wähle das passende Wort.":""}));
+  st.push({ph:4,t:"dlg"});
+  st.push({ph:5,t:"final"});
+  return st;
 }
-function chatParse(raw){
-  const out={text:[],goal:"",corr:"",tip:""};
-  raw.split("\n").forEach(l=>{const t=l.trim();if(!t)return;
-    if(t.startsWith("🎯"))out.goal=t.slice(2).trim();else if(t.startsWith("✏️"))out.corr=t.slice(2).trim();else if(t.startsWith("✏"))out.corr=t.slice(1).trim();else if(t.startsWith("💡"))out.tip=t.slice(2).trim();else out.text.push(t);});
-  return {text:out.text.join(" "),goal:out.goal,corr:out.corr,tip:out.tip};
+function otStart(){
+  const C=V.chat,u=otUnit();
+  C.ot={mode:"teach",u:u.id,steps:tchBuild(u),i:0,tries:0,right:0,n:0,fr:0,fn:0,wrong:{},done:false,dlg:null,quiz:null,last:null,ask:false};
+  C.msgs=[];C.err="";tchRun();
 }
-async function chatAsk(){
-  const C=V.chat;C.busy=true;C.err="";render();
-  const msgs=[{role:"user",content:"(Please start now.)"}].concat(C.msgs.map(m=>({role:m.role,content:m.raw||m.text})));
-  try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":getAK(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-5-5",max_tokens:500,system:chatSystem(),messages:msgs})});
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok){C.err=r.status===401?"Der API-Schlüssel wurde abgelehnt. Prüfe ihn.":"Fehler der KI ("+r.status+"): "+((j.error&&j.error.message)||"");}
-    else{
-      const raw=((j.content||[]).map(b=>b.text||"").join("")).trim();
-      if(needPlace()){
-        const mm=raw.match(/LEVEL:\s*(A1|A2|B1|B2)/);
-        if(mm){S.level=mm[1];S.placed=Date.now();save();C.level=S.level;V.cards=null;V.ex=null;C.result={lvl:mm[1],text:raw.replace(/LEVEL:\s*(A1|A2|B1|B2)/,"").trim()};C.msgs=[];C.busy=false;render();return;}
-        C.msgs.push({role:"assistant",text:raw,raw});C.speakIdx=C.msgs.length-1;C.busy=false;render();
-        if(C.auto)speak(raw,.9);
-        return;
-      }
-      const p=chatParse(raw);
-      // Abgleich der letzten Nutzernachricht
-      const lu=C.msgs.length?C.msgs[C.msgs.length-1]:null;
-      if(lu&&lu.role==="user"){
-        const target=C.goal||p.corr;
-        if(lu.spoken){
-          if(target){const ev=evaluate(target,[lu.text]);lu.cmp={target,score:ev.score,words:ev.words};}
-          else lu.cmp={target:lu.text,score:100,words:null};
-        }
-        if(p.corr)lu.corr=p.corr;
-      }
-      C.goal=p.goal||null;
-      C.msgs.push({role:"assistant",text:p.text,goal:p.goal,tip:p.tip,raw});C.speakIdx=C.msgs.length-1;addXp(2);
+function tchPrompt(q){
+  const o=V.chat.ot;
+  if(q.t==="info")return {text:q.text,opts:["Verstanden – weiter ▶"]};
+  if(q.t==="rep"){
+    const t=stripG(q.it.idn);
+    return {text:(q.hdr?q.hdr+" ":"")+(q.new?"Hör zu und sprich nach.":"Sprich noch einmal nach.")+" – "+LT.tp.cmd,goal:t,gl:q.it.de,ph:q.it.ph||"",say:t};
+  }
+  if(q.t==="mc"){
+    if(q.opts0===undefined){q.opts0=shuffle([q.it.de].concat(tchDistract(q.it,2,"de")));}
+    return {text:"Was bedeutet: „"+stripG(q.it.idn)+"“?",opts:q.opts0,say:stripG(q.it.idn)};
+  }
+  if(q.t==="tr")return {text:(q.hdr?q.hdr+" ":"")+"Wie sagt man auf "+CFG.lname+": „"+q.it.de+"“? (sprechen oder schreiben)"};
+  if(q.t==="cl")return {text:(q.hdr?q.hdr+" ":"")+"Welches Wort passt? "+q.p,opts:q.o};
+  return {text:""};
+}
+function tchRun(){
+  const C=V.chat,o=C.ot;
+  if(o.i>=o.steps.length){tchFinish();return;}
+  const q=o.steps[o.i];o.cur=q;o.tries=0;
+  if(q.t==="final"){tchFinal();return;}
+  if(q.t==="dlg"){
+    const u=otUnit(),d={L:u.dlg.lines,p:0};o.dlg=d;
+    C.msgs.push({role:"assistant",text:"Jetzt alles zusammen – ein Dialog: „"+u.dlg.t+"“. Ich spiele die erste Rolle, du bist Person B. Antworte sinngemäß, ich gleiche mit der Vorlage ab."});
+    dlgAdvance(C,d,0);return;
+  }
+  const p=tchPrompt(q);
+  C.msgs.push(Object.assign({role:"assistant",ph:q.ph},p,{ph:p.ph||""}));
+  if(p.say)o.last={say:p.say,gl:p.gl||""};
+  render();
+  if(p.say&&C.auto)speak(p.say,.9);
+}
+function tchNext(){V.chat.ot.i++;tchRun();}
+function tchFinal(){
+  const C=V.chat,o=C.ot,u=otUnit();
+  const weak=Object.keys(o.wrong).map(id=>IDX[id]).filter(Boolean);
+  const unitIts=ITEMS.filter(x=>x.u===u.id);
+  let pool=weak.slice(0,5);
+  shuffle(unitIts.filter(x=>!pool.includes(x))).slice(0,Math.max(0,8-pool.length-2)).forEach(x=>pool.push(x));
+  const old=ITEMS.filter(x=>x.u!==u.id&&(S.box[x.id]||0)>0&&(S.box[x.id]||0)<4);
+  shuffle(old).slice(0,2).forEach(x=>pool.push(x));
+  const qs=shuffle(pool).map((it,k)=>k%2===0?{ph:5,t:"mc",it,dir:"toNative",mark:true,fin:true}:{ph:5,t:"tr",it,mark:true,fin:true});
+  o.steps.splice(o.i,1,...qs);
+  C.msgs.push({role:"assistant",text:"Zum Schluss die Abfrage: "+qs.length+" Fragen zu dem, was wir gemacht haben – plus ein paar Wörter von früher. Los geht's!"});
+  tchRun();
+}
+function tchFinish(){
+  const C=V.chat,o=C.ot,u=otUnit();o.done=true;
+  const weak=Object.keys(o.wrong).map(id=>IDX[id]).filter(Boolean);
+  const pct=o.fn?Math.round(100*o.fr/o.fn):100;
+  C.msgs.push({role:"assistant",text:LT.tp.end+" 🎉 Abfrage: "+o.fr+" / "+o.fn+" richtig ("+pct+" %). "+(weak.length?"Das solltest du noch üben: "+weak.slice(0,8).map(x=>stripG(x.idn)).join(", ")+". Ich kann diese Wörter jetzt noch einmal mit dir wiederholen.":"Alles sitzt – sehr gut!")+" Deine Wörter sind jetzt in den Karten (Wiederholung nach Plan)."});
+  addXp(5+(pct>=80?5:0));save();render();
+}
+function tchDrill(){
+  const C=V.chat,o=C.ot;const weak=Object.keys(o.wrong).map(id=>IDX[id]).filter(Boolean);if(!weak.length)return;
+  o.wrong={};o.done=false;
+  const st=[];weak.forEach(it=>st.push({ph:5,t:"rep",it,hdr:"Wiederholung:"}));weak.forEach(it=>st.push({ph:5,t:"mc",it,dir:"toNative",mark:true}));
+  o.steps=o.steps.slice(0,o.i).concat(st);o.i=o.steps.length-st.length;
+  C.msgs.push({role:"assistant",text:"Gut, wir wiederholen die schwachen Stellen."});tchRun();
+}
+function tchWrong(q){const o=V.chat.ot;if(q.it)o.wrong[q.it.id]=1;}
+function tchAnswer(txt,spoken){
+  const C=V.chat,o=C.ot,q=o.cur;
+  const um={role:"user",text:txt,spoken:!!spoken};C.msgs.push(um);
+  if(q.t==="info"){tchNext();return;}
+  const isCl=q.t==="cl",isMc=q.t==="mc";
+  const target=isCl?q.a:stripG(q.it.idn);
+  let ok,ev=null;
+  if(isCl)ok=norm(txt)===norm(q.a);
+  else if(isMc)ok=norm(txt)===norm(q.it.de);
+  else{ev=evaluate(target,[txt]);um.cmp={target,score:ev.score,words:ev.words};ok=ev.score>=85;}
+  if(q.fin){}
+  if(ok){
+    o.n++;o.right++;if(q.fin){o.fn++;o.fr++;}addXp(q.t==="rep"?1:2);
+    if(q.it&&(q.mark||q.t==="rep")){if(q.t==="rep"&&!q.new&&false){}tchMark(q.it.id,true);}
+    C.msgs.push({role:"assistant",text:pick(LT.tp.ok)+" ✅"+(isCl&&q.n?" "+q.n:"")+(isMc?" „"+stripG(q.it.idn)+"“ = „"+q.it.de+"“":"")});
+    o.i++;tchRun();return;
+  }
+  if(!isCl&&!isMc&&o.tries<1){
+    o.tries++;const red=(ev.words||[]).filter(w=>w.s<.85).map(w=>w.w).join(", ");
+    C.msgs.push({role:"assistant",text:"Fast – achte auf: "+(red||"…")+". Hör dir das Vorbild an und versuche es noch einmal. – "+LT.tp.again,goal:target});
+    render();if(C.auto)speak(target,.7);o.last={say:target,gl:q.it?q.it.de:""};return;
+  }
+  o.n++;if(q.fin){o.fn++;}tchWrong(q);if(q.it)tchMark(q.it.id,false);
+  if(isCl)C.msgs.push({role:"assistant",text:"Nicht ganz – richtig ist: „"+q.a+"“. "+(q.n||"")});
+  else if(isMc)C.msgs.push({role:"assistant",text:"Nicht ganz – „"+stripG(q.it.idn)+"“ bedeutet „"+q.it.de+"“.",say:stripG(q.it.idn),gl:q.it.de});
+  else C.msgs.push({role:"assistant",text:"Kein Problem – so heißt es richtig:",goal:target});
+  o.last={say:target,gl:q.it?q.it.de:""};
+  o.i++;tchRun();
+}
+/* Fragen an den Lehrer mitten in der Lektion */
+function tchQuestion(txt,spoken){
+  const C=V.chat,o=C.ot;miniBuild();
+  const um={role:"user",text:txt,spoken:!!spoken};C.msgs.push(um);
+  const ai=miniIntent(txt);let intent=ai.intent;
+  if(RX.repeat.test(txt)){intent="repeat";}else if(RX.slow.test(txt)){intent="slow";}
+  const resume=()=>{o.ask=false;if(o.done){render();return;}
+    if(o.dlg){render();return;}
+    const q=o.cur;if(!q)return;const p=tchPrompt(q);
+    C.msgs.push(Object.assign({role:"assistant",text:"Zurück zur Aufgabe: "+p.text},p,{text:"Zurück zur Aufgabe: "+p.text,say:undefined}));render();};
+  if(intent==="dialog"){o.ask=false;if(o.done||o.dlg){}else{const k=o.steps.findIndex((s,j)=>j>=o.i&&s.t==="dlg");if(k>=0){o.i=k;tchRun();return;}}}
+  if(intent==="quiz"){const k=o.steps.findIndex((s,j)=>j>=o.i&&s.t==="final");if(k>=0){o.i=k;o.dlg=null;tchRun();return;}}
+  if(intent==="nextlesson"){C.msgs.push({role:"assistant",text:"Gerne – wir können jederzeit zur nächsten Lektion wechseln. Tippe unten auf „Nächste Lektion“."});o.skip=true;render();return;}
+  if(intent==="stop"){C.msgs.push({role:"assistant",text:"Kein Problem, wir machen eine Pause. Sag Bescheid oder tippe auf „Weiter“, dann geht es an der gleichen Stelle weiter.",opts:["Weiter ▶"]});o.paused=true;render();return;}
+  if(!["target","unknown"].includes(intent)&&(ai.conf>=.3||intent==="repeat"||intent==="slow")){
+    const dlgSave=o.dlg;o.dlg=null;
+    miniDo(C,intent,txt,miniSlot(txt),um);o.dlg=dlgSave;resume();return;
+  }
+  miniFixedReply(C,txt,mTok(txt),um);resume();
+}
+/* Entscheidet: Antwort auf die Aufgabe oder Frage an den Lehrer */
+function tchHandle(txt,spoken){
+  const C=V.chat,o=C.ot;txt=(txt||"").trim();if(!txt||!o)return;miniBuild();
+  if(o.mode==="talk"){talkHandle(txt,spoken);return;}
+  if(o.mode!=="teach")return;
+  if(o.done){tchQuestion(txt,spoken);return;}
+  if(o.paused){o.paused=false;}
+  const q=o.cur;
+  if(o.ask){tchQuestion(txt,spoken);return;}
+  if(o.dlg){
+    const ai=miniIntent(txt);
+    const d=o.dlg,exp=d.L[d.p],ev=evaluate(exp[1],[txt]);
+    if(ev.score<45&&!["target","unknown"].includes(ai.intent)&&ai.conf>=.6){tchQuestion(txt,spoken);return;}
+    const um={role:"user",text:txt,spoken:!!spoken,cmp:{target:exp[1],score:ev.score,words:ev.words}};C.msgs.push(um);
+    if(ev.score>=85)addXp(2);
+    dlgAdvance(C,d,d.p+1);return;
+  }
+  if(!q)return;
+  if(q.t==="info"){const ai=miniIntent(txt);if(/^(ok|okay|weiter|ja|verstanden|next|continue|yes)\b/i.test(txt)||["target","unknown"].includes(ai.intent)){tchAnswer(txt,spoken);}else tchQuestion(txt,spoken);return;}
+  if(q.t==="mc"||q.t==="cl"){
+    const opts=q.t==="mc"?q.opts0:q.o;
+    if(opts.some(x=>norm(x)===norm(txt))){tchAnswer(txt,spoken);return;}
+    tchQuestion(txt,spoken);return;
+  }
+  // rep / tr: Zielsprache = Antwort; klare Fragen auf Deutsch = Frage
+  const target=stripG(q.it.idn),ev=evaluate(target,[txt]);
+  if(ev.score<55){const ai=miniIntent(txt);if(!["target","unknown"].includes(ai.intent)&&ai.conf>=(ev.score<35?.4:.6)){tchQuestion(txt,spoken);return;}}
+  tchAnswer(txt,spoken);
+}
+function tchPick(i){
+  const C=V.chat,o=C.ot;if(!o)return;
+  const last=C.msgs[C.msgs.length-1];if(!last||!last.opts)return;
+  const val=last.opts[i];
+  if(o.mode==="place"){
+    C.msgs.push({role:"user",text:val});
+    const ok=norm(val)===norm(o.cur[1]);if(ok)o.right[o.li]++;
+    o.k++;
+    if(o.k>=3){
+      if(o.right[o.li]>=2){if(o.li>=3){otPlaceDone(3,true);return;}o.li++;o.k=0;o.qs=[];}
+      else{otPlaceDone(o.li);return;}
     }
-  }catch(e){C.err="Keine Verbindung zur KI: "+((e&&e.message)||e);}
-  C.busy=false;render();
-  if(!C.err&&C.auto&&C.speakIdx!=null&&C.msgs[C.speakIdx])speak(C.msgs[C.speakIdx].text,.9);
+    otPlaceAsk();return;
+  }
+  if(val==="Zeig mir die Lösung"&&o.dlg){
+    const e=o.dlg.L[o.dlg.p];last.opts=null;
+    C.msgs.push({role:"assistant",text:"So könntest du antworten – sprich es nach:",goal:e[1],gl:e[2]});o.last={say:e[1],gl:e[2]};render();if(C.auto)speak(e[1],.9);return;
+  }
+  last.opts=null;
+  if(val==="Weiter ▶"){o.paused=false;const q=o.cur;if(q&&q.t==="info"){C.msgs.push({role:"user",text:"Weiter"});tchNext();}else{C.msgs.pop();C.msgs.push({role:"user",text:"Weiter"});if(q&&!o.done){const p=tchPrompt(q);C.msgs.push(Object.assign({role:"assistant"},p));}render();}return;}
+  if(val==="Verstanden – weiter ▶"){C.msgs.push({role:"user",text:"Verstanden"});tchNext();return;}
+  tchHandle(val,false);
 }
-function chatSend(txt,spoken){
-  const C=V.chat;if(offline())return otHandle(txt,spoken);txt=(txt||"").trim();if(!txt||C.busy)return;
-  C.msgs.push({role:"user",text:txt,spoken:!!spoken});chatAsk();
-}
+function chatSend(txt,spoken){tchHandle(txt,spoken);}
 function chatListen(retryIdx){
   if(!SRC){V.chat.err=LT.srUnsup;render();return;}
   stopAudio();releaseAudio();
@@ -1760,7 +1905,7 @@ function chatListen(retryIdx){
   try{r.start();}catch(e){V.chat.err="Spracherkennung konnte nicht starten.";render();}
 }
 function cmpHtml(m,i){
-  if(!m.cmp)return m.corr?`<div class="small" style="margin-top:6px">✏️ ${esc(m.corr)}</div>`:"";
+  if(!m.cmp)return "";
   const c=m.cmp,sc=(c.retry||c).score,w=(c.retry||c).words;
   const cls=sc>=85?"var(--ok)":sc>=60?"var(--mid)":"var(--bad)";
   if(!c.words&&!c.retry)return `<div class="small" style="margin-top:6px;color:var(--ok)">✅ Perfekt – keine Korrektur nötig</div>`;
@@ -1771,108 +1916,38 @@ function cmpHtml(m,i){
 function vOT(){
   const C=V.chat,o=C.ot,place=needPlace();
   const last=C.msgs[C.msgs.length-1];
+  const nl=t=>esc(t).replace(/\n/g,"<br>");
   const bub=C.msgs.map((m,i)=>m.role==="assistant"
-   ?`<div class="bub A"><b>${esc(m.text)}</b>${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button></div>`:""}${m.chips&&m===last?`<div class="row" style="margin-top:8px">${m.chips.map((c,k)=>`<button class="btn sm" data-act="miniChip" data-i="${i}" data-k="${k}">${esc(c[0])}</button>`).join("")}</div>`:""}${m.say?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><b>${esc(m.say)}</b> <button class="btn sm" data-act="chatSayS" data-i="${i}">🔊</button>${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.opts&&m===last?`<div style="margin-top:8px">${m.opts.map((x,k)=>`<button class="btn opt" data-act="otPick" data-i="${k}">${esc(x)}</button>`).join("")}</div>`:""}</div>`
+   ?`<div class="bub A"><b>${nl(m.text)}</b>${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button>${m.ph?`<div class="ph" style="font-size:13px">${esc(m.ph)}</div>`:""}${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.chips&&m===last?`<div class="row" style="margin-top:8px">${m.chips.map((c,k)=>`<button class="btn sm" data-act="miniChip" data-i="${i}" data-k="${k}">${esc(c[0])}</button>`).join("")}</div>`:""}${m.say&&!m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><b>${esc(m.say)}</b> <button class="btn sm" data-act="chatSayS" data-i="${i}">🔊</button>${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.opts&&m===last?`<div style="margin-top:8px">${m.opts.map((x,k)=>`<button class="btn opt" data-act="otPick" data-i="${k}">${esc(x)}</button>`).join("")}</div>`:""}</div>`
    :`<div class="bub B"><b>${esc(m.text)}</b>${cmpHtml(m,i)}</div>`).join("");
   const manual=`<div class="small" style="margin:12px 0 6px">Oder wähle dein Level selbst:</div><div class="row">${LEVELS.map(l=>`<button class="btn sm" data-act="setLevel" data-l="${l}">${l}</button>`).join("")}</div>`;
-  const needInput=o&&!o.done&&((o.mode==="tutor"&&o.cur&&o.cur.t!=="cl")||o.mode==="talk");
-  const keyCard=C.showKey?`<div class="card"><h3>KI-Modus (optional)</h3><p class="small">Mit einem eigenen API-Schlüssel von Anthropic (console.anthropic.com) antwortet eine KI frei auf alles, was du sagst. Der Schlüssel bleibt nur auf diesem Gerät. Der Offline-Tutor braucht keinen Schlüssel.</p><input type="password" id="akin" placeholder="API-Schlüssel (sk-ant-…)" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="row" style="margin-top:8px"><button class="btn pri" data-act="chatSaveKey">Speichern</button></div><div class="small" id="akmsg" style="margin-top:6px"></div></div>`:"";
+  const teach=o&&o.mode==="teach",talk=o&&o.mode==="talk";
+  const dlgWait=teach&&o.dlg;
+  const needInput=o&&!o.done&&((teach&&o.cur&&o.cur.t!=="info"&&o.cur.t!=="mc"&&o.cur.t!=="cl")||dlgWait||talk||(teach&&(o.ask||o.paused)));
+  const inputOn=needInput||(teach&&o.done);
+  const units=unitsIn("all");
+  const sel=`<select id="tunit" style="margin-bottom:8px;max-width:100%">${units.map(u=>`<option value="${u.id}" ${otUnit().id===u.id?"selected":""}>${u.n}. ${esc(u.t)}</option>`).join("")}</select>`;
   const start=C.msgs.length?"":(place
    ?`<div class="card"><p>Der Tutor stellt dir kurze Aufgaben, vom Leichten zum Schweren, und findet so dein Level (A1–B2). Das dauert etwa 3 Minuten.</p><button class="btn pri" data-act="chatStart">Einstufung starten</button>${manual}</div>`
-   :`<div class="card"><p>Dein Tutor führt dich durch die Lektion „${esc(otUnit().n+". "+otUnit().t)}“: Wörter nachsprechen, Sätze bauen, Aufgaben lösen. Nach jeder Antwort siehst du sofort den Abgleich mit der richtigen Form.</p><div class="row"><button class="btn pri" data-act="chatStart">Gespräch starten</button><button class="btn" data-act="talkStart">💬 Frei fragen &amp; sprechen</button></div></div>`);
-  const done=o&&o.done?`<div class="row" style="margin-top:10px"><button class="btn pri" data-act="otNext">Zur nächsten Lektion</button><button class="btn" data-act="chatReset">Nochmal</button></div>`:"";
-  $("#view").innerHTML=`<h2>${place?"Einstufung":"Tutor"}</h2>
-   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button><button class="btn sm" data-act="chatOffline">📘 Offline-Tutor</button><button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}<button class="btn sm" data-act="chatAI">🤖 KI-Modus</button></div>
-   ${keyCard}${start}${bub}${done}
-   ${needInput?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><input type="text" id="cin" placeholder="Sprich oder schreibe …" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
+   :`<div class="card"><p>Dein Lehrer führt dich durch die Lektion: erklärt die Basics, spricht die Wörter vor, lässt dich nachsprechen, baut Sätze mit dir, übt die Grammatik, spielt einen Dialog und fragt am Ende ab. Fragen kannst du jederzeit stellen.</p>${sel}<div class="row"><button class="btn pri" data-act="chatStart">Lektion starten</button><button class="btn" data-act="talkStart">💬 Frei fragen &amp; sprechen</button></div></div>`);
+  const weakN=o&&o.wrong?Object.keys(o.wrong).length:0;
+  const done=o&&o.done?`<div class="row" style="margin-top:10px">${weakN?`<button class="btn pri" data-act="tchDrill">Schwache Wörter wiederholen</button>`:""}<button class="btn ${weakN?"":"pri"}" data-act="otNext">Nächste Lektion</button><button class="btn" data-act="chatReset">Lektion neu starten</button></div>`:"";
+  const prog=teach&&!o.done?`<div class="small" style="margin-bottom:8px">Lektion ${otUnit().n} · ${TCH_PH[o.cur?o.cur.ph:0]} · Schritt ${Math.min(o.i+1,o.steps.length)} von ${o.steps.length}<div style="height:6px;border-radius:3px;background:var(--line);margin-top:4px"><div style="height:6px;border-radius:3px;background:var(--red);width:${Math.round(100*o.i/Math.max(1,o.steps.length))}%"></div></div></div>`:"";
+  $("#view").innerHTML=`<h2>${place?"Einstufung":"Lehrer"}</h2>
+   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
+   ${prog}${start}${bub}${done}
+   ${inputOn?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
   const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter"){const v=i.value;i.value="";chatSend(v);}};
+  const s2=$("#tunit");if(s2)s2.onchange=e=>{V.unit=e.target.value;};
   window.scrollTo(0,1e6);
 }
 function vChat(){
-  const C=V.chat,key=getAK();
+  const C=V.chat;
   if(C.result){
-    $("#view").innerHTML=`<h2>Tutor</h2><div class="card"><h3>Dein Ergebnis</h3><div class="score">${C.result.lvl}</div><p>${esc(C.result.text)}</p><p class="small">Lektionen, Karten und Übungen beginnen jetzt auf deinem Level.</p><div class="row"><button class="btn pri" data-act="toLesson">Zur ersten Lektion</button><button class="btn" data-act="chatDone">Mit dem Tutor weiterüben</button></div></div>`;
+    $("#view").innerHTML=`<h2>Einstufung</h2><div class="card"><h3>Dein Ergebnis</h3><div class="score">${C.result.lvl}</div><p>${esc(C.result.text)}</p><p class="small">Lektionen, Karten und Übungen beginnen jetzt auf deinem Level.</p><div class="row"><button class="btn pri" data-act="toLesson">Zur ersten Lektion</button><button class="btn" data-act="chatDone">Mit dem Lehrer starten</button></div></div>`;
     return;
   }
-  if(offline()){vOT();return;}
-  if(needPlace()){
-    const bubs=C.msgs.map(m=>m.role==="assistant"?`<div class="bub A"><b>${esc(m.text)}</b></div>`:`<div class="bub B"><b>${esc(m.text)}</b></div>`).join("");
-    const manual=`<div class="small" style="margin:12px 0 6px">Oder wähle dein Level selbst:</div><div class="row">${LEVELS.map(l=>`<button class="btn sm" data-act="setLevel" data-l="${l}">${l}</button>`).join("")}</div>`;
-    if(!key){$("#view").innerHTML=`<h2>Einstufung</h2><div class="card"><p>Der Tutor stellt dir ein paar kurze Fragen und findet so dein Level (A1–B2). Dafür brauchst du einen eigenen API-Schlüssel von Anthropic (console.anthropic.com → API Keys). Er wird nur auf diesem Gerät gespeichert.</p><input type="password" id="akin" placeholder="API-Schlüssel (sk-ant-…)" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="row" style="margin-top:8px"><button class="btn pri" data-act="chatSaveKey">Speichern</button></div><div class="small" id="akmsg" style="margin-top:6px"></div>${manual}</div>`;return;}
-    $("#view").innerHTML=`<h2>Einstufung</h2>
-     ${C.msgs.length?"":`<div class="card"><p>Ich stelle dir etwa sieben kurze Fragen – du antwortest auf Englisch, schriftlich oder mit dem Mikrofon. Keine Sorge: Fehler sind okay, es geht nur darum, dein Level zu finden.</p><button class="btn pri" data-act="chatStart">Einstufung starten</button>${manual}</div>`}
-     ${bubs}${C.busy?`<div class="small">Tutor denkt nach …</div>`:""}${C.err?`<div class="warn">${esc(C.err)}</div>`:""}
-     ${C.msgs.length?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><input type="text" id="cin" placeholder="Sprich oder schreibe …" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
-    const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter")chatSend(i.value);};window.scrollTo(0,1e6);
-    return;
-  }
-  if(!key){
-    $("#view").innerHTML=`<h2>Tutor</h2><div class="card"><p>Dein persönlicher Tutor: Er führt dich durch die Lektion, spricht mit dir in der Zielsprache, korrigiert dich und vergleicht deine gesprochene Antwort sofort mit der richtigen Form.</p>
-     <p class="small">Dafür brauchst du einen eigenen API-Schlüssel von Anthropic (console.anthropic.com → API Keys). Er wird nur auf diesem Gerät gespeichert und nur an Anthropic gesendet. Die Nutzung kostet wenige Cent pro Gespräch.</p>
-     <input type="password" id="akin" placeholder="API-Schlüssel (sk-ant-…)" autocomplete="off" autocapitalize="off" spellcheck="false">
-     <div class="row" style="margin-top:8px"><button class="btn pri" data-act="chatSaveKey">Speichern</button></div><div class="small" id="akmsg" style="margin-top:6px"></div></div>`;
-    return;
-  }
-  const bub=C.msgs.map((m,i)=>m.role==="assistant"
-   ?`<div class="bub A"><b>${esc(m.text)}</b><div><button class="btn sm" data-act="chatSay" data-i="${i}">🔊</button></div>${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button></div>`:""}${m.tip?`<span>💡 ${esc(m.tip)}</span>`:""}</div>`
-   :`<div class="bub B"><b>${esc(m.text)}</b>${m.spoken?"":""}${cmpHtml(m,i)}</div>`).join("");
-  $("#view").innerHTML=`<h2>Tutor</h2>
-   <div class="row" style="margin-bottom:10px"><select id="clvl">${LEVELS.map(l=>`<option value="${l}" ${C.level===l?"selected":""}>${l}</option>`).join("")}</select>
-    <select id="ctopic">${CHAT_TOPICS.map(t=>`<option value="${t[0]}" ${C.topic===t[0]?"selected":""}>${t[1]}</option>`).join("")}</select>
-    <button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button><button class="btn sm" data-act="chatReset">Neu starten</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}</div>
-   ${C.topic==="tutor"?`<div class="small" style="margin-bottom:8px">Lektion: ${esc(chatUnit().n+". "+chatUnit().t)}</div>`:""}
-   ${C.msgs.length?"":`<div class="card"><p>Tippe auf „Gespräch starten“. Der Tutor beginnt, du antwortest mit dem Mikrofon oder schriftlich.</p><button class="btn pri" data-act="chatStart">Gespräch starten</button></div>`}
-   ${bub}${C.busy?`<div class="small">Tutor denkt nach …</div>`:""}${C.err?`<div class="warn">${esc(C.err)}</div>`:""}
-   ${C.msgs.length?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><input type="text" id="cin" placeholder="Sprich oder schreibe …" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}
-   <div class="row" style="margin-top:14px"><button class="btn sm" data-act="chatDelKey">Schlüssel löschen</button></div>`;
-  $("#clvl").onchange=e=>{C.level=e.target.value;if(CFG.placement){S.level=C.level;save();}};$("#ctopic").onchange=e=>{C.topic=e.target.value;C.msgs=[];C.goal=null;render();};
-  const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter")chatSend(i.value);};
-  window.scrollTo(0,1e6);
-}
-
-
-/* ===================== OFFLINE-TUTOR (ohne API) ===================== */
-const stripG=t=>String(t).split(" – ")[0].trim();
-const offline=()=>!(V.chat.useAI&&getAK());
-function otUnit(){return UNIT(V.unit||nextUnit().id);}
-function otStart(){
-  const C=V.chat,u=otUnit();
-  const vs=u.vocab.slice(0,6).map(v=>({t:"rep",goal:stripG(v[0]),gl:v[1]}));
-  const ss=u.sent.slice(0,5).map(v=>({t:"rep",goal:v[0],gl:v[1]}));
-  const tr=shuffle(u.sent.slice()).slice(0,3).map(v=>({t:"tr",goal:v[0],gl:v[1]}));
-  const cl=shuffle((u.ex||[]).slice()).slice(0,3).map(c=>({t:"cl",p:c[0],a:c[1],o:shuffle(c[2].slice()),n:c[3]}));
-  if(vs[0])vs[0].hdr="Beginnen wir mit den Wörtern.";if(ss[0])ss[0].hdr="Jetzt die ganzen Sätze – gebaut aus den Wörtern von eben.";if(tr[0])tr[0].hdr="Jetzt wird es aktiv: Übersetze in die Zielsprache.";if(cl[0])cl[0].hdr="Zum Schluss ein paar Lückensätze – wähle das passende Wort.";
-  C.ot={mode:"tutor",q:vs.concat(ss,tr,cl),i:0,tries:0,right:0,n:0,done:false};C.msgs=[];C.err="";
-  C.msgs.push({role:"assistant",text:"Willkommen! Heute üben wir: "+u.n+". "+u.t+". Ich führe dich Schritt für Schritt durch die Lektion – erst Wörter, dann Sätze, dann kleine Aufgaben. Sprich jede Vorgabe nach (Mikrofon oder tippen) – ich vergleiche sofort mit der richtigen Form."});
-  otAsk();
-}
-function otAsk(){
-  const C=V.chat,o=C.ot;
-  if(o.i>=o.q.length){
-    o.done=true;C.msgs.push({role:"assistant",text:"Geschafft! "+o.right+" von "+o.n+" Aufgaben richtig. Du kannst die Lektion jetzt vertiefen (Karten, Übungen) oder mit der nächsten weitermachen."});addXp(5);render();return;
-  }
-  const q=o.q[o.i];o.cur=q;o.tries=0;
-  const pre=q.hdr?q.hdr+" ":"";
-  if(q.t==="rep")C.msgs.push({role:"assistant",text:pre+"Sag nach: „"+q.gl+"“",goal:q.goal});
-  if(q.t==="tr")C.msgs.push({role:"assistant",text:pre+"Übersetze: „"+q.gl+"“"});
-  if(q.t==="cl")C.msgs.push({role:"assistant",text:pre+"Welches Wort passt? "+q.p,opts:q.o});
-  render();
-  if(q.t==="rep"&&C.auto)speak(q.goal,.9);
-}
-function otHandle(txt,spoken){
-  const C=V.chat,o=C.ot;txt=(txt||"").trim();if(!txt||!o||o.done||o.mode==="place")return;
-  if(o.mode==="talk"){talkHandle(txt,spoken);return;}
-  const q=o.cur,um={role:"user",text:txt,spoken:!!spoken};C.msgs.push(um);
-  const target=q.t==="cl"?q.a:q.goal;
-  const ev=q.t==="cl"?{score:norm(txt)===norm(q.a)?100:0,words:null}:evaluate(target,[txt]);
-  if(q.t!=="cl")um.cmp={target,score:ev.score,words:ev.words};
-  if(q.t==="cl"&&o.opened)o.opened=false;
-  if(ev.score>=85){o.n++;o.right++;addXp(2);C.msgs.push({role:"assistant",text:(q.t==="cl"?"Richtig! ✅ "+(q.n||""):"Sehr gut! ✅")});o.i++;otAsk();return;}
-  if(o.tries<1&&q.t!=="cl"){
-    o.tries++;const red=(ev.words||[]).filter(w=>w.s<.85).map(w=>w.w).join(", ");
-    C.msgs.push({role:"assistant",text:"Fast – achte auf: "+(red||"…")+". Hör dir das Vorbild an und versuche es noch einmal.",goal:q.t==="rep"?q.goal:undefined});render();if(q.t==="rep"&&C.auto)speak(q.goal,.7);return;
-  }
-  o.n++;C.msgs.push({role:"assistant",text:(q.t==="cl"?"Nicht ganz – richtig ist: "+q.a+". "+(q.n||""):"Kein Problem – so heißt es richtig:"),goal:q.t==="cl"?undefined:target});o.i++;otAsk();
+  vOT();
 }
 
 /* ===================== MINI-KI (selbstgebaut, ohne Internet) ===================== */
@@ -1982,8 +2057,9 @@ function stripHtml(h){return String(h).replace(/<br\s*\/?>/gi," ").replace(/<\/(
 function dlgAdvance(C,d,j){
   const o=C.ot,L=d.L;let say="",gl="";
   while(j<L.length&&L[j][0]!=="B"){say=L[j][1];gl=L[j][2];if(say){C.msgs.push({role:"assistant",text:"",say,gl});o.last={say,gl};}j++;}
-  if(j>=L.length){o.dlg=null;C.msgs.push({role:"assistant",text:"Dialog geschafft! 🎉 Sag „Dialog“ für einen neuen."});addXp(5);render();if(say&&C.auto)speak(say,.9);return;}
-  d.p=j;C.msgs.push({role:"assistant",text:"Du bist dran – antworte sinngemäß: „"+L[j][2]+"“"});render();if(say&&C.auto)speak(say,.9);
+  if(j>=L.length){o.dlg=null;if(o.mode==="teach"){C.msgs.push({role:"assistant",text:"Dialog geschafft! 🎉 Gut gemacht."});addXp(5);render();if(say&&C.auto)speak(say,.9);tchNext();return;}
+    C.msgs.push({role:"assistant",text:"Dialog geschafft! 🎉 Sag „Dialog“ für einen neuen."});addXp(5);render();if(say&&C.auto)speak(say,.9);return;}
+  d.p=j;C.msgs.push({role:"assistant",text:"Du bist dran – antworte sinngemäß: „"+L[j][2]+"“",opts:o.mode==="teach"?["Zeig mir die Lösung"]:undefined});render();if(say&&C.auto)speak(say,.9);
 }
 function quizNext(C){
   const o=C.ot,u=otUnit(),pool=u.sent.length?u.sent:MINI.items.filter(x=>x.k==="s").map(x=>[x.tgt,x.gl]);
@@ -2148,23 +2224,6 @@ function otPlaceDone(li,all){
   const txt=all?"Stark! Du hast alle Stufen sicher gelöst – du startest bei "+S.level+".":(li===0?"Du startest ganz von vorn bei A1 – perfekt für den Einstieg.":"Die Aufgaben der Stufe "+S.level+" waren noch nicht ganz sicher – dort beginnst du.");
   C.result={lvl:S.level,text:txt};C.msgs=[];C.ot=null;render();
 }
-function otPick(i){
-  const C=V.chat,o=C.ot;if(!o)return;
-  const last=C.msgs[C.msgs.length-1];if(!last||!last.opts)return;
-  const val=last.opts[i];
-  if(o.mode==="place"){
-    C.msgs.push({role:"user",text:val});
-    const ok=norm(val)===norm(o.cur[1]);if(ok)o.right[o.li]++;
-    o.k++;
-    if(o.k>=3){
-      if(o.right[o.li]>=2){if(o.li>=3){otPlaceDone(3,true);return;}o.li++;o.k=0;o.qs=[];}
-      else{otPlaceDone(o.li);return;}
-    }
-    otPlaceAsk();return;
-  }
-  last.opts=null;otHandle(val,false);
-}
-
 /* ===================== EVENTS ===================== */
 function openUnit(id){V.unit=id;V.utab="intro";V.tab="path";Rec.stop(true);stopAudio();render();window.scrollTo(0,0);}
 document.addEventListener("click",e=>{
@@ -2174,22 +2233,20 @@ document.addEventListener("click",e=>{
   const a=dsx.act;
   switch(a){
    case"go":go(dsx.tab);break;
-   case"chatSaveKey":{V.chat.useAI=true;V.chat.showKey=false;const v=(($("#akin")||{}).value||"").trim();if(!/^sk-/.test(v)){$("#akmsg").textContent="Das sieht nicht wie ein API-Schlüssel aus (beginnt mit sk-).";break;}setAK(v);render();break;}
-   case"chatDelKey":setAK("");V.chat.useAI=false;V.chat.msgs=[];V.chat.ot=null;render();break;
    case"chatReset":V.chat.ot=null;V.chat.msgs=[];V.chat.err="";stopAudio();render();break;
-   case"chatStart":if(offline()){needPlace()?otPlaceStart():otStart();}else chatAsk();break;
-   case"otPick":otPick(+dsx.i);break;
+   case"chatStart":needPlace()?otPlaceStart():otStart();break;
+   case"tchAsk":{const o=V.chat.ot;if(o){o.ask=!o.ask;render();const i=$("#cin");if(i)i.focus();}break;}
+   case"tchDrill":tchDrill();break;
+   case"otPick":tchPick(+dsx.i);break;
    case"talkStart":talkStart();break;
    case"miniChip":{const m=V.chat.msgs[+dsx.i];const ch=m.chips[+dsx.k];m.chips=null;V.chat.msgs.push({role:"user",text:ch[0]});miniDo(V.chat,ch[1],m.q,m.slot,V.chat.msgs[V.chat.msgs.length-1]);break;}
    case"chatSayS":speak(V.chat.msgs[+dsx.i].say,.9);break;
-   case"chatAI":V.chat.showKey=!V.chat.showKey;V.chat.useAI=false;render();break;
-   case"chatOffline":V.chat.useAI=false;V.chat.showKey=false;V.chat.msgs=[];V.chat.ot=null;render();break;
    case"otNext":V.chat.msgs=[];V.chat.ot=null;openUnit(nextUnit().id);break;
    case"chatSendBtn":chatSend(($("#cin")||{}).value);break;
    case"chatListen":chatListen();break;
-   case"chatDone":V.chat.result=null;V.chat.topic="tutor";render();break;
+   case"chatDone":V.chat.result=null;render();break;
    case"setLevel":S.level=dsx.l;S.placed=Date.now();save();V.chat.level=S.level;V.chat.msgs=[];V.chat.result=null;V.cards=null;V.ex=null;render();break;
-   case"relevel":S.level=null;V.chat.msgs=[];V.chat.result=null;V.chat.topic="tutor";save();render();break;
+   case"relevel":S.level=null;V.chat.msgs=[];V.chat.result=null;save();render();break;
    case"toLesson":openUnit(nextUnit().id);break;
    case"chatRetry":chatListen(+dsx.i);break;
    case"chatAuto":V.chat.auto=!V.chat.auto;render();break;
