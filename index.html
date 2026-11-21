@@ -1935,7 +1935,7 @@ function tchPick(i){
   tchHandle(val,false);
 }
 function chatSend(txt,spoken){tchHandle(txt,spoken);}
-let chatSR=null,chatSRgen=0;
+let chatSR=null,chatSRgen=0,lvlStop=null;
 async function chatListen(retryIdx){
   if(!SRC){V.chat.err=LT.srUnsup;render();return;}
   if(chatSR&&Date.now()-(chatSR._t0||0)<15000){tlog("Tipp während Aufnahme → Stopp");try{chatSR.stop();}catch(e){}return;}   // zweiter Tipp = fertig, auswerten
@@ -1946,7 +1946,7 @@ async function chatListen(retryIdx){
   const st=()=>$("#cstat"),say=t=>{const e=st();if(e)e.textContent=t;};
   const alts=[];let interim="",srErr=null,tries=0,t0=Date.now(),finished=false;
   const finish=()=>{
-    if(finished)return;finished=true;chatSR=null;micBusy=false;
+    if(finished)return;finished=true;chatSR=null;micBusy=false;if(lvlStop)lvlStop();
     try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
     if(!alts.length&&interim)alts.push(interim);
     if(!alts.length){
@@ -1968,7 +1968,8 @@ async function chatListen(retryIdx){
         if(e.results[i].isFinal){got=true;for(let k=0;k<e.results[i].length;k++)alts.push(e.results[i][k].transcript);}
         else{interim=e.results[i][0].transcript;say("🎙 "+interim+" …");}
       }};
-    r.onerror=e=>{srErr=e.error;tlog("SR Fehler: "+e.error);};
+    ["audiostart","soundstart","speechstart","speechend","soundend","audioend","nomatch"].forEach(n=>{r["on"+n]=()=>tlog("SR Ereignis: "+n);});
+    r.onerror=e=>{srErr=e.error;tlog("SR Fehler: "+e.error+(e.message?" ("+e.message+")":""));};
     r.onend=()=>{
       tlog("SR ende (Ergebnisse: "+alts.length+", Zwischen: "+(interim?1:0)+")");
       if(gen!==chatSRgen||finished)return;
@@ -1980,6 +1981,15 @@ async function chatListen(retryIdx){
   };
   say("🎙 Mikrofon wird vorbereitet …");
   run();
+  if(!isIOS&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&(window.AudioContext||window.webkitAudioContext)){
+    navigator.mediaDevices.getUserMedia({audio:true}).then(st=>{
+      const ctx=new (window.AudioContext||window.webkitAudioContext)(),an=ctx.createAnalyser();an.fftSize=512;ctx.createMediaStreamSource(st).connect(an);
+      const d=new Uint8Array(an.fftSize);let mx=0;const iv=setInterval(()=>{an.getByteTimeDomainData(d);for(let i=0;i<d.length;i++)mx=Math.max(mx,Math.abs(d[i]-128));},100);
+      const t=((st.getAudioTracks()[0]||{}).label)||"?";
+      lvlStop=()=>{clearInterval(iv);try{st.getTracks().forEach(x=>x.stop());}catch(e){}try{ctx.close();}catch(e){}tlog("Mikrofon \""+t+"\": Pegel max "+mx+"/128");lvlStop=null;};
+      if(finished)lvlStop();
+    }).catch(e=>tlog("Pegel-Messung nicht möglich: "+(e&&e.name)));
+  }
   setTimeout(()=>{if(gen===chatSRgen&&!finished){if(chatSR){try{chatSR.stop();}catch(e){}}setTimeout(()=>{if(gen===chatSRgen&&!finished)finish();},1500);}},12000);   // Sicherheits-Stopp
 }
 function cmpHtml(m,i){
