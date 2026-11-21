@@ -11,85 +11,126 @@
 <meta name="referrer" content="no-referrer">
 <title>Englisch lernen (A1–B2)</title>
 <style>
-:root{--bg:#f2f2f7;--card:#ffffff;--ink:#000000;--ink2:#3c3c43;--mute:#8e8e93;--line:rgba(60,60,67,.14);--fill:rgba(120,120,128,.12);--red:#e11d2e;--redd:#b8101f;--ok:#34c759;--okd:#1f8a3d;--mid:#ff9f0a;--bad:#ff3b30;--soft:rgba(120,120,128,.10);--r:14px;--sh:0 0.5px 0 rgba(0,0,0,.04)}
-@media(prefers-color-scheme:dark){:root{--bg:#000000;--card:#1c1c1e;--ink:#ffffff;--ink2:#ebebf5;--mute:#8e8e93;--line:rgba(84,84,88,.55);--fill:rgba(120,120,128,.24);--red:#ff453a;--redd:#ff6961;--soft:rgba(120,120,128,.20);--okd:#30d158}}
+/* Liquid Glass – clean, modern, Apple-like */
+:root{
+ --bg:#eef0f6;--ink:#111114;--ink2:#3a3a40;--mute:#7c7c86;
+ --red:#e5202f;--redd:#c4121f;--ok:#30c06a;--okd:#1f8a3d;--mid:#ff9f0a;--bad:#ff453a;
+ --glass:rgba(255,255,255,.58);--glass2:rgba(255,255,255,.38);--card:rgba(255,255,255,.7);
+ --edge:rgba(255,255,255,.85);--edge2:rgba(255,255,255,.25);
+ --line:rgba(60,60,67,.12);--fill:rgba(120,120,135,.13);--soft:rgba(120,120,135,.10);
+ --sh:0 1px 1px rgba(255,255,255,.7) inset,0 10px 30px -12px rgba(40,40,80,.22),0 2px 6px rgba(40,40,80,.06);
+ --r:24px;--blur:blur(28px) saturate(185%);
+}
+@media(prefers-color-scheme:dark){:root{
+ --bg:#000;--ink:#f5f5f7;--ink2:#e2e2ea;--mute:#9a9aa6;
+ --red:#ff453a;--redd:#ff6961;--okd:#30d158;
+ --glass:rgba(40,40,48,.52);--glass2:rgba(60,60,72,.38);--card:rgba(44,44,54,.55);
+ --edge:rgba(255,255,255,.2);--edge2:rgba(255,255,255,.05);
+ --line:rgba(255,255,255,.1);--fill:rgba(255,255,255,.1);--soft:rgba(255,255,255,.07);
+ --sh:0 1px 1px rgba(255,255,255,.12) inset,0 14px 36px -14px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.35);
+}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4;-webkit-font-smoothing:antialiased;letter-spacing:-.011em}
-header{position:sticky;top:0;z-index:15;background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);padding:calc(10px + env(safe-area-inset-top)) 20px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:.5px solid var(--line)}
-header h1{margin:0;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
-header h1::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);margin-right:8px;vertical-align:1px}
-header .stats{margin-left:auto;display:flex;gap:6px;font-size:13px;font-weight:600;color:var(--ink2)}
-header .stats>*{background:var(--fill);padding:3px 10px;border-radius:999px}
-nav{display:flex;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 78%,transparent);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border-top:.5px solid var(--line);overflow-x:auto;position:fixed;left:0;right:0;bottom:0;z-index:20;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-nav button{border:0;background:none;color:var(--mute);font-size:12px;font-weight:500;font-family:inherit;padding:8px 12px;border-radius:10px;cursor:pointer;white-space:nowrap;transition:color .15s,background .15s}
-nav button.on{color:var(--red);background:color-mix(in srgb,var(--red) 10%,transparent);font-weight:600}
-main{max-width:760px;margin:0 auto;padding:6px 16px calc(90px + env(safe-area-inset-bottom))}
-h2{margin:14px 4px 12px;font-size:32px;font-weight:700;letter-spacing:-.03em;line-height:1.12}
-h3{margin:20px 4px 8px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--mute)}
-.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:var(--sh)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.btn{border:0;background:var(--fill);color:var(--red);padding:10px 16px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform .1s,opacity .15s,background .15s}
-.btn:hover{background:var(--soft)}
-.btn:active{transform:scale(.97);opacity:.7}
-.btn.pri{background:var(--red);color:#fff}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",system-ui,sans-serif;color:var(--ink);line-height:1.42;-webkit-font-smoothing:antialiased;letter-spacing:-.011em;background:var(--bg);min-height:100vh}
+/* ambient colour behind the glass */
+body::before{content:"";position:fixed;inset:-10% -10% -10% -10%;z-index:-1;pointer-events:none;
+ background:
+  radial-gradient(42% 32% at 12% 8%,rgba(255,120,130,.38),transparent 70%),
+  radial-gradient(40% 34% at 92% 18%,rgba(110,150,255,.34),transparent 70%),
+  radial-gradient(46% 38% at 80% 92%,rgba(255,190,120,.34),transparent 70%),
+  radial-gradient(40% 34% at 8% 86%,rgba(170,120,255,.26),transparent 70%)}
+@media(prefers-color-scheme:dark){body::before{background:
+  radial-gradient(42% 32% at 12% 8%,rgba(229,32,47,.34),transparent 70%),
+  radial-gradient(40% 34% at 92% 18%,rgba(60,90,220,.30),transparent 70%),
+  radial-gradient(46% 38% at 80% 92%,rgba(170,70,40,.26),transparent 70%),
+  radial-gradient(40% 34% at 8% 86%,rgba(110,60,200,.26),transparent 70%)}}
+/* header */
+header{position:sticky;top:0;z-index:15;margin:calc(8px + env(safe-area-inset-top)) 12px 0;padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:nowrap;
+ background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);border-radius:22px;box-shadow:var(--sh)}
+header h1{margin:0;font-size:16px;font-weight:650;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .stats{margin-left:auto;display:flex;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
+header .stats>*{background:var(--fill);padding:4px 10px;border-radius:999px}
+/* floating tab bar */
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:20;display:flex;gap:2px;padding:5px;max-width:560px;margin:0 auto;
+ background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);border-radius:30px;box-shadow:var(--sh),0 18px 40px -16px rgba(0,0,0,.35)}
+nav button{flex:1;border:0;background:none;color:var(--mute);font-size:12px;font-weight:600;font-family:inherit;padding:11px 4px;border-radius:24px;cursor:pointer;white-space:nowrap;transition:color .2s,background .2s,box-shadow .2s}
+nav button.on{color:var(--red);background:var(--glass2);box-shadow:0 1px 0 var(--edge) inset,0 4px 14px -6px rgba(0,0,0,.3)}
+main{max-width:720px;margin:0 auto;padding:4px 14px calc(110px + env(safe-area-inset-bottom))}
+h2{margin:18px 6px 14px;font-size:34px;font-weight:750;letter-spacing:-.035em;line-height:1.08}
+h3{margin:22px 8px 8px;font-size:12.5px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+/* glass surfaces */
+.card{background:var(--card);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.card h3{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.grid .card{margin:0;transition:transform .2s}
+.grid .card:active{transform:scale(.98)}
+/* buttons */
+.btn{border:1px solid var(--edge);background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%);color:var(--ink);padding:10px 18px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 4px 12px -6px rgba(0,0,0,.25);transition:transform .12s,opacity .15s,background .15s}
+.btn:hover{background:var(--glass2)}
+.btn:active{transform:scale(.96);opacity:.8}
+.btn.pri{background:linear-gradient(180deg,color-mix(in srgb,var(--red) 88%,#fff) 0%,var(--red) 100%);border-color:rgba(255,255,255,.35);color:#fff;box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 8px 20px -8px var(--red)}
 .btn.pri:hover{background:var(--redd)}
-.btn.rec{background:var(--bad);color:#fff;animation:pulse 1.4s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,59,48,.45)}100%{box-shadow:0 0 0 12px rgba(255,59,48,0)}}
-.btn.sm{padding:5px 11px;font-size:13px;border-radius:9px}
+.btn.rec{background:var(--bad);border-color:rgba(255,255,255,.3);color:#fff;animation:pulse 1.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,69,58,.5)}100%{box-shadow:0 0 0 14px rgba(255,69,58,0)}}
+.btn.sm{padding:6px 13px;font-size:13px}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.bar{height:6px;background:var(--fill);border-radius:999px;overflow:hidden}
-.bar>i{display:block;height:100%;background:var(--ok);border-radius:999px;transition:width .4s}
-.big{font-size:32px;font-weight:700;margin:8px 0 2px;word-break:break-word;letter-spacing:-.03em;line-height:1.15}
+.bar{height:7px;background:var(--fill);border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--ok),color-mix(in srgb,var(--ok) 60%,#7be0a8));border-radius:999px;transition:width .4s}
+.big{font-size:32px;font-weight:750;margin:8px 0 2px;word-break:break-word;letter-spacing:-.03em;line-height:1.15}
 .de{color:var(--mute);font-size:17px}
 .ph{font-size:15px;color:var(--red);font-weight:600}
 .small{font-size:13px;color:var(--mute)}
-.lvl{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red);margin-right:6px}
-.warn{background:#fff4d6;color:#6b4e00;border-radius:12px;padding:11px 14px;font-size:14px;margin-bottom:12px}
-@media(prefers-color-scheme:dark){.warn{background:#3a3016;color:#f1d98a}}
-.word{display:inline-block;padding:3px 10px;border-radius:8px;margin:2px;font-weight:600;font-size:17px}
-.word.g{background:#d9f2e3;color:#14532d}.word.m{background:#fdecc0;color:#7a4b00}.word.r{background:#fbd5d1;color:#7f1d1d}
-@media(prefers-color-scheme:dark){.word.g{background:#12361f;color:#8ee6a8}.word.m{background:#3a2c0c;color:#ffd48a}.word.r{background:#401512;color:#ffaaa3}}
-.score{font-size:52px;font-weight:700;letter-spacing:-.04em;color:var(--red)}
-canvas{width:100%;height:50px;background:var(--fill);border-radius:12px;display:block}
-.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px 16px;border-radius:12px;background:var(--fill);color:var(--ink);font-weight:500}
-.opt.ok{background:#d9f2e3;color:#14532d}
-.opt.no{background:#fbd5d1;color:#7f1d1d}
-@media(prefers-color-scheme:dark){.opt.ok{background:#12361f;color:#8ee6a8}.opt.no{background:#401512;color:#ffaaa3}}
-input[type=text],textarea{width:100%;padding:13px 14px;border-radius:12px;border:0;background:var(--fill);color:var(--ink);font-size:17px;font-family:inherit;outline:none}
-input[type=text]:focus,textarea:focus{box-shadow:0 0 0 2px var(--red)}
+.lvl{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red);margin-right:6px}
+.warn{background:rgba(255,196,60,.22);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid rgba(255,196,60,.4);color:#6b4e00;border-radius:18px;padding:12px 15px;font-size:14px;margin-bottom:12px}
+@media(prefers-color-scheme:dark){.warn{background:rgba(255,196,60,.14);color:#f1d98a}}
+.word{display:inline-block;padding:3px 11px;border-radius:999px;margin:2px;font-weight:600;font-size:17px}
+.word.g{background:rgba(48,192,106,.22);color:#14632f}.word.m{background:rgba(255,159,10,.24);color:#7a4b00}.word.r{background:rgba(255,69,58,.2);color:#8a1a14}
+@media(prefers-color-scheme:dark){.word.g{color:#8ee6a8}.word.m{color:#ffd48a}.word.r{color:#ffaaa3}}
+.score{font-size:54px;font-weight:750;letter-spacing:-.04em;color:var(--red)}
+canvas{width:100%;height:50px;background:var(--fill);border-radius:16px;display:block}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:15px 18px;border-radius:20px;font-weight:550}
+.opt.ok{background:rgba(48,192,106,.25);color:#14632f;border-color:rgba(48,192,106,.5)}
+.opt.no{background:rgba(255,69,58,.2);color:#8a1a14;border-color:rgba(255,69,58,.45)}
+@media(prefers-color-scheme:dark){.opt.ok{color:#8ee6a8}.opt.no{color:#ffaaa3}}
+input[type=text],input[type=password],textarea{width:100%;padding:14px 16px;border-radius:18px;border:1px solid var(--edge);background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);color:var(--ink);font-size:17px;font-family:inherit;outline:none}
+input[type=text]:focus,input[type=password]:focus,textarea:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 35%,transparent)}
 textarea{font-size:13px;min-height:90px}
 table{border-collapse:collapse;width:100%}
-td,th{padding:10px 4px;border-bottom:.5px solid var(--line);text-align:left;font-size:15px;vertical-align:top}
-th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);font-weight:600}
+td,th{padding:11px 4px;border-bottom:1px solid var(--line);text-align:left;font-size:15px;vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);font-weight:650}
 tr:last-child td{border-bottom:0}
-table.g th{background:transparent}
-select{padding:9px 30px 9px 14px;border-radius:12px;border:0;background:var(--fill);color:var(--ink);font-size:15px;font-weight:500;font-family:inherit;max-width:100%}
-.flip{min-height:260px;text-align:center;display:flex;flex-direction:column;justify-content:center;cursor:pointer;border-radius:22px;padding:28px 20px;box-shadow:0 8px 30px -12px rgba(0,0,0,.18)}
-.chip{display:inline-block;padding:9px 14px;margin:4px;border-radius:10px;background:var(--fill);cursor:pointer;font-size:16px;font-weight:500;user-select:none}
-.chip:hover{background:var(--soft)}
-.ans{min-height:56px;padding:8px;border:1.5px dashed var(--line);border-radius:14px;margin:10px 0}
-.bub{max-width:84%;padding:9px 14px;border-radius:19px;margin:6px 0;background:var(--fill);color:var(--ink)}
-.bub.A{margin-right:auto;border-bottom-left-radius:5px}
-.bub.B{margin-left:auto;background:var(--red);color:#fff;border-bottom-right-radius:5px}
-.bub.B span{color:rgba(255,255,255,.78)}
+select{padding:10px 32px 10px 16px;border-radius:999px;border:1px solid var(--edge);background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);color:var(--ink);font-size:15px;font-weight:550;font-family:inherit;max-width:100%}
+.flip{min-height:270px;text-align:center;display:flex;flex-direction:column;justify-content:center;cursor:pointer;border-radius:32px;padding:30px 22px}
+.chip{display:inline-block;padding:10px 16px;margin:4px;border-radius:999px;background:var(--glass);border:1px solid var(--edge);cursor:pointer;font-size:16px;font-weight:550;user-select:none;box-shadow:0 1px 0 rgba(255,255,255,.4) inset}
+.chip:hover{background:var(--glass2)}
+.ans{min-height:58px;padding:8px;border:1.5px dashed var(--line);border-radius:20px;margin:10px 0}
+.bub{max-width:86%;padding:10px 15px;border-radius:22px;margin:7px 0;background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);color:var(--ink)}
+.bub.A{margin-right:auto;border-bottom-left-radius:7px}
+.bub.B{margin-left:auto;background:linear-gradient(180deg,color-mix(in srgb,var(--red) 88%,#fff),var(--red));color:#fff;border-color:rgba(255,255,255,.3);border-bottom-right-radius:7px}
+.bub.B span{color:rgba(255,255,255,.82)}
 .bub.on{outline:2px solid var(--red);outline-offset:2px}
 .bub b{display:block;font-weight:600}
 .bub span{color:var(--mute);font-size:13px}
-.tabs2{display:flex;gap:2px;margin:10px 0;padding:2px;background:var(--fill);border-radius:10px;overflow-x:auto;scrollbar-width:none}
-.tabs2 button{flex:1;border:0;background:transparent;color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:500;font-family:inherit;white-space:nowrap}
-.tabs2 button.on{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.14);font-weight:600}
-details{margin-bottom:8px}
+.tabs2{display:flex;gap:2px;margin:10px 2px 14px;padding:4px;background:var(--glass2);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge2);border-radius:999px;overflow-x:auto;scrollbar-width:none}
+.tabs2::-webkit-scrollbar{display:none}
+.tabs2 button{flex:1;border:0;background:transparent;color:var(--ink2);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:13.5px;font-weight:550;font-family:inherit;white-space:nowrap;transition:background .2s}
+.tabs2 button.on{background:var(--glass);box-shadow:0 1px 0 var(--edge) inset,0 3px 10px -5px rgba(0,0,0,.35);color:var(--ink);font-weight:650}
+details{margin-bottom:10px}
 summary{cursor:pointer;font-weight:600;padding:8px 2px}
 .chart{display:flex;align-items:flex-end;gap:6px;height:90px}
-.chart div{flex:1;background:var(--red);border-radius:5px 5px 2px 2px;min-height:3px;opacity:.9}
+.chart div{flex:1;background:linear-gradient(180deg,var(--red),color-mix(in srgb,var(--red) 55%,#ffb0a8));border-radius:8px 8px 3px 3px;min-height:3px}
 .ring{display:flex;align-items:center;gap:12px}
 .check{font-size:20px;margin-right:6px}
-.tip li{margin:5px 0}
-.toast{position:fixed;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));background:rgba(44,44,46,.96);color:#fff;padding:13px 16px;border-radius:14px;z-index:50;font-size:14px;display:none;box-shadow:0 10px 30px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.tip li{margin:6px 0}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(86px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;background:rgba(30,30,36,.82);color:#fff;padding:14px 18px;border-radius:22px;z-index:50;font-size:14px;display:none;border:1px solid rgba(255,255,255,.18);box-shadow:0 14px 36px rgba(0,0,0,.4);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
 .ph:empty{display:none}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+ .card,.btn,nav,header,.bub,select,input[type=text],input[type=password],.tabs2{background:var(--card)}
+}
+.chatbar{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;padding:8px;margin-top:12px;background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--edge);border-radius:30px;box-shadow:var(--sh)}
+.chatbar input{flex:1;border-radius:999px;padding:11px 14px}
+.chatbar .btn{flex:none}
 
 </style>
 </head>
@@ -106,6 +147,7 @@ summary{cursor:pointer;font-weight:600;padding:8px 2px}
 function phon(text){return "";}
 const UNITS=[];
 function U(o){UNITS.push(o);}
+function ADD(id,list){const u=UNITS.find(x=>x.id===id);if(!u){console.warn("ADD: "+id);return;}const have=new Set(u.vocab.map(v=>v[0]));list.forEach(v=>{if(!have.has(v[0]))u.vocab.push(v);});}
 
 /* ===== English A1 (Oberfläche Deutsch) ===== */
 U({id:"a1-01",lvl:"A1",e:"👋",t:"Begrüßung & Vorstellung",
@@ -605,9 +647,46 @@ U({id:"b2-35",lvl:"B2",e:"📣",t:"Meinung, Medien & Gesellschaft",
  ex:[["I ___ more. (Zustimmung)","couldn't agree",["couldn't agree","wouldn't agree","can't agree","don't agree"],"I couldn't agree more."],["___ to experts, the situation is improving.","According",["According","Following","Regarding for","Based of"],""],["It ___ that prices are rising. (scheint)","seems",["seems","looks like","sounds","shows"],""],["I'm afraid I ___ with you. (widersprechen)","disagree",["disagree","not agree","don't agree to","opposite"],""]]
 });
 
+/* Zusatzwortschatz: jedes Wort in den Sätzen wird vorher eingeführt */
+ADD("a1-01",[["very much","sehr / vielen (Dank)"],["Mr / Mrs","Herr / Frau"],["Germany","Deutschland"]]);
+ADD("a1-02",[["have / has","haben"],["class, lesson","Unterricht, Stunde"],["shop","Geschäft, Laden"],["open – it opens","öffnen – es öffnet"],["birthday","Geburtstag"],["What time is it?","Wie spät ist es?"],["See you tomorrow.","Bis morgen."],["euro / euros","Euro"]]);
+ADD("a1-03",[["this","dies, das hier"],["brother – brothers","Bruder – Brüder"],["doctor","Arzt / Ärztin"],["and","und"],["eighty","achtzig"]]);
+ADD("a1-04",[["eat – she eats","essen – sie isst"],["every day","jeden Tag"]]);
+ADD("a1-05",[["has (breakfast)","hat (Frühstück) – have breakfast = frühstücken"],["Sundays","sonntags"],["by bus","mit dem Bus"],["cook – he cooks","kochen – er kocht"],["lesson – it starts","Unterricht – er beginnt"],["English","Englisch"]]);
+ADD("a1-06",[["bedroom – bedrooms","Schlafzimmer"],["cat","Katze"],["balcony","Balkon"],["but","aber"]]);
+ADD("a1-07",[["take – I'll take it","nehmen – ich nehme es"],["card – pay by card","Karte – mit Karte zahlen"]]);
+ADD("a1-08",[["running","Laufen, Joggen"],["watching films","Filme schauen"],["drawing","Zeichnen"]]);
+ADD("a1-09",[["for two minutes","zwei Minuten lang"],["here – far from here","hier – weit von hier"]]);
+ADD("a1-10",[["What's the weather like?","Wie ist das Wetter?"],["wear – I'm wearing","tragen (Kleidung) – ich trage"],["coat","Mantel"],["play – they're playing","spielen – sie spielen"]]);
+ADD("a2-11",[["year","Jahr"],["visit – we visited","besuchen – wir besuchten"],["grandparents","Großeltern"],["film","Film"],["arrive – they arrived","ankommen – sie kamen an"],["hour – hours","Stunde – Stunden"],["stay – he stayed","bleiben – er blieb"],["all day","den ganzen Tag"],["tennis","Tennis"],["listen – we listened","zuhören – wir hörten zu"]]);
+ADD("a2-12",[["Spain","Spanien"],["new","neu"],["phone","Telefon, Handy"],["a great time","eine tolle Zeit"],["sign","Schild"],["keys","Schlüssel"],["pizza","Pizza"],["drink – drank","trinken – trank"],["sleep – slept","schlafen – schlief"],["well","gut"]]);
+ADD("a2-13",[["month","Monat"],["leave – it leaves","abfahren – er fährt ab"],["delayed","verspätet"],["forget","vergessen"]]);
+ADD("a2-14",[["tall – taller","groß – größer"],["student","Schüler / Student"],["train – trains, bus – buses","Zug – Züge, Bus – Busse"],["town","Stadt"],["think – I thought","denken – ich dachte"]]);
+ADD("a2-15",[["terrible","schrecklich"],["twice","zweimal"],["need","brauchen"]]);
+ADD("a2-16",[["with","mit"],["bag – bags","Tasche – Taschen"],["party","Party"],["learn","lernen"],["Spanish","Spanisch"],["move","umziehen"],["Canada","Kanada"],["tonight","heute Abend"],["gift","Geschenk"],["I'll / we'll / you'll (= will)","ich werde / wir werden / du wirst"]]);
+ADD("a2-17",[["homework","Hausaufgaben"],["talk – talked","sprechen – sprach"],["we've (= we have)","wir haben"]]);
+ADD("a2-18",[["people","Leute, Menschen"],["student – students","Schüler / Student"],["sugar","Zucker"]]);
+ADD("b1-19",[["wait – I've been waiting","warten – ich warte schon"],["he'll (= he will)","er wird"],["each other","einander"],["June","Juni"],["How long …?","Wie lange …?"]]);
+ADD("b1-20",[["world","Welt"],["boil – it boils","kochen (Wasser) – es kocht"],["talk to","sprechen mit"],["win – won","gewinnen – gewann"],["hard","hart, fleißig"]]);
+ADD("b1-21",[["speak – spoken","sprechen – gesprochen"],["all over the world","auf der ganzen Welt"],["repair – repaired","reparieren – repariert"],["library","Bibliothek"],["George Orwell","George Orwell (Autor)"],["cancel – cancelled","absagen – abgesagt"],["produce – produced","herstellen – hergestellt"],["factory","Fabrik"],["window – windows","Fenster"],["clean – cleaned","putzen – geputzt"]]);
+ADD("b1-22",[["promise – promised","versprechen – versprach"],["wouldn't (= would not)","würde nicht"],["anyone","irgendjemand"]]);
+ADD("b1-23",[["outside","draußen"],["abroad","im Ausland"],["busy","beschäftigt"],["apologise","sich entschuldigen"]]);
+ADD("b1-24",[["woman","Frau"],["police","Polizei"],["award – awards","Preis, Auszeichnung"],["speak – she speaks","sprechen – sie spricht"],["language – languages","Sprache – Sprachen"]]);
+ADD("b1-25",[["look for – I'm looking for","suchen – ich suche"],["run out of – we ran out of","ausgehen – uns ging … aus"],["holidays","Ferien, Urlaub"],["break down – it broke down","eine Panne haben"],["motorway","Autobahn"],["form","Formular"]]);
+ADD("b2-26",[["show up – he showed up","auftauchen – er tauchte auf"],["everyone","alle, jeder"],["realise – he realised","merken, erkennen"],["missing","vermisst"],["dog","Hund"]]);
+ADD("b2-27",[["hadn't (= had not)","hatte nicht"],["rich – richer","reich – reicher"],["truth","Wahrheit"],["leave – you leave","lassen, verlassen"],["things","Sachen"],["everywhere","überall"]]);
+ADD("b2-28",[["paint – painted","streichen – gestrichen"],["eyes","Augen"],["test – tested","testen – getestet"]]);
+ADD("b2-29",[["apologise – apologised","sich entschuldigen"],["cinema","Kino"],["insist on – insisted","bestehen auf"],["pay – paying","zahlen"]]);
+ADD("b2-30",[["reliable","zuverlässig"],["fun","Spaß, lustig"],["tiring","anstrengend"],["advantage – disadvantage","Vorteil – Nachteil"]]);
+ADD("b2-31",[["decide – decided","entscheiden – entschied"],["open – opening","öffnen"]]);
+ADD("b2-32",[["joke","Witz"],["feel – I'm feeling","sich fühlen"],["a bit","ein bisschen"],["cost – it costs","kosten"],["Let's …","Lass uns …"]]);
+ADD("b2-33",[["product","Produkt"],["details","Einzelheiten"],["report","Bericht"],["attached","beigefügt"],["letter","Brief"]]);
+ADD("b2-34",[["item (on the agenda)","Punkt (Tagesordnung)"],["percent","Prozent"],["discount","Rabatt"],["increase – increased","steigen – stieg"],["fifteen","fünfzehn"]]);
+ADD("b2-35",[["less","weniger"],["screen – screens","Bildschirm"],["become – becoming","werden"],["important","wichtig"],["election – elections","Wahl – Wahlen"],["topic","Thema"]]);
+
 /* Sprachkonfiguration: Englisch (UI Deutsch) */
 const CFG={
- key:"english_v1",idb:"english",tl:"en",sr:"en-US",
+ key:"english_v1",placement:true,idb:"english",tl:"en",sr:"en-US",
  vre:[/^en[-_]US/i,/^en([-_]|$)/i,/^en[-_]GB/i],alt:/$^/,
  numw:{"0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine","10":"ten","11":"eleven","12":"twelve","13":"thirteen","14":"fourteen","15":"fifteen","16":"sixteen","17":"seventeen","18":"eighteen","19":"nineteen","20":"twenty","30":"thirty","40":"forty","50":"fifty","100":"hundred","1000":"thousand"},
  sounds:[
@@ -641,7 +720,7 @@ const CFG={
  gsyn:[["will","would"],["can","could"],["may","might"],["and","but"],["in","at","on"],["do","does","did"]],
  tongue:["She sells seashells by the seashore.","Three thin thieves thought about Thursday.","I think this is the best weather.","The rain in Spain stays mainly in the plain.","Red lorry, yellow lorry."],
  t:{
-  greet:"Welcome! 👋",hintBtn:"💡 Hinweis (Deutsch)",transPh:"Auf Englisch …",testSent:"Good morning. How are you?",
+  lname:"English",nname:"German",greet:()=>{const h=new Date().getHours();return (h<5?"Good evening":h<12?"Good morning":h<18?"Good afternoon":"Good evening")+"! 👋";},hintBtn:"💡 Hinweis (Deutsch)",transPh:"Auf Englisch …",testSent:"Good morning. How are you?",
   srUnsup:"Englisch wird von der Spracherkennung dieses Geräts nicht unterstützt.",
   lvl:{A1:"Anfänger – erste Gespräche",A2:"Grundlagen – Alltag meistern",B1:"Mittelstufe – flüssig & natürlich",B2:"Fortgeschritten – souverän & differenziert"},
   quick:`<details class="card tip" open><summary>⚡ Die 10 wichtigsten Regeln auf einen Blick</summary><ol>
@@ -730,8 +809,10 @@ const NUMW=CFG.numw;
 const heardNorm=s=>norm(s).split(" ").map(w=>NUMW[w]||w).join(" ");
 
 /* ---------- Scopes ---------- */
+const LI=l=>LEVELS.indexOf(l);
+const needPlace=()=>!!(CFG.placement&&!S.level);
 function unitsIn(scope){
-  if(scope==="all")return UNITS;
+  if(scope==="all")return (CFG.placement&&S.level)?UNITS.filter(u=>LI(u.lvl)>=LI(S.level)):UNITS;
   if(scope.startsWith("lvl:"))return UNITS.filter(u=>u.lvl===scope.slice(4));
   return UNITS.filter(u=>u.id===scope.slice(2));
 }
@@ -742,7 +823,7 @@ function scopeSelect(){
 function mastery(u){const it=ITEMS.filter(x=>x.u===u.id);if(!it.length)return 0;return Math.round(100*it.filter(x=>(S.box[x.id]||0)>=3).length/it.length);}
 function lvlPct(l){const us=UNITS.filter(u=>u.lvl===l);return Math.round(us.reduce((a,u)=>a+mastery(u),0)/us.length);}
 function dueCount(){const n=Date.now();return ITEMS.filter(x=>S.due[x.id]&&S.due[x.id]<=n).length;}
-function nextUnit(){return UNITS.find(u=>mastery(u)<60)||UNITS[UNITS.length-1];}
+function nextUnit(){const li=(CFG.placement&&S.level)?LI(S.level):0;return UNITS.find(u=>LI(u.lvl)>=li&&mastery(u)<60)||UNITS[UNITS.length-1];}
 
 /* ---------- Sprachausgabe ---------- */
 let voices=[],playTok=0;
@@ -1035,22 +1116,33 @@ function speakBox(target,ph,hideTarget){
 const V={tab:"today",scope:"all",unit:null,utab:"intro",cards:null,
  sp:{mode:"item",unit:"a1-01",kind:"s",i:0},rp:null,
  hear:{mode:"dict",q:null},ex:null,exType:"mix",q:"",showDe:true,showId:true,hideT:false};
-const TABS=[["today","Heute"],["path","Lernpfad"],["cards","Karten"],["speak","Sprechen"],["hear","Hören"],["ex","Üben"],["gram","Grammatik"],["dict","Wörterbuch"],["sounds","Laute"],["prog","Fortschritt"]];
-function tabsHtml(){$("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" class="${V.tab===k?"on":""}">${n}</button>`).join("");}
-function go(t){Rec.stop(true);stopAudio();V.tab=t;if(t==="path")V.unit=null;render();window.scrollTo(0,0);}
+const TABS=[["today","Heute"],["path","Lektion"],["rp","Dialog"],["chat","Tutor"],["gram","Mehr"]];
+const GROUPS={today:["today"],path:["path","cards","speak","hear","ex"],rp:["rp","hdlg"],chat:["chat"],gram:["gram","dict","sounds","prog"]};
+const SUBN={path:"Lernen",cards:"Karten",speak:"Sprechen",hear:"Diktat",ex:"Üben",rp:"Rollenspiel",hdlg:"Hörtest",gram:"Grammatik",dict:"Wörterbuch",sounds:"Laute",prog:"Fortschritt"};
+function grpOf(t){for(const g in GROUPS)if(GROUPS[g].includes(t))return g;return "today";}
+function tabsHtml(){const g=grpOf(V.tab);$("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" class="${g===k?"on":""}">${n}</button>`).join("");}
+function go(t){Rec.stop(true);stopAudio();V.tab=t;if(t==="path"&&!V.unit)V.unit=nextUnit().id;render();window.scrollTo(0,0);}
 function render(){
   tabsHtml();
-  ({today:vToday,path:vPath,cards:vCards,speak:vSpeak,hear:vHear,ex:vEx,gram:vGram,dict:vDict,sounds:vSounds,prog:vProg})[V.tab]();
+  ({today:vToday,path:vPath,cards:vCards,speak:()=>{V.sp.mode="item";vSpeak();},rp:()=>{V.sp.mode="role";vSpeak();},hear:()=>{V.hear.mode="dict";vHear();},hdlg:()=>{V.hear.mode="dlg";vHear();},ex:vEx,gram:vGram,dict:vDict,sounds:vSounds,prog:vProg,chat:vChat})[V.tab]();
+  const gr=GROUPS[grpOf(V.tab)];
+  if(gr.length>1&&!(V.tab==="path"&&V.unit&&false))$("#view").insertAdjacentHTML("afterbegin",`<div class="tabs2">${gr.map(k=>`<button data-tab="${k}" class="${V.tab===k?"on":""}">${SUBN[k]}</button>`).join("")}</div>`);
   header();
 }
 
+/* ===================== EINSTUFUNG ===================== */
+function placeCard(){
+  if(!CFG.placement)return "";
+  if(!S.level)return `<div class="card"><h3>Dein Start</h3><b>Welches Level hast du gerade?</b><p class="small">Der Tutor stellt dir ein paar kurze Fragen und stuft dich ein. Danach bauen Lektionen und Training auf deinem Level auf.</p><div class="row"><button class="btn pri" data-act="go" data-tab="chat">Einstufung im Tutor starten</button></div><div class="small" style="margin:10px 0 6px">Oder wähle selbst:</div><div class="row">${LEVELS.map(l=>`<button class="btn sm" data-act="setLevel" data-l="${l}">${l}</button>`).join("")}</div></div>`;
+  return `<div class="small" style="margin:-6px 6px 10px">Dein Level: <b>${S.level}</b> · <a href="#" data-act="go" data-tab="chat" style="color:var(--red)">ändern / neu testen</a></div>`;
+}
 /* ===================== HEUTE ===================== */
 function vToday(){
   const d=D(),xp=S.hist[today()]||0,pct=Math.min(100,Math.round(100*xp/S.goal));
   const next=nextUnit(),due=dueCount();
   const plan=[["Karteikarten wiederholen","cards",d.cards,20,"cards"],["Sätze laut sprechen (mit Aufnahme)","speak",d.speak,5,"speak"],["Diktat schreiben","dict",d.dict,3,"hear"],["Übungsaufgaben lösen","ex",d.ex,10,"ex"]];
   $("#view").innerHTML=`
-  <h2>${LT.greet}</h2>${storageWarn()}
+  <h2>${LT.greet()}</h2>${storageWarn()}${placeCard()}
   <div class="card"><div class="row" style="justify-content:space-between"><b>Tagesziel: ${xp} / ${S.goal} XP</b>
    <select data-sel="goal">${[30,60,100,150].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></div>
    <div class="bar" style="margin-top:8px;height:12px"><i style="width:${pct}%"></i></div>
@@ -1085,22 +1177,24 @@ function dlgHtml(u,rev){
 }
 function vUnit(){
   const u=UNIT(V.unit),t=V.utab;
-  const tabs=[["intro","Überblick"],["vocab","Vokabeln"],["sent","Sätze"],["dlg","Dialog"]];
+  const tabs=[["intro","① Basics"],["vocab","② Vokabeln"],["sent","③ Sätze"],["dlg","④ Dialog"]];
+  const nextBtn=(k,l)=>`<div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn pri" data-act="utab" data-t="${k}">${l}</button></div>`;
   let body="";
   if(t==="intro")body=`<div class="card"><p>${esc(u.intro)}</p></div><div class="card"><h3 style="margin-top:0">📖 ${esc(u.grammar.t)}</h3>${u.grammar.html}</div>
-   <div class="row"><button class="btn pri" data-act="startCards" data-scope="u:${u.id}">🃏 Karten dieser Lektion</button><button class="btn" data-act="startEx" data-scope="u:${u.id}">✍️ Üben</button></div>`;
+   <div class="row"><button class="btn pri" data-act="startCards" data-scope="u:${u.id}">🃏 Karten dieser Lektion</button><button class="btn" data-act="startEx" data-scope="u:${u.id}">✍️ Üben</button></div>`+nextBtn("vocab","Weiter: Vokabeln →");
+  if(t==="intro")body=`<div class="small" style="margin-bottom:8px">Schritt 1 von 4 – erst die Grundlagen: Lies die Regel und die Beispiele. Danach lernst du die Wörter und baust daraus Sätze.</div>`+body;
   if(t==="vocab"||t==="sent"){
     const k=t==="vocab"?"v":"s",its=ITEMS.filter(x=>x.u===u.id&&x.k===k);
-    body=`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="sayAll" data-u="${u.id}" data-k="${k}">▶ Alle vorlesen</button><button class="btn" data-act="startCards" data-scope="u:${u.id}">🃏 Karten</button></div>
+    body=`<div class="small" style="margin-bottom:8px">${t==="vocab"?"Schritt 2 von 4 – Wörter lernen: Höre jedes Wort, sprich es nach. Die Sätze im nächsten Schritt bestehen nur aus diesen und früheren Wörtern.":"Schritt 3 von 4 – Sätze: Jetzt setzt du die Basics und Wörter zusammen. Höre, sprich nach und achte auf die Satzstellung."}</div><div class="row" style="margin-bottom:8px"><button class="btn" data-act="sayAll" data-u="${u.id}" data-k="${k}">▶ Alle vorlesen</button><button class="btn" data-act="startCards" data-scope="u:${u.id}">🃏 Karten</button></div>
     <div class="card"><table>${its.map(x=>`<tr><td style="width:46%"><b>${esc(x.idn)}</b><div class="ph" style="font-size:13px">${esc(x.ph)}</div></td><td>${esc(x.de)}</td>
-     <td style="white-space:nowrap"><button class="btn sm" data-act="say" data-i="${x.id}">🔊</button> <button class="btn sm" data-act="goSpeakItem" data-i="${x.id}">🎙</button></td></tr>`).join("")}</table></div>`;
+     <td style="white-space:nowrap"><button class="btn sm" data-act="say" data-i="${x.id}">🔊</button> <button class="btn sm" data-act="goSpeakItem" data-i="${x.id}">🎙</button></td></tr>`).join("")}</table></div>`+(t==="vocab"?nextBtn("sent","Weiter: Sätze →"):nextBtn("dlg","Weiter: Dialog →"));
   }
-  if(t==="dlg")body=`<div class="card"><h3 style="margin-top:0">🗣️ ${esc(u.dlg.t)}</h3>
+  if(t==="dlg")body=`<div class="card"><div class="small" style="margin-bottom:8px">Schritt 4 von 4 – Dialog: Alles zusammen in einem Gespräch. Erst hören, dann Rollenspiel.</div><h3 style="margin-top:0">🗣️ ${esc(u.dlg.t)}</h3>
    <div class="row" style="margin-bottom:8px"><button class="btn pri" data-act="playDlg" data-u="${u.id}">▶ Anhören</button>
     <button class="btn" data-act="toggleDe">${V.showDe?"Übersetzung ausblenden":"Übersetzung zeigen"}</button>
     <button class="btn" data-act="toggleId">${V.showId?"Text verdecken (Hörtest)":"Text zeigen"}</button>
     <button class="btn" data-act="startRp" data-u="${u.id}" data-role="B">🎭 Rollenspiel</button></div>${dlgHtml(u)}</div>`;
-  $("#view").innerHTML=`<div class="row"><button class="btn sm" data-act="back">← Lernpfad</button><span class="lvl">${u.lvl}</span><h2 style="margin:0">${u.e} ${u.n}. ${esc(u.t)}</h2></div>
+  $("#view").innerHTML=`<div class="row"><button class="btn sm" data-act="back">← Alle Lektionen</button><span class="lvl">${u.lvl}</span><h2 style="margin:0">${u.e} ${u.n}. ${esc(u.t)}</h2></div>
    ${voiceWarning()}<div class="tabs2">${tabs.map(([k,n])=>`<button data-act="utab" data-t="${k}" class="${t===k?"on":""}">${n}</button>`).join("")}</div>${body}`;
 }
 
@@ -1161,7 +1255,7 @@ function rateCard(r){
 /* ===================== SPRECHEN ===================== */
 function vSpeak(){
   const s=V.sp;
-  const modes=`<div class="tabs2"><button data-act="spMode" data-m="item" class="${s.mode==="item"?"on":""}">Wörter & Sätze</button><button data-act="spMode" data-m="role" class="${s.mode==="role"?"on":""}">Rollenspiel & Shadowing</button></div>`;
+  const modes="";
   if(s.mode==="role"){vRp(modes);return;}
   const u=UNIT(s.unit),list=ITEMS.filter(x=>x.u===u.id&&x.k===s.kind),it=list[Math.min(s.i,list.length-1)];
   if(SP.target!==it.idn)spReset(it.idn);
@@ -1210,7 +1304,7 @@ function buildDict(){
 }
 function vHear(){
   const h=V.hear;
-  const modes=`<div class="tabs2"><button data-act="hMode" data-m="dict" class="${h.mode==="dict"?"on":""}">Diktat</button><button data-act="hMode" data-m="dlg" class="${h.mode==="dlg"?"on":""}">Dialog-Hörtest</button></div>`;
+  const modes="";
   if(h.mode==="dlg"){
     const us=UNITS,u=UNIT(h.dlgU||"a1-01");
     $("#view").innerHTML=`<h2>Hören</h2>${voiceWarning()}${modes}
@@ -1446,6 +1540,135 @@ function vProg(){
    <li>Bis dahin: regelmäßig „Als Datei sichern“ oder „In Zwischenablage kopieren“ (z. B. in Notizen einfügen).</li></ol></details>`;
 }
 
+
+/* ===================== TUTOR (KI-Gespräch mit Abgleich) ===================== */
+const AK_KEY=CFG.key+"_apikey";
+function getAK(){try{return localStorage.getItem(AK_KEY)||"";}catch(e){return "";}}
+function setAK(v){try{if(v)localStorage.setItem(AK_KEY,v);else localStorage.removeItem(AK_KEY);}catch(e){}}
+const CHAT_TOPICS=[["tutor","Geführter Tutor (aktuelle Lektion)","a guided tutoring session"],["free","Freies Gespräch","a relaxed free conversation about everyday topics"],["cafe","Im Café bestellen","a role-play: you are a waiter in a café and the learner is the guest"],["intro","Sich vorstellen","a role-play: you meet the learner for the first time at a party and chat"],["travel","Reise & Wegbeschreibung","a role-play: the learner is travelling and asks you for directions and tips"],["work","Arbeit & Alltag","a conversation about work, daily routine and hobbies"],["opinion","Meinungen austauschen","a conversation where you and the learner exchange opinions on a simple topic"]];
+V.chat={msgs:[],level:(S.level||"A2"),topic:"tutor",busy:false,err:"",auto:true,goal:null};
+function chatUnit(){return UNIT(V.unit||nextUnit().id);}
+function placeSystem(){
+  const n=V.chat.msgs.filter(m=>m.role==="user").length;
+  return "You are a friendly placement examiner for a learner of "+CFG.lname+" whose native language is "+CFG.nname+". Goal: find out the learner's CEFR level (A1, A2, B1 or B2) with about 7 short questions asked ONE at a time in a chat. Start with a very easy question in simple "+CFG.lname+" (A1: name, where from). Make each next question a little harder or easier depending on how well the learner answered (A2: yesterday, daily routine, shopping; B1: plans, experiences, a simple 'if' situation; B2: opinion with reasons, hypothetical situations, abstract topics). Do NOT correct mistakes during the test and give no teaching. Write only 1-2 short sentences per message. The learner has answered "+n+" question(s) so far. "+(n>=7?"Now stop asking: write in "+CFG.nname+" a short friendly verdict (2 sentences, mention strengths), and put on the very last line exactly 'LEVEL: X' where X is A1, A2, B1 or B2.":"Do not write 'LEVEL:' yet.")+" If the learner writes in "+CFG.nname+" or says they know nothing, treat it as A1 and give the verdict after at most 3 questions.";
+}
+function chatSystem(){
+  if(needPlace())return placeSystem();
+  const t=CHAT_TOPICS.find(x=>x[0]===V.chat.topic)||CHAT_TOPICS[0];
+  let topic="Topic: "+t[2]+".";
+  if(t[0]==="tutor"){
+    const u=chatUnit();
+    topic="Mode: GUIDED TUTOR. You guide the learner step by step through this lesson: \""+u.t+"\" (grammar: "+u.grammar.t+"). Key words: "+u.vocab.slice(0,14).map(v=>v[0]+" = "+v[1]).join("; ")+". Model sentences: "+u.sent.slice(0,6).map(v=>v[0]+" = "+v[1]).join("; ")+". Procedure: first greet briefly and say in "+CFG.nname+" what you will practise; then introduce ONE phrase at a time (give it on a 🎯 line), ask the learner to say it, react to what they said, correct it kindly, then move on to the next phrase or a small question that makes them build their own sentence from the lesson words. Praise progress. Keep every turn short.";
+  }
+  return "You are a friendly, patient "+(t[0]==="tutor"?"tutor and ":"")+"conversation partner for a learner of "+CFG.lname+". The learner's native language is "+CFG.nname+" and their level is "+V.chat.level+". "+topic+" Rules: Answer in "+CFG.lname+" with vocabulary and grammar suited to the level, 1-3 short sentences, ending with a short question or task so the conversation continues (explanations of the lesson in tutor mode may use "+CFG.nname+" in one short sentence). After your answer you may add extra lines, each on its own line at the very end and each starting with its symbol: '🎯 ' + one short phrase in "+CFG.lname+" that the learner should repeat or say next (always in tutor mode); '✏️ ' + the learner's last message corrected in "+CFG.lname+" (ONLY if it contained mistakes); '💡 ' + a brief tip in "+CFG.nname+" (max 2 sentences, only if useful). No markdown, no lists, no other emojis.";
+}
+function chatParse(raw){
+  const out={text:[],goal:"",corr:"",tip:""};
+  raw.split("\n").forEach(l=>{const t=l.trim();if(!t)return;
+    if(t.startsWith("🎯"))out.goal=t.slice(2).trim();else if(t.startsWith("✏️"))out.corr=t.slice(2).trim();else if(t.startsWith("✏"))out.corr=t.slice(1).trim();else if(t.startsWith("💡"))out.tip=t.slice(2).trim();else out.text.push(t);});
+  return {text:out.text.join(" "),goal:out.goal,corr:out.corr,tip:out.tip};
+}
+async function chatAsk(){
+  const C=V.chat;C.busy=true;C.err="";render();
+  const msgs=[{role:"user",content:"(Please start now.)"}].concat(C.msgs.map(m=>({role:m.role,content:m.raw||m.text})));
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":getAK(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-5-5",max_tokens:500,system:chatSystem(),messages:msgs})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){C.err=r.status===401?"Der API-Schlüssel wurde abgelehnt. Prüfe ihn.":"Fehler der KI ("+r.status+"): "+((j.error&&j.error.message)||"");}
+    else{
+      const raw=((j.content||[]).map(b=>b.text||"").join("")).trim();
+      if(needPlace()){
+        const mm=raw.match(/LEVEL:\s*(A1|A2|B1|B2)/);
+        if(mm){S.level=mm[1];S.placed=Date.now();save();C.level=S.level;V.cards=null;V.ex=null;C.result={lvl:mm[1],text:raw.replace(/LEVEL:\s*(A1|A2|B1|B2)/,"").trim()};C.msgs=[];C.busy=false;render();return;}
+        C.msgs.push({role:"assistant",text:raw,raw});C.speakIdx=C.msgs.length-1;C.busy=false;render();
+        if(C.auto)speak(raw,.9);
+        return;
+      }
+      const p=chatParse(raw);
+      // Abgleich der letzten Nutzernachricht
+      const lu=C.msgs.length?C.msgs[C.msgs.length-1]:null;
+      if(lu&&lu.role==="user"){
+        const target=C.goal||p.corr;
+        if(lu.spoken){
+          if(target){const ev=evaluate(target,[lu.text]);lu.cmp={target,score:ev.score,words:ev.words};}
+          else lu.cmp={target:lu.text,score:100,words:null};
+        }
+        if(p.corr)lu.corr=p.corr;
+      }
+      C.goal=p.goal||null;
+      C.msgs.push({role:"assistant",text:p.text,goal:p.goal,tip:p.tip,raw});C.speakIdx=C.msgs.length-1;addXp(2);
+    }
+  }catch(e){C.err="Keine Verbindung zur KI: "+((e&&e.message)||e);}
+  C.busy=false;render();
+  if(!C.err&&C.auto&&C.speakIdx!=null&&C.msgs[C.speakIdx])speak(C.msgs[C.speakIdx].text,.9);
+}
+function chatSend(txt,spoken){
+  const C=V.chat;txt=(txt||"").trim();if(!txt||C.busy)return;
+  C.msgs.push({role:"user",text:txt,spoken:!!spoken});chatAsk();
+}
+function chatListen(retryIdx){
+  if(!SRC){V.chat.err=LT.srUnsup;render();return;}
+  stopAudio();releaseAudio();
+  const r=new SRC();r.lang=CFG.sr;r.interimResults=false;r.maxAlternatives=3;
+  const st=$("#cstat");if(st)st.textContent="🎙 Ich höre zu …";
+  let got=false;
+  r.onresult=e=>{got=true;const alts=[];for(let k=0;k<e.results[0].length;k++)alts.push(e.results[0][k].transcript);
+    if(retryIdx!=null){const m=V.chat.msgs[retryIdx];if(m&&m.cmp){const ev=evaluate(m.cmp.target,alts);m.cmp.retry={score:ev.score,words:ev.words};addXp(1);render();}}
+    else chatSend(alts[0],true);};
+  r.onerror=e=>{if(!got){V.chat.err="Spracherkennung: "+(e.error||"Fehler");render();}};
+  r.onend=()=>{if(!got&&st)st.textContent="";};
+  try{r.start();}catch(e){V.chat.err="Spracherkennung konnte nicht starten.";render();}
+}
+function cmpHtml(m,i){
+  if(!m.cmp)return m.corr?`<div class="small" style="margin-top:6px">✏️ ${esc(m.corr)}</div>`:"";
+  const c=m.cmp,sc=(c.retry||c).score,w=(c.retry||c).words;
+  const cls=sc>=85?"var(--ok)":sc>=60?"var(--mid)":"var(--bad)";
+  if(!c.words&&!c.retry)return `<div class="small" style="margin-top:6px;color:var(--ok)">✅ Perfekt – keine Korrektur nötig</div>`;
+  return `<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)"><div class="small">Abgleich mit: <b>${esc(c.target)}</b></div>
+   <div style="margin:4px 0">${(w||[]).map(x=>`<span class="word ${x.s>=.85?"g":x.s>=.6?"m":"r"}">${esc(x.w)}</span>`).join("")}</div>
+   <div class="row"><b style="color:${cls}">${sc}%${c.retry?" (neuer Versuch)":""}</b><button class="btn sm" data-act="chatSayT" data-i="${i}">🔊 Vorbild</button><button class="btn sm" data-act="chatRetry" data-i="${i}">🎙 Nochmal</button></div></div>`;
+}
+function vChat(){
+  const C=V.chat,key=getAK();
+  if(C.result){
+    $("#view").innerHTML=`<h2>Tutor</h2><div class="card"><h3>Dein Ergebnis</h3><div class="score">${C.result.lvl}</div><p>${esc(C.result.text)}</p><p class="small">Lektionen, Karten und Übungen beginnen jetzt auf deinem Level.</p><div class="row"><button class="btn pri" data-act="toLesson">Zur ersten Lektion</button><button class="btn" data-act="chatDone">Mit dem Tutor weiterüben</button></div></div>`;
+    return;
+  }
+  if(needPlace()){
+    const bubs=C.msgs.map(m=>m.role==="assistant"?`<div class="bub A"><b>${esc(m.text)}</b></div>`:`<div class="bub B"><b>${esc(m.text)}</b></div>`).join("");
+    const manual=`<div class="small" style="margin:12px 0 6px">Oder wähle dein Level selbst:</div><div class="row">${LEVELS.map(l=>`<button class="btn sm" data-act="setLevel" data-l="${l}">${l}</button>`).join("")}</div>`;
+    if(!key){$("#view").innerHTML=`<h2>Einstufung</h2><div class="card"><p>Der Tutor stellt dir ein paar kurze Fragen und findet so dein Level (A1–B2). Dafür brauchst du einen eigenen API-Schlüssel von Anthropic (console.anthropic.com → API Keys). Er wird nur auf diesem Gerät gespeichert.</p><input type="password" id="akin" placeholder="API-Schlüssel (sk-ant-…)" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="row" style="margin-top:8px"><button class="btn pri" data-act="chatSaveKey">Speichern</button></div><div class="small" id="akmsg" style="margin-top:6px"></div>${manual}</div>`;return;}
+    $("#view").innerHTML=`<h2>Einstufung</h2>
+     ${C.msgs.length?"":`<div class="card"><p>Ich stelle dir etwa sieben kurze Fragen – du antwortest auf Englisch, schriftlich oder mit dem Mikrofon. Keine Sorge: Fehler sind okay, es geht nur darum, dein Level zu finden.</p><button class="btn pri" data-act="chatStart">Einstufung starten</button>${manual}</div>`}
+     ${bubs}${C.busy?`<div class="small">Tutor denkt nach …</div>`:""}${C.err?`<div class="warn">${esc(C.err)}</div>`:""}
+     ${C.msgs.length?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><input type="text" id="cin" placeholder="Sprich oder schreibe …" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
+    const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter")chatSend(i.value);};window.scrollTo(0,1e6);
+    return;
+  }
+  if(!key){
+    $("#view").innerHTML=`<h2>Tutor</h2><div class="card"><p>Dein persönlicher Tutor: Er führt dich durch die Lektion, spricht mit dir in der Zielsprache, korrigiert dich und vergleicht deine gesprochene Antwort sofort mit der richtigen Form.</p>
+     <p class="small">Dafür brauchst du einen eigenen API-Schlüssel von Anthropic (console.anthropic.com → API Keys). Er wird nur auf diesem Gerät gespeichert und nur an Anthropic gesendet. Die Nutzung kostet wenige Cent pro Gespräch.</p>
+     <input type="password" id="akin" placeholder="API-Schlüssel (sk-ant-…)" autocomplete="off" autocapitalize="off" spellcheck="false">
+     <div class="row" style="margin-top:8px"><button class="btn pri" data-act="chatSaveKey">Speichern</button></div><div class="small" id="akmsg" style="margin-top:6px"></div></div>`;
+    return;
+  }
+  const bub=C.msgs.map((m,i)=>m.role==="assistant"
+   ?`<div class="bub A"><b>${esc(m.text)}</b><div><button class="btn sm" data-act="chatSay" data-i="${i}">🔊</button></div>${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button></div>`:""}${m.tip?`<span>💡 ${esc(m.tip)}</span>`:""}</div>`
+   :`<div class="bub B"><b>${esc(m.text)}</b>${m.spoken?"":""}${cmpHtml(m,i)}</div>`).join("");
+  $("#view").innerHTML=`<h2>Tutor</h2>
+   <div class="row" style="margin-bottom:10px"><select id="clvl">${LEVELS.map(l=>`<option value="${l}" ${C.level===l?"selected":""}>${l}</option>`).join("")}</select>
+    <select id="ctopic">${CHAT_TOPICS.map(t=>`<option value="${t[0]}" ${C.topic===t[0]?"selected":""}>${t[1]}</option>`).join("")}</select>
+    <button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button><button class="btn sm" data-act="chatReset">Neu starten</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}</div>
+   ${C.topic==="tutor"?`<div class="small" style="margin-bottom:8px">Lektion: ${esc(chatUnit().n+". "+chatUnit().t)}</div>`:""}
+   ${C.msgs.length?"":`<div class="card"><p>Tippe auf „Gespräch starten“. Der Tutor beginnt, du antwortest mit dem Mikrofon oder schriftlich.</p><button class="btn pri" data-act="chatStart">Gespräch starten</button></div>`}
+   ${bub}${C.busy?`<div class="small">Tutor denkt nach …</div>`:""}${C.err?`<div class="warn">${esc(C.err)}</div>`:""}
+   ${C.msgs.length?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><input type="text" id="cin" placeholder="Sprich oder schreibe …" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}
+   <div class="row" style="margin-top:14px"><button class="btn sm" data-act="chatDelKey">Schlüssel löschen</button></div>`;
+  $("#clvl").onchange=e=>{C.level=e.target.value;if(CFG.placement){S.level=C.level;save();}};$("#ctopic").onchange=e=>{C.topic=e.target.value;C.msgs=[];C.goal=null;render();};
+  const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter")chatSend(i.value);};
+  window.scrollTo(0,1e6);
+}
+
 /* ===================== EVENTS ===================== */
 function openUnit(id){V.unit=id;V.utab="intro";V.tab="path";Rec.stop(true);stopAudio();render();window.scrollTo(0,0);}
 document.addEventListener("click",e=>{
@@ -1455,6 +1678,21 @@ document.addEventListener("click",e=>{
   const a=dsx.act;
   switch(a){
    case"go":go(dsx.tab);break;
+   case"chatSaveKey":{const v=(($("#akin")||{}).value||"").trim();if(!/^sk-/.test(v)){$("#akmsg").textContent="Das sieht nicht wie ein API-Schlüssel aus (beginnt mit sk-).";break;}setAK(v);render();break;}
+   case"chatDelKey":setAK("");V.chat.msgs=[];render();break;
+   case"chatReset":V.chat.msgs=[];V.chat.err="";stopAudio();render();break;
+   case"chatStart":chatAsk();break;
+   case"chatSendBtn":chatSend(($("#cin")||{}).value);break;
+   case"chatListen":chatListen();break;
+   case"chatDone":V.chat.result=null;V.chat.topic="tutor";render();break;
+   case"setLevel":S.level=dsx.l;S.placed=Date.now();save();V.chat.level=S.level;V.chat.msgs=[];V.chat.result=null;V.cards=null;V.ex=null;render();break;
+   case"relevel":S.level=null;V.chat.msgs=[];V.chat.result=null;V.chat.topic="tutor";save();render();break;
+   case"toLesson":openUnit(nextUnit().id);break;
+   case"chatRetry":chatListen(+dsx.i);break;
+   case"chatAuto":V.chat.auto=!V.chat.auto;render();break;
+   case"chatSayT":speak(V.chat.msgs[+dsx.i].cmp.target,.9);break;
+   case"chatSayG":speak(V.chat.msgs[+dsx.i].goal,.9);break;
+   case"chatSay":speak(V.chat.msgs[+dsx.i].text,.9);break;
    case"openUnit":openUnit(dsx.u);break;
    case"back":V.unit=null;render();break;
    case"utab":V.utab=dsx.t;stopAudio();render();break;
@@ -1487,7 +1725,7 @@ document.addEventListener("click",e=>{
    case"scoreOnly":Rec.active?Rec.stop():Rec.start(null,"sr");break;
    case"playMine":playMine();break;
    case"compare":compareAudio();break;
-   case"startRp":V.rp={u:dsx.u,role:dsx.role||"B",i:0,scores:[],played:{},done:false};V.sp.mode="role";go("speak");break;
+   case"startRp":V.rp={u:dsx.u,role:dsx.role||"B",i:0,scores:[],played:{},done:false};V.sp.mode="role";go("rp");break;
    case"rpNext":{const r=V.rp;if(SP.res)r.scores[r.i]=SP.res.score;Rec.stop(true);stopAudio();r.i++;SP._rpIdx=-1;render();break;}
    case"rpRestart":V.rp={u:V.rp.u,role:V.rp.role,i:0,scores:[],played:{},done:false};SP._rpIdx=-1;render();break;
    case"rpSwap":V.rp={u:V.rp.u,role:V.rp.role==="A"?"B":"A",i:0,scores:[],played:{},done:false};SP._rpIdx=-1;render();break;
