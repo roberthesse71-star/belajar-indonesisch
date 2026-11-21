@@ -91,3 +91,16 @@ T.update({"🔊 Vorlesen":"🔊 Read aloud"})
 T.update({"👩‍🏫 Dein Lehrer":"👩‍🏫 Your teacher","Starte mit der Einstufung – der Lehrer findet dein Level.":"Start with the placement – the teacher finds your level.","Er führt dich durch Lektion ":"The teacher guides you through lesson "," – erklärt, spricht vor, fragt ab.":" – explains, models, quizzes you.",'"Lernen"':'"Learn"'})
 
 T.update({"🎙 Ich höre zu – sprich jetzt …":"🎙 I'm listening – speak now …","🎙 Mikrofon wird vorbereitet …":"🎙 Preparing the microphone …","Nichts erkannt. Tippe auf 🎙, warte kurz, bis „Ich höre zu“ erscheint, und sprich dann deutlich. Du kannst auch tippen. (Die Spracherkennung braucht Internet.)":"Nothing recognised. Tap 🎙, wait until “I'm listening” appears and then speak clearly. You can also type. (Speech recognition needs internet.)"})
+
+T.update({
+"Sprich ins Tastatur-Mikrofon oder tippe den Satz.":"Speak into the keyboard microphone or type the sentence.",
+"Bewertung fertig – unten siehst du, welche Wörter passen.":"Scoring done – below you can see which words fit.",
+"] Tipp: 🔄 Mikrofon zurücksetzen oder ⌨️ Tastatur-Diktat unten.":"] Tip: 🔄 Reset microphone or ⌨️ keyboard dictation below.",
+"🔄 Mikrofon zurücksetzen":"🔄 Reset microphone",
+"⌨️ Tastatur-Diktat":"⌨️ Keyboard dictation",
+'title="Tastatur-Diktat"':'title="Keyboard dictation"',
+"⌨️ Oder: Tastatur-Mikrofon benutzen / tippen":"⌨️ Or: use the keyboard microphone / type",
+">Bewerten</button>":">Score</button>",
+"Mikrofon zurückgesetzt – tippe jetzt noch einmal auf 🎙.":"Microphone reset – now tap 🎙 once more.",
+"Tippe auf das Mikrofon-Symbol deiner iPhone-Tastatur (unten rechts), sprich, dann auf „Senden“.":"Tap the microphone icon on your iPhone keyboard (bottom right), speak, then tap “Send”.",
+})

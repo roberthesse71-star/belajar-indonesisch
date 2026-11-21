@@ -1134,6 +1134,27 @@ async function getMic(opts){
   }
   throw last;
 }
+/* Mikrofon vor jeder Aufnahme frisch machen (iOS hängt sich ab der 2. Aufnahme gern auf) */
+let micUses=0,SRkeep=null;
+function srGet(reuse){if(reuse&&SRkeep)return SRkeep;SRkeep=new SRC();return SRkeep;}
+async function micReset(hard){
+  stopAudio();releaseAudio();
+  try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
+  if(hard){try{if(SRkeep)SRkeep.abort();}catch(e){}SRkeep=null;}
+  if(isIOS&&(hard||micUses>0)&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    try{const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop());}catch(e){}
+    await sleep(350);
+  }
+  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
+  micUses++;
+  await sleep(isIOS?600:60);
+}
+function scoreText(text){
+  text=(text||"").trim();if(!text){toast("Sprich ins Tastatur-Mikrofon oder tippe den Satz.",3500);return;}
+  SP.res=evaluate(SP.target,[text]);const key="t:"+norm(SP.target);S.best[key]=Math.max(S.best[key]||0,SP.res.score);
+  addXp(Math.max(1,Math.round(SP.res.score/10)));S.totalSpeak=(S.totalSpeak||0)+1;D().speak++;save();
+  SP.status="Bewertung fertig – unten siehst du, welche Wörter passen.";render();
+}
 const recMode=()=>S.recMode||(isIOS?"rec":"both");
 const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,curMode:"",usedRec:false,
  async start(cb,forceMode){
@@ -1144,9 +1165,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   this.wantSR=mode!=="rec"&&!!SRC;
   if(wantRec&&!this.wantSR)SP.res=null;
   this.cb=cb;this.fin=false;this.alts=[];this.chunks=[];this.srErr=null;this.blob=null;this.mr=null;this.stream=null;
-  playTok++;releaseAudio();   // laufende Wiedergabe beenden, Mikrofon braucht freie Audio-Session
-  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
-  await sleep(isIOS?350:50);
+  await micReset();   // laufende Wiedergabe beenden, Audio-Session und Mikrofon frisch machen
   if(gen!==this.gen)return;
   if(mode==="sr"&&!SRC){SP.status="Keine Spracherkennung in diesem Browser – wähle oben „Nur Aufnahme“.";render();return;}
   if(wantRec){
@@ -1181,7 +1200,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
  },
  startSR(gen){
   try{
-    const sr=new SRC();sr.lang=CFG.sr;sr.interimResults=true;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;this.srTries++;
+    this.srTries++;const sr=srGet(this.srTries>1&&this.srTries%2===0);sr.lang=CFG.sr;sr.interimResults=true;sr.maxAlternatives=5;sr.continuous=this.srTries>=3;this.srDone=false;
     let gotFinal=false;
     sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){
       if(e.results[i].isFinal){gotFinal=true;for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);}
@@ -1192,7 +1211,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
       // Zu früh beendet, noch nichts erkannt, Nutzer hat nicht gestoppt → neu starten (iOS bricht gern ab)
       const el=Date.now()-this.t0,soft=!this.srErr||this.srErr==="no-speech"||this.srErr==="aborted";
       if(this.active&&!gotFinal&&!this.alts.length&&soft&&this.srTries<4&&el<10500){
-        this.srErr=null;try{this.startSR(gen);return;}catch(e){}
+        this.srErr=null;setTimeout(()=>{if(gen===this.gen&&this.active)this.startSR(gen);},this.srTries>1?500:250);return;
       }
       if(!this.alts.length&&this.interim)this.alts.push(this.interim);   // Zwischenergebnis retten
       this.srDone=true;if(this.active)this.stop();else this.tryFinish();};
@@ -1209,7 +1228,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
   this.ctx=null;
   try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
   if(silent){this.gen++;this.fin=true;this.srDone=true;this.mrDone=true;return;}
-  if(was){SP.status="Auswertung …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){if(!this.alts.length&&this.interim)this.alts.push(this.interim);this.srDone=true;this.mrDone=true;this.tryFinish();}},3200);}
+  if(was){SP.status="Auswertung …";render();if(this.srDone&&this.mrDone){this.tryFinish();return;}const g=this.gen;setTimeout(()=>{if(g===this.gen){if(!this.alts.length&&this.interim)this.alts.push(this.interim);this.srDone=true;this.mrDone=true;this.tryFinish();}},3200);}
  },
  tryFinish(){
   if(this.active||!this.srDone||!this.mrDone||this.fin)return;
@@ -1227,7 +1246,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
     SP.status=this.usedRec?"Fertig – höre deine Aufnahme (▶) und vergleiche (⇄) mit dem Vorbild.":"Bewertung fertig – unten siehst du, welche Wörter erkannt wurden.";
   }else if(this.wantSR){
     SP.res=null;addXp(1);
-    SP.status=(err&&SRERR[err])?SRERR[err]:"Es wurde nichts erkannt. Sprich lauter und näher am Mikrofon. Die Spracherkennung braucht Internet.";
+    SP.status=((err&&SRERR[err])?SRERR[err]:"Es wurde nichts erkannt. Sprich lauter und näher am Mikrofon. Die Spracherkennung braucht Internet.")+" [Code: "+(err||"leer")+"] Tipp: 🔄 Mikrofon zurücksetzen oder ⌨️ Tastatur-Diktat unten.";
     if(SP.url)SP.status+=" Deine Aufnahme kannst du trotzdem anhören.";
   }else{SP.res=null;addXp(1);SP.status=SP.url?"Aufnahme gespeichert. Tippe auf ⇄ Abgleich (Vorbild, dann du) oder ▶ nur deine Aufnahme. Für eine Prozentwertung: 📊 Bewerten und den Satz noch einmal sprechen.":"Es wurde nichts aufgenommen. Prüfe die Mikrofon-Berechtigung.";}
   if(this.cb)this.cb(SP.res);
@@ -1278,6 +1297,8 @@ function speakBox(target,ph,hideTarget){
     <button class="btn" data-act="altRec">🎤 Aufnahme über iPhone-Rekorder</button></div>
    <div class="small" style="margin-top:6px">① Vorbild hören → ② 🎙 aufnehmen → ③ ⇄ Abgleich (Vorbild, dann du) → ④ 📊 Bewerten (nochmal sprechen, für die Prozentwertung)</div>
    <div class="small" id="spstat" style="margin-top:8px">${esc(SP.status||"Tipp: Erst Vorbild anhören, dann nachsprechen.")}</div>
+   <div class="row" style="justify-content:center;margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Mikrofon zurücksetzen</button></div>
+   <div class="row" style="justify-content:center;margin-top:8px"><input type="text" id="kbin" placeholder="⌨️ Oder: Tastatur-Mikrofon benutzen / tippen" lang="${CFG.sr}" autocomplete="off" autocapitalize="off" style="flex:1;min-width:0"><button class="btn" data-act="kbScore">Bewerten</button></div>
    <div class="row" style="justify-content:center;margin-top:8px"><select data-sel="recmode">
     <option value="both" ${m==="both"?"selected":""}>Aufnahme + Bewertung</option>
     <option value="rec" ${m==="rec"?"selected":""}>Nur Aufnahme (Selbstvergleich)</option>
@@ -1932,10 +1953,8 @@ async function chatListen(retryIdx){
   if(chatSR&&Date.now()-(chatSR._t0||0)>900){try{chatSR.abort();}catch(e){}chatSR=null;micBusy=false;chatSRgen++;const st0=$("#cstat");if(st0)st0.textContent="";return;}   // zweiter Tipp = abbrechen
   if(chatSR){try{chatSR.abort();}catch(e){}chatSR=null;}
   const gen=++chatSRgen;
-  micBusy=true;Rec.stop(true);stopAudio();releaseAudio();V.chat.err="";
-  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
-  await sleep(isIOS?650:60);if(gen!==chatSRgen){return;}
-  stopAudio();releaseAudio();
+  micBusy=true;Rec.stop(true);V.chat.err="";
+  await micReset();if(gen!==chatSRgen){return;}
   const st=()=>$("#cstat"),say=t=>{const e=st();if(e)e.textContent=t;};
   const alts=[];let interim="",srErr=null,tries=0,t0=Date.now(),finished=false;
   const finish=()=>{
@@ -1952,8 +1971,8 @@ async function chatListen(retryIdx){
   };
   const run=()=>{
     tries++;
-    let r;try{r=new SRC();}catch(e){srErr="aborted";finish();return;}
-    chatSR=r;r._t0=Date.now();r.lang=CFG.sr;r.interimResults=true;r.maxAlternatives=5;r.continuous=false;
+    let r;try{r=srGet(tries>1&&tries%2===0);}catch(e){srErr="aborted";finish();return;}
+    chatSR=r;r._t0=Date.now();r.lang=CFG.sr;r.interimResults=true;r.maxAlternatives=5;r.continuous=tries>=3;
     let got=false;
     r.onstart=()=>say("🎙 Ich höre zu – sprich jetzt …");
     r.onresult=e=>{
@@ -2006,7 +2025,8 @@ function vOT(){
   $("#view").innerHTML=`<h2>${place?"Einstufung":"Lehrer"}</h2>
    <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
    ${prog}${start}${bub}${done}
-   ${inputOn?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
+   ${C.err?`<div class="warn">${esc(C.err)}<div class="row" style="margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Mikrofon zurücksetzen</button><button class="btn sm" data-act="chatKbd">⌨️ Tastatur-Diktat</button></div></div>`:""}
+   ${inputOn?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><button class="btn" data-act="chatKbd" title="Tastatur-Diktat">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
   const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter"){const v=i.value;i.value="";chatSend(v);}};
   const s2=$("#tunit");if(s2)s2.onchange=e=>{V.unit=e.target.value;};
   window.scrollTo(0,1e6);
@@ -2320,6 +2340,9 @@ document.addEventListener("click",e=>{
    case"toTutor":V.unit=nextUnit().id;V.chat.msgs=[];V.chat.ot=null;V.chat.result=null;go("chat");break;
    case"toLesson":openUnit(nextUnit().id);break;
    case"chatRetry":chatListen(+dsx.i);break;
+   case"micFix":{Rec.stop(true);if(typeof chatSR!=="undefined"&&chatSR){try{chatSR.abort();}catch(e){}chatSR=null;chatSRgen++;}micBusy=false;V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt noch einmal auf 🎙.",4000);render();});break;}
+   case"chatKbd":{const i=$("#cin");if(i)i.focus();toast("Tippe auf das Mikrofon-Symbol deiner iPhone-Tastatur (unten rechts), sprich, dann auf „Senden“.",6000);break;}
+   case"kbScore":scoreText(($("#kbin")||{}).value);break;
    case"chatAuto":V.chat.auto=!V.chat.auto;render();break;
    case"chatSayT":speak(V.chat.msgs[+dsx.i].cmp.target,.9);break;
    case"chatSayG":speak(V.chat.msgs[+dsx.i].goal,.9);break;
