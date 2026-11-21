@@ -1033,23 +1033,13 @@ function deviceSpeak(text,rate,pitch,forceDefault,lang){
   });
 }
 let micBusy=false;
-async function speak(text,rate,pitch,forceDefault){
-  if(micBusy)return;   // während das Mikrofon lauscht, nichts abspielen (sonst verliert iOS die Aufnahme)
-  if(S.ttsV!==2){S.ttsV=2;S.ttsMode="online";save();}   // einmalig: Online-Stimme als Standard für alle Lektionen
-  const mode=S.ttsMode||"online",tok=playTok;
-  if(!forceDefault&&(mode==="online"||(mode==="auto"&&(S.ttsAutoOnline||!idVoice())))){
-    if(await speakOnline(text,rate))return;
-    if(tok!==playTok||micBusy){tlog("Wiedergabe abgebrochen");return;}
-    tlog("Online-Stimme nicht möglich → Gerätestimme");
-  }
-  if(tok!==playTok||micBusy)return;
-  const ok=await deviceSpeak(text,rate,pitch,forceDefault);
-  if(tok!==playTok||micBusy)return;
-  if(!ok&&!forceDefault&&mode==="auto"&&!S.ttsAutoOnline){
-    tlog("Gerätestimme stumm → versuche Online-Stimme");
-    if(await speakOnline(text,rate)){S.ttsAutoOnline=true;save();toast("Die Gerätestimme blieb stumm – ich nutze jetzt die Online-Stimme (Internet nötig).",6000);}
-    else toast("Keine Sprachausgabe möglich: Gerätestimme stumm und Online-Stimme nicht erreichbar. Sieh im Tab „Laute“ ins Protokoll.",9000);
-  }
+/* Nur Online-Stimme (Gerätestimme bewusst entfernt: sie funkte in die Aufnahme) */
+async function speak(text,rate){
+  if(micBusy)return;
+  if(S.ttsMode!=="online"){S.ttsMode="online";save();}
+  const tok=playTok;
+  const ok=await speakOnline(text,rate);
+  if(!ok&&tok===playTok&&!micBusy)toast("Online-Stimme nicht erreichbar – prüfe die Internetverbindung.",5000);
 }
 /* Erklärungen in der Muttersprache der App vorlesen (z. B. Deutsch in der Indonesisch-/Englisch-App) */
 const natLang=()=>LT.nname==="German"?"de":"en";
@@ -1076,9 +1066,7 @@ async function speakNative(text){
     if(p&&p.l===l&&(p.t+" "+g).length<170)p.t+=" "+g;else parts.push({l,t:g});}
   for(const p of parts){
     if(my!==playTok)return;
-    const t=p.t.slice(0,190);let ok=false;
-    if((S.ttsMode||"online")!=="device")ok=await speakOnline(t,.95,p.l);
-    if(!ok&&my===playTok)await deviceSpeak(t,.95,1,false,p.l===CFG.tl?undefined:p.l);
+    await speakOnline(p.t.slice(0,190),.95,p.l);
   }
 }
 async function playDialog(u,cb){
@@ -1090,13 +1078,7 @@ async function playDialog(u,cb){
   }
   cb&&cb(-1);
 }
-function voiceWarning(){
-  if(!("speechSynthesis" in window))return '<div class="warn">Dieser Browser hat keine Sprachausgabe. Bitte Safari, Chrome oder Edge nutzen.</div>';
-  const v=idVoice();
-  if(!v)return '<div class="warn">'+LT.voiceMissing+' <button class="btn sm" data-act="go" data-tab="sounds">'+LT.diag+'</button></div>';
-  if(!isIdLang(v)&&!S.voiceURI)return '<div class="small" style="margin-bottom:8px">'+LT.voiceSub(esc(v.name),esc(v.lang))+'</div>';
-  return "";
-}
+function voiceWarning(){return "";}
 
 /* ---------- Aufnahme & Bewertung ---------- */
 const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -1287,7 +1269,7 @@ function speakBox(target,ph,hideTarget){
   const supp=(m!=="sr"&&!navigator.mediaDevices)?'<div class="warn">Kein Mikrofonzugriff möglich. Öffne die https-Adresse der App direkt in Safari/Chrome/Edge (nicht in einer Vorschau oder als lokale Datei).</div>':"";
   const noSR=(m!=="rec"&&!SRC)?'<div class="warn">Keine Spracherkennung in diesem Browser. Wähle oben „Nur Aufnahme“ und vergleiche per Gehör.</div>':"";
   const mix=(m==="both"&&isIOS)?'<div class="warn">Auf dem iPhone blockieren sich gleichzeitige Aufnahme und Spracherkennung oft. Falls etwas hakt: wähle „Nur Aufnahme“ oder „Nur Bewertung“.</div>':"";
-  const idv=(!idVoice()&&"speechSynthesis" in window)?'<div class="small" style="margin-bottom:6px">'+LT.voiceNone+'</div>':"";
+  const idv="";
   return `${supp}${noSR}${mix}
   <div class="card" style="text-align:center">
    ${hideTarget?`<div class="small">Text verdeckt – sprich aus dem Gedächtnis.</div>`:`<div class="big" style="font-size:26px">${esc(target)}</div>`}
