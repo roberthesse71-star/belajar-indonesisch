@@ -89,6 +89,7 @@ summary{cursor:pointer;font-weight:600;padding:8px 2px}
 .check{font-size:20px;margin-right:6px}
 .tip li{margin:5px 0}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));background:rgba(44,44,46,.96);color:#fff;padding:13px 16px;border-radius:14px;z-index:50;font-size:14px;display:none;box-shadow:0 10px 30px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.ph:empty{display:none}
 
 </style>
 </head>
@@ -751,15 +752,12 @@ U({id:"b2-35",lvl:"B2",e:"🏯",t:"Geschichte & Kultur Indonesiens",
  ex:[["Indonesia merdeka ___ tahun 1945. (im Jahr)","pada",["pada","di","ke","dari"],""],["Saya ___ ke Bali. (war schon einmal)","pernah",["pernah","akan","sedang","belum"],""],["___ itu, bangsa Eropa datang. (Danach)","Setelah",["Setelah","Sebelum","Karena","Supaya"],""],["Batik adalah ___ budaya dunia. (Erbe)","warisan",["warisan","ujian","pajak","hutan"],""]]
 });
 
-
-/* ---------- Items ---------- */
-const ITEMS=[],IDX={};
-function addItem(u,k,i,v){const it={id:u.id+":"+k+i,u:u.id,k,idn:v[0],de:v[1],ph:phon(v[0])};ITEMS.push(it);IDX[it.id]=it;}
-UNITS.forEach((u,n)=>{u.n=n+1;(u.vocab||[]).forEach((v,i)=>addItem(u,"v",i,v));(u.sent||[]).forEach((v,i)=>addItem(u,"s",i,v));});
-const UNIT=id=>UNITS.find(u=>u.id===id);
-const LEVELS=["A1","A2","B1","B2"];
-
-const SOUNDS=[
+/* Sprachkonfiguration: Indonesisch (UI Deutsch) */
+const CFG={
+ key:"belajar_v2",idb:"belajar",tl:"id",sr:"id-ID",
+ vre:[/^id[-_]/i,/^(id|in)([-_]|$)/i,/^ms([-_]|$)/i],alt:/^ms/i,
+ numw:{"0":"nol","1":"satu","2":"dua","3":"tiga","4":"empat","5":"lima","6":"enam","7":"tujuh","8":"delapan","9":"sembilan","10":"sepuluh","100":"seratus","1000":"seribu"},
+ sounds:[
  ["c","wie „tsch“","cinta, cari, cuci"],["j","wie „dsch“","jalan, jam, kerja"],["ny","wie „nj“ / spanisches ñ","nyamuk, nyanyi, banyak"],
  ["ng","wie in „Ding“ – auch am Wortanfang!","ngantuk, ngomong, bangun"],["sy","wie „sch“","syukur, syarat"],["kh","wie „ch“ in „Bach“","khusus, akhir"],
  ["r","kurz gerolltes Zungenspitzen-r","burung, rumah, terbang"],["e","meist unbetont wie in „bitte“ (Schwa), teils wie langes „e“","selamat, besok, kemarin"],
@@ -767,21 +765,57 @@ const SOUNDS=[
  ["ai / au","Doppellaute wie „ei“ / „au“ am Wortende","pakai, pulau, damai"],["aa / ua / ia","Vokale getrennt sprechen (zwei Silben)","maaf, buah, saat"],
  ["s / z / f / v","s stimmlos wie „ß“; v klingt wie f","sama, zaman, vitamin"],
  ["Betonung","flach, meist leicht auf der vorletzten Silbe; keine Töne","bahasa, belajar, selamat"]
-];
+],
+ gcats:[
+ ["Verneinung",["tidak","bukan","belum","jangan"],"<b>tidak</b> verneint Verben/Adjektive, <b>bukan</b> Nomen, <b>belum</b> = noch nicht, <b>jangan</b> = verbietet (Imperativ)."],
+ ["Zeitformen",["sudah","sedang","akan","belum"],"Keine Verbformen: <b>sudah</b> (schon/Vergangenheit), <b>sedang</b> (gerade), <b>akan</b> (Zukunft)."],
+ ["Präpositionen",["di","ke","dari","untuk","dengan","pada","dalam"],"<b>di</b> = in/an (Ort), <b>ke</b> = nach/zu (Richtung), <b>dari</b> = von/aus, <b>untuk</b> = für/um zu, <b>dengan</b> = mit."],
+ ["Pronomen",["saya","aku","kamu","Anda","dia","kami","kita","mereka"],"<b>kami</b> = wir (ohne dich), <b>kita</b> = wir (mit dir), <b>Anda</b> = höfliches Sie."],
+ ["Zeigewörter",["ini","itu"],"<b>ini</b> = dieser/hier, <b>itu</b> = jener/dort. Sie stehen <i>hinter</i> dem Nomen."],
+ ["Verbindungswörter",["dan","atau","tetapi","karena","kalau","yang"],"<b>dan</b> und, <b>atau</b> oder, <b>tetapi</b> aber, <b>karena</b> weil, <b>kalau</b> wenn, <b>yang</b> = der/die/das (Relativsatz)."],
+ ["Steigerung",["sangat","lebih","paling","sekali","agak"],"<b>sangat</b>/<b>sekali</b> = sehr, <b>lebih</b> = mehr/-er, <b>paling</b> = am meisten/-ste."],
+ ["Fragewörter",["apa","siapa","kapan","di mana","mengapa","bagaimana","berapa"],"<b>apa</b> was, <b>siapa</b> wer, <b>kapan</b> wann, <b>mengapa</b> warum, <b>bagaimana</b> wie, <b>berapa</b> wie viel."]
+],
+ gsyn:[["saya","aku","Anda","kamu"],["kami","kita"],["di","pada","dalam"],["sangat","sekali","agak"]],
+ tongue:["Kakak kaya kaya raya.","Saya suka makan ikan bakar.","Burung itu terbang tinggi.","Cinta tanah air.","Ayam goreng enak sekali."],
+ t:{
+  cm:[["id2de","Indonesisch → Deutsch"],["de2id","Deutsch → Indonesisch"],["listen","Hören → Bedeutung"]],
+  howSay:"Wie sagt man auf Indonesisch?",dictWrite:"Höre den Satz und schreibe ihn auf Indonesisch.",transTo:"Übersetze ins Indonesische",
+  dictHint:"Tippe ein indonesisches oder deutsches Wort.",dictPh:"Suche (Indonesisch oder Deutsch) …",test1:"🔊 Test 1: Indonesisch",voiceAuto:"Automatisch (Indonesisch → Malaiisch → Standard)",
+  diag:"Diagnose",
+  voiceMissing:"⚠️ Keine <b>indonesische (oder malaiische) Stimme</b> gefunden – es wird die Standardstimme genutzt, das klingt falsch. iPhone: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Indonesisch laden. Windows: Sprache → Indonesisch → Sprachausgabe. Ohne Stimme nutzt die App automatisch eine Online-Stimme (Internet nötig).",
+  voiceSub:(n,l)=>"ℹ️ Es wird die Stimme „"+n+"“ ("+l+") als Ersatz genutzt. Sie klingt ähnlich, ist aber nicht perfekt. Bessere Auswahl: Laute → Audio-Diagnose.",
+  voiceNone:"⚠️ Keine indonesische Stimme gefunden – Vorbild klingt evtl. falsch (Tab „Laute“ → Diagnose).",
+  tipListen:"<li><b>Hören im Alltag:</b> Höre indonesische Podcasts, YouTube und Musik. Beginne mit Untertiteln, dann ohne.</li>",
+  tipMistakes:"<li><b>Fehler sind gut:</b> Indonesier sind sehr nachsichtig und freuen sich, wenn du ihre Sprache sprichst.</li>",
+  soundsIntro:"Indonesisch wird fast so gesprochen, wie es geschrieben wird – <b>jeder Buchstabe hat (fast) immer denselben Laut</b>. Es gibt keine Töne. Klicke auf die Beispiele, um sie zu hören, und übe sie dann im Tab „Sprechen“."
+ }
+};
+
+
+const LT=CFG.t;
+/* ---------- Items ---------- */
+const ITEMS=[],IDX={};
+function addItem(u,k,i,v){const it={id:u.id+":"+k+i,u:u.id,k,idn:v[0],de:v[1],ph:phon(v[0])};ITEMS.push(it);IDX[it.id]=it;}
+UNITS.forEach((u,n)=>{u.n=n+1;(u.vocab||[]).forEach((v,i)=>addItem(u,"v",i,v));(u.sent||[]).forEach((v,i)=>addItem(u,"s",i,v));});
+const UNIT=id=>UNITS.find(u=>u.id===id);
+const LEVELS=["A1","A2","B1","B2"];
+
+const SOUNDS=CFG.sounds;
 
 /* ---------- Speicher ---------- */
 let S={box:{},due:{},xp:0,last:"",streak:0,bestStreak:0,best:{},hist:{},day:null,goal:60,newPerDay:10,cmode:"id2de",ckinds:"vs",totalCards:0,totalSpeak:0};
-try{const r=localStorage.getItem("belajar_v2");if(r)Object.assign(S,JSON.parse(r));}catch(e){}
+try{const r=localStorage.getItem(CFG.key);if(r)Object.assign(S,JSON.parse(r));}catch(e){}
 function ds(dt){return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");}
 const today=()=>ds(new Date());
 const yesterday=()=>ds(new Date(Date.now()-864e5));
 function D(){const t=today();if(!S.day||S.day.d!==t)S.day={d:t,cards:0,speak:0,dict:0,ex:0,newc:0};return S.day;}
 let STORE_OK=false;
 try{localStorage.setItem("__t","1");STORE_OK=localStorage.getItem("__t")==="1";localStorage.removeItem("__t");}catch(e){}
-function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open("belajar",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}});}
+function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open(CFG.idb,1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}});}
 async function idbPut(){try{const db=await idbOpen();db.transaction("kv","readwrite").objectStore("kv").put(JSON.stringify(S),"S");}catch(e){}}
 async function idbLoad(){try{const db=await idbOpen();return await new Promise(res=>{const q=db.transaction("kv").objectStore("kv").get("S");q.onsuccess=()=>res(q.result);q.onerror=()=>res(null);});}catch(e){return null;}}
-function save(){S.ts=Date.now();try{localStorage.setItem("belajar_v2",JSON.stringify(S));}catch(e){}idbPut();header();}
+function save(){S.ts=Date.now();try{localStorage.setItem(CFG.key,JSON.stringify(S));}catch(e){}idbPut();header();}
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 function storageWarn(){
@@ -816,7 +850,7 @@ function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ
 function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);
   for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
 const sim=(a,b)=>(!a.length&&!b.length)?1:1-lev(a,b)/Math.max(a.length,b.length);
-const NUMW={"0":"nol","1":"satu","2":"dua","3":"tiga","4":"empat","5":"lima","6":"enam","7":"tujuh","8":"delapan","9":"sembilan","10":"sepuluh","100":"seratus","1000":"seribu"};
+const NUMW=CFG.numw;
 const heardNorm=s=>norm(s).split(" ").map(w=>NUMW[w]||w).join(" ");
 
 /* ---------- Scopes ---------- */
@@ -838,10 +872,10 @@ function nextUnit(){return UNITS.find(u=>mastery(u)<60)||UNITS[UNITS.length-1];}
 let voices=[],playTok=0;
 function loadVoices(){try{voices=speechSynthesis.getVoices();}catch(e){}}
 if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
-const isIdLang=v=>/^(id|in)([-_]|$)/i.test(v.lang||"");
+const isIdLang=v=>CFG.vre[1].test(v.lang||"");
 const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
-  return voices.find(v=>/^id[-_]/i.test(v.lang))||voices.find(isIdLang)||voices.find(v=>/^ms([-_]|$)/i.test(v.lang))||null;
+  return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
 const TTSLOG=[];
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
@@ -858,7 +892,7 @@ function releaseAudio(){   // Audio-Element wirklich freigeben, damit das Mikrof
 function speakOnline(text,rate){
   return new Promise(res=>{
     let done=false;const fin=ok=>{if(!done){done=true;if(!ok)try{AUD.pause();}catch(e){}res(ok);}};
-    const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=id&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
+    const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+CFG.tl+"&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
     tlog("Online-Stimme: lade \""+text.slice(0,28)+"\"");
     try{
       AUD.pause();AUD.onended=()=>{tlog("→ Online beendet");try{AUD.onended=null;AUD.onerror=null;AUD.removeAttribute("src");AUD.load();}catch(e){}fin(true);};
@@ -925,8 +959,8 @@ async function playDialog(u,cb){
 function voiceWarning(){
   if(!("speechSynthesis" in window))return '<div class="warn">Dieser Browser hat keine Sprachausgabe. Bitte Safari, Chrome oder Edge nutzen.</div>';
   const v=idVoice();
-  if(!v)return '<div class="warn">⚠️ Keine <b>indonesische (oder malaiische) Stimme</b> gefunden – es wird die Standardstimme genutzt, das klingt falsch. iPhone: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Indonesisch laden. Windows: Sprache → Indonesisch → Sprachausgabe. Ohne Stimme nutzt die App automatisch eine Online-Stimme (Internet nötig). <button class="btn sm" data-act="go" data-tab="sounds">Diagnose</button></div>';
-  if(!isIdLang(v)&&!S.voiceURI)return '<div class="small" style="margin-bottom:8px">ℹ️ Es wird die Stimme „'+esc(v.name)+'“ ('+esc(v.lang)+') als Ersatz genutzt. Sie klingt ähnlich, ist aber nicht perfekt. Bessere Auswahl: Laute → Audio-Diagnose.</div>';
+  if(!v)return '<div class="warn">'+LT.voiceMissing+' <button class="btn sm" data-act="go" data-tab="sounds">'+LT.diag+'</button></div>';
+  if(!isIdLang(v)&&!S.voiceURI)return '<div class="small" style="margin-bottom:8px">'+LT.voiceSub(esc(v.name),esc(v.lang))+'</div>';
   return "";
 }
 
@@ -1016,7 +1050,7 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
  },
  startSR(gen){
   try{
-    const sr=new SRC();sr.lang="id-ID";sr.interimResults=true;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;this.srTries++;
+    const sr=new SRC();sr.lang=CFG.sr;sr.interimResults=true;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;this.srTries++;
     let gotFinal=false;
     sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){
       if(e.results[i].isFinal){gotFinal=true;for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);}
@@ -1097,7 +1131,7 @@ function speakBox(target,ph,hideTarget){
   const supp=(m!=="sr"&&!navigator.mediaDevices)?'<div class="warn">Kein Mikrofonzugriff möglich. Öffne die https-Adresse der App direkt in Safari/Chrome/Edge (nicht in einer Vorschau oder als lokale Datei).</div>':"";
   const noSR=(m!=="rec"&&!SRC)?'<div class="warn">Keine Spracherkennung in diesem Browser. Wähle oben „Nur Aufnahme“ und vergleiche per Gehör.</div>':"";
   const mix=(m==="both"&&isIOS)?'<div class="warn">Auf dem iPhone blockieren sich gleichzeitige Aufnahme und Spracherkennung oft. Falls etwas hakt: wähle „Nur Aufnahme“ oder „Nur Bewertung“.</div>':"";
-  const idv=(!idVoice()&&"speechSynthesis" in window)?'<div class="small" style="margin-bottom:6px">⚠️ Keine indonesische Stimme gefunden – Vorbild klingt evtl. falsch (Tab „Laute“ → Diagnose).</div>':"";
+  const idv=(!idVoice()&&"speechSynthesis" in window)?'<div class="small" style="margin-bottom:6px">'+LT.voiceNone+'</div>':"";
   return `${supp}${noSR}${mix}
   <div class="card" style="text-align:center">
    ${hideTarget?`<div class="small">Text verdeckt – sprich aus dem Gedächtnis.</div>`:`<div class="big" style="font-size:26px">${esc(target)}</div>`}
@@ -1156,8 +1190,8 @@ function vToday(){
    <li><b>Sätze statt Einzelwörter:</b> Die Karten mischen Wörter und ganze Sätze. Ganze Sätze zeigen dir Wortstellung und Partikeln.</li>
    <li><b>Rollenspiel wiederholen:</b> Spiele jeden Dialog mit beiden Rollen, bis du ohne Text sprechen kannst („Text verdecken“).</li>
    <li><b>Echte Menschen:</b> Suche Sprachpartner (z. B. über Tandem-Apps oder Sprachcafés) und sprich ab Lektion 5 wöchentlich mit Muttersprachlern. Nichts ersetzt echte Gespräche.</li>
-   <li><b>Hören im Alltag:</b> Höre indonesische Podcasts, YouTube und Musik. Beginne mit Untertiteln, dann ohne.</li>
-   <li><b>Fehler sind gut:</b> Indonesier sind sehr nachsichtig und freuen sich, wenn du ihre Sprache sprichst.</li></ul></details>`;
+   ${LT.tipListen}
+   ${LT.tipMistakes}</ul></details>`;
 }
 
 /* ===================== LERNPFAD ===================== */
@@ -1210,7 +1244,7 @@ function buildCards(free){
   if(isFree){q=shuffle(pool).sort((a,b)=>(S.box[a.id]||0)-(S.box[b.id]||0)).slice(0,15).map(x=>x.id);q=shuffle(q).sort((a,b)=>(IDX[a].k==="v"?0:1)-(IDX[b].k==="v"?0:1));}
   V.cards={q,i:0,flip:false,free:isFree,again:{},spoken:false,right:0};
 }
-const CM=[["id2de","Indonesisch → Deutsch"],["de2id","Deutsch → Indonesisch"],["listen","Hören → Bedeutung"]];
+const CM=LT.cm;
 function vCards(){
   if(!V.cards)buildCards();
   const c=V.cards;
@@ -1226,7 +1260,7 @@ function vCards(){
   const it=IDX[c.q[c.i]],m=S.cmode;let front="",back="";
   const idBlock=`<div class="big">${esc(it.idn)}</div><div class="ph">${esc(it.ph)}</div>`;
   if(m==="id2de"){front=idBlock;back=`<div class="de" style="margin-top:14px;font-size:22px">${esc(it.de)}</div>`;}
-  if(m==="de2id"){front=`<div class="small">Wie sagt man auf Indonesisch?</div><div class="big" style="font-size:26px">${esc(it.de)}</div>`;back=`<div style="margin-top:14px">${idBlock}</div>`;}
+  if(m==="de2id"){front=`<div class="small">${LT.howSay}</div><div class="big" style="font-size:26px">${esc(it.de)}</div>`;back=`<div style="margin-top:14px">${idBlock}</div>`;}
   if(m==="listen"){front=`<div class="small">Was hörst du?</div><div style="font-size:48px">🔊</div>`;back=`<div style="margin-top:12px">${idBlock}<div class="de" style="font-size:20px">${esc(it.de)}</div></div>`;}
   const u=UNIT(it.u);
   $("#view").innerHTML=`<h2>Karteikarten</h2>${voiceWarning()}${cfg}
@@ -1323,7 +1357,7 @@ function vHear(){
     res=`<div class="card"><div style="margin:4px 0">${q.res.words.map(w=>`<span class="word ${w.s>=.99?"g":w.s>=.7?"m":"r"}">${esc(w.w)}</span>`).join("")}</div>
      <div class="small">Richtig: <b>${esc(it.idn)}</b> – ${esc(it.de)}</div><div class="row" style="margin-top:8px"><button class="btn pri" data-act="dNext">Weiter →</button></div></div>`;
   }
-  $("#view").innerHTML=`${head}<div class="card"><p>Höre den Satz und schreibe ihn auf Indonesisch.</p>
+  $("#view").innerHTML=`${head}<div class="card"><p>${LT.dictWrite}</p>
    <div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="dPlay">🔊 Abspielen</button><button class="btn" data-act="dPlay" data-slow="1">🐢 Langsam</button>
    <button class="btn" data-act="dHint">💡 Hinweis (Deutsch)</button></div>
    <div id="dhint" class="small" style="display:none;margin-bottom:8px">${esc(it.de)}</div>
@@ -1344,16 +1378,7 @@ function dictCheck(){
 /* ===================== ÜBEN ===================== */
 const EXT=[["mix","Gemischt"],["gram","Grammatik: Wörter einsetzen"],["cloze","Lückentext (Grammatik)"],["build","Satzbau"],["trans","Übersetzen"],["hear","Hörverstehen"],["vocab","Vokabel-Quiz"]];
 
-const GCATS=[
- ["Verneinung",["tidak","bukan","belum","jangan"],"<b>tidak</b> verneint Verben/Adjektive, <b>bukan</b> Nomen, <b>belum</b> = noch nicht, <b>jangan</b> = verbietet (Imperativ)."],
- ["Zeitformen",["sudah","sedang","akan","belum"],"Keine Verbformen: <b>sudah</b> (schon/Vergangenheit), <b>sedang</b> (gerade), <b>akan</b> (Zukunft)."],
- ["Präpositionen",["di","ke","dari","untuk","dengan","pada","dalam"],"<b>di</b> = in/an (Ort), <b>ke</b> = nach/zu (Richtung), <b>dari</b> = von/aus, <b>untuk</b> = für/um zu, <b>dengan</b> = mit."],
- ["Pronomen",["saya","aku","kamu","Anda","dia","kami","kita","mereka"],"<b>kami</b> = wir (ohne dich), <b>kita</b> = wir (mit dir), <b>Anda</b> = höfliches Sie."],
- ["Zeigewörter",["ini","itu"],"<b>ini</b> = dieser/hier, <b>itu</b> = jener/dort. Sie stehen <i>hinter</i> dem Nomen."],
- ["Verbindungswörter",["dan","atau","tetapi","karena","kalau","yang"],"<b>dan</b> und, <b>atau</b> oder, <b>tetapi</b> aber, <b>karena</b> weil, <b>kalau</b> wenn, <b>yang</b> = der/die/das (Relativsatz)."],
- ["Steigerung",["sangat","lebih","paling","sekali","agak"],"<b>sangat</b>/<b>sekali</b> = sehr, <b>lebih</b> = mehr/-er, <b>paling</b> = am meisten/-ste."],
- ["Fragewörter",["apa","siapa","kapan","di mana","mengapa","bagaimana","berapa"],"<b>apa</b> was, <b>siapa</b> wer, <b>kapan</b> wann, <b>mengapa</b> warum, <b>bagaimana</b> wie, <b>berapa</b> wie viel."]
-];
+const GCATS=CFG.gcats;
 function gramPool(scope){
   const L=[];
   unitsIn(scope).forEach(u=>{
@@ -1387,8 +1412,7 @@ function genEx(scope,type,n){
   const gp=gramPool(scope);
   mk.gram=function(){const g=pick(gp);const c=GCATS[g.ci];const toks=g.idn.replace(/[.,!?]/g,"").split(" ");const raw=g.idn.split(" ");
     const q=raw.map((t,i)=>i===g.wi?"_____":t).join(" ");
-    const SYN=[["saya","aku","Anda","kamu"],["kami","kita"],["di","pada","dalam"],["dari","ke"],["sangat","sekali","agak"],["tidak","bukan"]];
-    const bl=new Set();SYN.forEach(gr=>{if(gr.includes(g.ans)&&["saya","aku","kami","kita","di","pada","dalam","sangat","sekali","agak"].includes(g.ans))gr.forEach(x=>bl.add(x));});bl.delete(g.ans);
+    const bl=new Set();(CFG.gsyn||[]).forEach(gr=>{if(gr.includes(g.ans))gr.forEach(x=>bl.add(x));});bl.delete(g.ans);
     let cand=c[1].filter(x=>x!==g.ans&&!bl.has(x));if(cand.length<3)cand=c[1].filter(x=>x!==g.ans);
     const o=shuffle([g.ans,...sample(cand,3)]);
     return {key:"g"+g.idn+g.wi+g.ci,t:"gram",p:q,a:g.ans,o,n:c[0]+": "+c[2],de:g.de,idn:g.idn};};
@@ -1441,7 +1465,7 @@ function vEx(){
     if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> <button class="btn sm" data-act="exPlay">🔊</button>`;
   }
   if(q.t==="trans"){
-    body=`<div class="small">Übersetze ins Indonesische</div><div class="big" style="font-size:24px">${esc(q.it.de)}</div>
+    body=`<div class="small">${LT.transTo}</div><div class="big" style="font-size:24px">${esc(q.it.de)}</div>
      <input type="text" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res!==undefined?"disabled":""} value="${esc(q.typed||"")}" placeholder="Auf Indonesisch …">
      ${q.res===undefined?`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exTransCheck">Prüfen</button><button class="btn" data-act="exSkip">Weiß nicht</button></div>`:""}`;
     if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> <button class="btn sm" data-act="exPlay">🔊</button>`;
@@ -1473,13 +1497,13 @@ function vGram(){
 
 /* ===================== WÖRTERBUCH ===================== */
 function dictResults(q){
-  const n=norm(q);if(!n)return `<div class="small">Tippe ein indonesisches oder deutsches Wort. ${ITEMS.length} Einträge durchsuchbar.</div>`;
+  const n=norm(q);if(!n)return `<div class="small">${LT.dictHint} ${ITEMS.length} Einträge durchsuchbar.</div>`;
   const r=ITEMS.filter(x=>norm(x.idn).includes(n)||norm(x.de).includes(n)).slice(0,80);
   if(!r.length)return `<div class="small">Nichts gefunden.</div>`;
   return `<div class="card"><table>${r.map(x=>{const u=UNIT(x.u);return `<tr><td style="width:44%"><b>${esc(x.idn)}</b><div class="ph" style="font-size:13px">${esc(x.ph)}</div></td><td>${esc(x.de)}<div class="small">${u.lvl} · ${u.n}. ${esc(u.t)}</div></td><td style="white-space:nowrap"><button class="btn sm" data-act="say" data-i="${x.id}">🔊</button></td></tr>`;}).join("")}</table></div>`;
 }
 function vDict(){
-  $("#view").innerHTML=`<h2>Wörterbuch</h2>${voiceWarning()}<input type="text" id="dq" placeholder="Suche (Indonesisch oder Deutsch) …" value="${esc(V.q)}" autocomplete="off"><div id="dres" style="margin-top:12px">${dictResults(V.q)}</div>`;
+  $("#view").innerHTML=`<h2>Wörterbuch</h2>${voiceWarning()}<input type="text" id="dq" placeholder="${LT.dictPh}" value="${esc(V.q)}" autocomplete="off"><div id="dres" style="margin-top:12px">${dictResults(V.q)}</div>`;
   const i=$("#dq");i.oninput=()=>{V.q=i.value;$("#dres").innerHTML=dictResults(V.q);};
 }
 
@@ -1492,8 +1516,8 @@ function diagHtml(){
   const rows=[["Sprachausgabe",yes("speechSynthesis" in window)],["Stimmen gefunden",nv+""],["Gewählte Stimme",v?("✅ "+esc(v.name)+" ("+esc(v.lang)+")"):"❌ keine – Standardstimme"],["Spracherkennung",yes(!!SRC)],["Aufnahme (MediaRecorder)",window.MediaRecorder?("✅ "+esc(pickMime()||"Standardformat")):"❌"],["Mikrofon-Zugriff möglich",yes(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))],["Sichere Verbindung (https)",yes(window.isSecureContext)],["Als Home-Bildschirm-App",standalone?"ja":"nein"],["Speicher funktioniert",yes(STORE_OK)],["Aufnahmemodus",esc(recMode())],["Audio-Session-API (iOS 16.4+)",yes(!!navigator.audioSession)]];
   return `<div class="card"><b>🔧 Audio-Diagnose</b><p class="small">Zeigt, was dein Gerät kann. Teste hier zuerst Ton und Mikrofon.</p>
    <table>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>
-   <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">🔊 Test 1: Indonesisch</button><button class="btn" data-act="diagSpeakDef">🔊 Test 2: Standardstimme (Englisch)</button><button class="btn" data-act="diagSpeakOn">🔊 Test 3: Online-Stimme</button><button class="btn" data-act="diagMic">🎙 Mikrofon-Test (3 Sek.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Test-Aufnahme abspielen</button></div>
-   <div class="row" style="margin-top:10px"><span class="small">Stimme:</span><select data-sel="voice"><option value="">Automatisch (Indonesisch → Malaiisch → Standard)</option>${voices.slice().sort((x,y)=>(isIdLang(y)-isIdLang(x))||((/^ms/i.test(y.lang)-/^ms/i.test(x.lang)))||x.name.localeCompare(y.name)).map(x=>`<option value="${esc(x.voiceURI)}" ${S.voiceURI===x.voiceURI?"selected":""}>${esc(x.name)} – ${esc(x.lang)}</option>`).join("")}</select></div>
+   <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">${LT.test1}</button><button class="btn" data-act="diagSpeakDef">🔊 Test 2: Standardstimme (Englisch)</button><button class="btn" data-act="diagSpeakOn">🔊 Test 3: Online-Stimme</button><button class="btn" data-act="diagMic">🎙 Mikrofon-Test (3 Sek.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Test-Aufnahme abspielen</button></div>
+   <div class="row" style="margin-top:10px"><span class="small">Stimme:</span><select data-sel="voice"><option value="">${LT.voiceAuto}</option>${voices.slice().sort((x,y)=>(isIdLang(y)-isIdLang(x))||((CFG.alt.test(y.lang)-CFG.alt.test(x.lang)))||x.name.localeCompare(y.name)).map(x=>`<option value="${esc(x.voiceURI)}" ${S.voiceURI===x.voiceURI?"selected":""}>${esc(x.name)} – ${esc(x.lang)}</option>`).join("")}</select></div>
    <div class="row" style="margin-top:10px"><span class="small">Quelle:</span><select data-sel="ttsmode">
     <option value="auto" ${(S.ttsMode||"online")==="auto"?"selected":""}>Automatisch (Gerät, sonst Online)</option>
     <option value="device" ${S.ttsMode==="device"?"selected":""}>Nur Gerätestimme</option>
@@ -1520,11 +1544,11 @@ async function diagMic(){
 /* ===================== LAUTE ===================== */
 function vSounds(){
   $("#view").innerHTML=`<h2>Aussprache-Guide</h2>${voiceWarning()}
-  <div class="card"><p>Indonesisch wird fast so gesprochen, wie es geschrieben wird – <b>jeder Buchstabe hat (fast) immer denselben Laut</b>. Es gibt keine Töne. Klicke auf die Beispiele, um sie zu hören, und übe sie dann im Tab „Sprechen“.</p>
+  <div class="card"><p>${LT.soundsIntro}</p>
   <table><tr><th>Schreibung</th><th>Aussprache</th><th>Beispiele</th></tr>${SOUNDS.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${r[2].split(", ").map(w=>`<button class="btn sm" style="margin:2px" data-act="sayw" data-w="${esc(w)}">🔊 ${esc(w)}</button>`).join("")}</td></tr>`).join("")}</table></div>
   ${diagHtml()}
   <div class="card"><b>Mini-Zungenbrecher</b><p class="small">Erst langsam, dann schneller. Nimm dich auf und vergleiche!</p>
-  ${["Kakak kaya kaya raya.","Saya suka makan ikan bakar.","Burung itu terbang tinggi.","Cinta tanah air.","Ayam goreng enak sekali."].map(w=>`<div class="row" style="margin:6px 0"><button class="btn sm" data-act="sayw" data-w="${esc(w)}">🔊</button><span>${esc(w)}</span><span class="ph" style="font-size:13px">${esc(phon(w))}</span></div>`).join("")}</div>`;
+  ${CFG.tongue.map(w=>`<div class="row" style="margin:6px 0"><button class="btn sm" data-act="sayw" data-w="${esc(w)}">🔊</button><span>${esc(w)}</span><span class="ph" style="font-size:13px">${esc(phon(w))}</span></div>`).join("")}</div>`;
 }
 
 /* ===================== FORTSCHRITT ===================== */
