@@ -974,7 +974,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 08:52";
+const BUILD="21.11.2026 08:58";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -2028,9 +2028,10 @@ async function whTranscribe(blob,onProg){
   tlog("Whisper: \""+text+"\" ("+Math.round((Date.now()-t0)/1000)+" s)");
   return text;
 }
-const Vm={mr:null,stream:null,chunks:[],on:false,busy:false,timer:0};
+const VM_HELP="Das Mikrofon liefert keinen Ton. Prüfe: Sind AirPods oder ein Bluetooth-Gerät verbunden (trennen)? Läuft gerade ein Anruf, eine Sprachnachricht oder Siri? Safari-Tab ganz schließen und neu öffnen; Einstellungen → Safari → Mikrofon → „Erlauben“; iPhone kurz neu starten. Mit ⌨️ Tastatur-Diktat kannst du trotzdem weitermachen.";
+const Vm={mr:null,stream:null,chunks:[],on:false,busy:false,timer:0,ctx:null,iv:0,max:0,test:false};
 function vmStatus(t){const e=$("#cstat");if(e)e.textContent=t;}
-async function vmToggle(){
+async function vmToggle(test){
   if(Vm.busy)return;
   if(Vm.on){vmStop();return;}
   liveStop();stopAudio();releaseAudio();V.chat.err="";
@@ -2039,16 +2040,27 @@ async function vmToggle(){
   await sleep(isIOS?400:60);
   try{Vm.stream=await getMic({audio:{echoCancellation:true,noiseSuppression:true}});}
   catch(e){V.chat.err="Mikrofon blockiert ("+((e&&e.name)||"Fehler")+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon).";tlog("Mikrofon blockiert: "+(e&&e.name));render();return;}
+  Vm.test=test===true;Vm.max=0;
+  try{const tr=Vm.stream.getAudioTracks()[0];
+    tlog("Mikrofon: "+(tr.label||"?")+" | "+tr.readyState+" | muted="+tr.muted+" | "+JSON.stringify(tr.getSettings?tr.getSettings():{}));
+    tr.onmute=()=>tlog("Track stummgeschaltet (Unterbrechung durch iOS/andere App)");tr.onunmute=()=>tlog("Track wieder aktiv");tr.onended=()=>tlog("Track beendet");
+  }catch(e){}
+  try{const AC=window.AudioContext||window.webkitAudioContext;Vm.ctx=new AC();if(Vm.ctx.resume)Vm.ctx.resume();
+    const an=Vm.ctx.createAnalyser();an.fftSize=512;Vm.ctx.createMediaStreamSource(Vm.stream).connect(an);const d=new Uint8Array(an.fftSize);
+    Vm.smp=()=>{an.getByteTimeDomainData(d);let m=0;for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i]-128));Vm.max=Math.max(Vm.max,m);return m;};
+    Vm.iv=setInterval(()=>{const m=Vm.smp();
+      const bars=Math.min(10,Math.round(m/6));vmStatus("🔴 Aufnahme läuft  "+"▮".repeat(bars)+"▯".repeat(10-bars)+(Vm.test?"  (Test)":"  – tippe ■, um zu senden"));},120);
+  }catch(e){tlog("Pegelanzeige nicht möglich: "+(e&&e.name));}
   const mime=pickMime();Vm.chunks=[];
   try{Vm.mr=new MediaRecorder(Vm.stream,mime?{mimeType:mime}:undefined);}catch(e){Vm.mr=new MediaRecorder(Vm.stream);}
   Vm.mr.ondataavailable=e=>{if(e.data&&e.data.size)Vm.chunks.push(e.data);};
   Vm.mr.onstop=()=>vmDone(new Blob(Vm.chunks,{type:(Vm.mr&&Vm.mr.mimeType)||mime||"audio/mp4"}));
-  Vm.mr.start();Vm.on=true;tlog("Sprachnachricht: Aufnahme läuft");
-  clearTimeout(Vm.timer);Vm.timer=setTimeout(()=>{if(Vm.on)vmStop();},20000);
+  Vm.mr.start(250);Vm.on=true;tlog("Sprachnachricht: Aufnahme läuft");
+  clearTimeout(Vm.timer);Vm.timer=setTimeout(()=>{if(Vm.on)vmStop();},Vm.test?3500:20000);
   render();vmStatus("🔴 Aufnahme läuft – sprich jetzt. Tippe ■, um zu senden.");
 }
 function vmStop(){
-  clearTimeout(Vm.timer);Vm.on=false;
+  clearTimeout(Vm.timer);Vm.on=false;try{Vm.smp&&Vm.smp();}catch(e){}clearInterval(Vm.iv);try{Vm.ctx&&Vm.ctx.close();}catch(e){}Vm.ctx=null;tlog("Pegel max "+Vm.max+"/128");
   try{if(Vm.mr&&Vm.mr.state!=="inactive")Vm.mr.stop();}catch(e){}
   try{Vm.stream&&Vm.stream.getTracks().forEach(t=>t.stop());}catch(e){}
   try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
@@ -2056,7 +2068,10 @@ function vmStop(){
 async function vmDone(blob){
   Vm.busy=true;render();
   tlog("Sprachnachricht: "+Math.round(blob.size/1024)+" KB ("+blob.type+")");
-  if(blob.size<1500){Vm.busy=false;V.chat.err="Die Aufnahme war leer. Tippe 🎤, sprich erst nach dem roten Hinweis und tippe dann ■.";render();return;}
+  if(Vm.test){Vm.busy=false;const url=URL.createObjectURL(blob);
+    V.chat.msgs.push({role:"assistant",text:"Mikrofon-Test: "+Math.round(blob.size/1024)+" KB aufgenommen, Pegel "+Vm.max+"/128. "+(Vm.max<3||blob.size<1500?"Das Mikrofon liefert keinen Ton – siehe Hinweise unten.":"Spiele die Aufnahme ab: Hörst du dich? Dann funktioniert das Mikrofon."),audio:url});
+    if(Vm.max<3||blob.size<1500)V.chat.err=VM_HELP;render();return;}
+  if(blob.size<1500||Vm.max<3){Vm.busy=false;V.chat.err=(blob.size<1500?"Die Aufnahme war leer. ":"Es kam kein Ton am Mikrofon an. ")+VM_HELP;render();return;}
   try{
     vmStatus("⏳ Spracherkennung wird geladen (einmalig, danach offline) …");
     const text=await whTranscribe(blob,(p)=>vmStatus("⏳ Spracherkennung wird geladen … "+p+" %"));
@@ -2083,7 +2098,7 @@ function vOT(){
   const last=C.msgs[C.msgs.length-1];
   const nl=t=>esc(t).replace(/\n/g,"<br>");
   const bub=C.msgs.map((m,i)=>m.role==="assistant"
-   ?`<div class="bub A"><b>${nl(m.text)}</b>${(m.text||"").length>45?`<div style="margin-top:6px"><button class="btn sm" data-act="chatRead" data-i="${i}">🔊 Vorlesen</button></div>`:""}${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button>${m.ph?`<div class="ph" style="font-size:13px">${esc(m.ph)}</div>`:""}${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.chips&&m===last?`<div class="row" style="margin-top:8px">${m.chips.map((c,k)=>`<button class="btn sm" data-act="miniChip" data-i="${i}" data-k="${k}">${esc(c[0])}</button>`).join("")}</div>`:""}${m.say&&!m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><b>${esc(m.say)}</b> <button class="btn sm" data-act="chatSayS" data-i="${i}">🔊</button>${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.opts&&m===last?`<div style="margin-top:8px">${m.opts.map((x,k)=>`<button class="btn opt" data-act="otPick" data-i="${k}">${esc(x)}</button>`).join("")}</div>`:""}</div>`
+   ?`<div class="bub A"><b>${nl(m.text)}</b>${m.audio?`<div style="margin-top:6px"><audio controls preload="none" src="${m.audio}" style="width:100%;height:34px"></audio></div>`:""}${(m.text||"").length>45?`<div style="margin-top:6px"><button class="btn sm" data-act="chatRead" data-i="${i}">🔊 Vorlesen</button></div>`:""}${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button>${m.ph?`<div class="ph" style="font-size:13px">${esc(m.ph)}</div>`:""}${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.chips&&m===last?`<div class="row" style="margin-top:8px">${m.chips.map((c,k)=>`<button class="btn sm" data-act="miniChip" data-i="${i}" data-k="${k}">${esc(c[0])}</button>`).join("")}</div>`:""}${m.say&&!m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><b>${esc(m.say)}</b> <button class="btn sm" data-act="chatSayS" data-i="${i}">🔊</button>${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.opts&&m===last?`<div style="margin-top:8px">${m.opts.map((x,k)=>`<button class="btn opt" data-act="otPick" data-i="${k}">${esc(x)}</button>`).join("")}</div>`:""}</div>`
    :`<div class="bub B"><b>${esc(m.text)}</b>${m.audio?`<div style="margin-top:6px"><audio controls preload="none" src="${m.audio}" style="width:100%;height:34px"></audio></div>`:""}${cmpHtml(m,i)}</div>`).join("");
   const manual=`<div class="small" style="margin:12px 0 6px">Oder wähle dein Level selbst:</div><div class="row">${LEVELS.map(l=>`<button class="btn sm" data-act="setLevel" data-l="${l}">${l}</button>`).join("")}</div>`;
   const teach=o&&o.mode==="teach",talk=o&&o.mode==="talk";
@@ -2100,7 +2115,7 @@ function vOT(){
   const prog=teach&&!o.done?`<div class="small" style="margin-bottom:8px">Lektion ${otUnit().n} · ${TCH_PH[o.cur?o.cur.ph:0]} · Schritt ${Math.min(o.i+1,o.steps.length)} von ${o.steps.length}<div style="height:6px;border-radius:3px;background:var(--line);margin-top:4px"><div style="height:6px;border-radius:3px;background:var(--red);width:${Math.round(100*o.i/Math.max(1,o.steps.length))}%"></div></div></div>`:"";
   $("#view").innerHTML=`<h2>${place?"Einstufung":"Lehrer"}</h2>
    <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button><button class="btn sm" data-act="chatLog">ℹ️ Protokoll</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
-   ${C.showLog?`<div class="card"><div class="small"><b>Protokoll</b> · Version ${BUILD}</div><pre class="small" style="white-space:pre-wrap;max-height:240px;overflow:auto">${esc(TTSLOG.join("\n")||"(noch leer)")}</pre><button class="btn sm" data-act="chatLogCopy">Kopieren</button></div>`:""}
+   ${C.showLog?`<div class="card"><div class="small"><b>Protokoll</b> · Version ${BUILD}</div><pre class="small" style="white-space:pre-wrap;max-height:240px;overflow:auto">${esc(TTSLOG.join("\n")||"(noch leer)")}</pre><div class="row"><button class="btn sm" data-act="vmTest">🧪 Mikrofon testen</button><button class="btn sm" data-act="chatLogCopy">Kopieren</button></div></div>`:""}
    ${prog}${start}${bub}${done}
    ${C.err?`<div class="warn">${esc(C.err)}<details style="margin-top:6px"><summary class="small">Protokoll</summary><pre class="small" style="white-space:pre-wrap">${esc(TTSLOG.join("\n"))}</pre></details><div class="row" style="margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Mikrofon zurücksetzen</button><button class="btn sm" data-act="chatKbd">⌨️ Tastatur-Diktat</button></div></div>`:""}
    ${inputOn?`<div class="chatbar"><button class="btn ${Vm.on?"rec":"pri"}" data-act="vmToggle" ${Vm.busy?"disabled":""}>${Vm.on?"■ Senden":"🎤"}</button><button class="btn ${liveSR?"rec":""}" data-act="chatListen" title="Live-Erkennung">${liveSR?"⏹":"🎙"}</button><button class="btn" data-act="chatKbd" title="Tastatur-Diktat">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
@@ -2419,6 +2434,7 @@ document.addEventListener("click",e=>{
    case"chatRetry":chatListen(+dsx.i);break;
    case"micFix":{Rec.stop(true);liveStop();if(Vm.on)vmStop();V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt auf 🎙.",4000);render();});break;}
    case"vmToggle":vmToggle();break;
+   case"vmTest":vmToggle(true);break;
    case"chatLog":V.chat.showLog=!V.chat.showLog;render();break;
    case"chatLogCopy":{const t="Version "+BUILD+"\n"+TTSLOG.join("\n");try{navigator.clipboard.writeText(t).then(()=>toast("Protokoll kopiert.",2500),()=>toast("Kopieren nicht möglich – markiere den Text.",3500));}catch(e){toast("Kopieren nicht möglich – markiere den Text.",3500);}break;}
    case"chatKbd":{const i=$("#cin");if(i)i.focus();toast("Tippe auf das Mikrofon-Symbol deiner iPhone-Tastatur (unten rechts), sprich, dann auf „Senden“.",6000);break;}

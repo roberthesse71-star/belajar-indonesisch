@@ -135,3 +135,17 @@ T.update({
 "Protokoll kopiert.":"Log copied.",
 "Kopieren nicht möglich – markiere den Text.":"Copying not possible – select the text.",
 })
+
+T.update({
+"Die Aufnahme war leer. ":"The recording was empty. ",
+"Es kam kein Ton am Mikrofon an. ":"No sound reached the microphone. ",
+"Das Mikrofon liefert keinen Ton. Prüfe: Sind AirPods oder ein Bluetooth-Gerät verbunden (trennen)? Läuft gerade ein Anruf, eine Sprachnachricht oder Siri? Safari-Tab ganz schließen und neu öffnen; Einstellungen → Safari → Mikrofon → „Erlauben“; iPhone kurz neu starten. Mit ⌨️ Tastatur-Diktat kannst du trotzdem weitermachen.":"The microphone delivers no sound. Check: are AirPods or a Bluetooth device connected (disconnect them)? Is a call, voice message or Siri running? Close the Safari tab completely and reopen it; Settings → Safari → Microphone → “Allow”; restart the iPhone briefly. You can still continue with ⌨️ keyboard dictation.",
+"Mikrofon-Test: ":"Microphone test: ",
+" KB aufgenommen, Pegel ":" KB recorded, level ",
+"Das Mikrofon liefert keinen Ton – siehe Hinweise unten.":"The microphone delivers no sound – see the notes below.",
+"Spiele die Aufnahme ab: Hörst du dich? Dann funktioniert das Mikrofon.":"Play the recording: can you hear yourself? Then the microphone works.",
+"🧪 Mikrofon testen":"🧪 Test microphone",
+"  (Test)":"  (test)",
+"  – tippe ■, um zu senden":"  – tap ■ to send",
+"🔴 Aufnahme läuft  ":"🔴 Recording  ",
+})
