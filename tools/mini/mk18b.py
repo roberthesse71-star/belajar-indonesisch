@@ -149,3 +149,5 @@ T.update({
 "  – tippe ■, um zu senden":"  – tap ■ to send",
 "🔴 Aufnahme läuft  ":"🔴 Recording  ",
 })
+
+T.update({"Das war ein anderes Wort. Gesucht ist: „":"That was a different word. The answer is: „","Hör es dir an und versuche es noch einmal. – ":"Listen to it and try again. – "})

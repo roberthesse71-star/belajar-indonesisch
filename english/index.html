@@ -837,7 +837,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 09:06";
+const BUILD="21.11.2026 09:15";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -1645,7 +1645,7 @@ function tchPrompt(q){
     if(q.opts0===undefined){q.opts0=shuffle([q.it.de].concat(tchDistract(q.it,2,"de")));}
     return {text:"Was bedeutet: „"+stripG(q.it.idn)+"“?",opts:q.opts0,say:stripG(q.it.idn)};
   }
-  if(q.t==="tr")return {text:(q.hdr?q.hdr+" ":"")+"Wie sagt man auf "+CFG.lname+": „"+q.it.de+"“? (sprechen oder schreiben)"};
+  if(q.t==="tr")return {text:(q.hdr?q.hdr+" ":"")+"Wie sagt man auf "+LT.lname+": „"+q.it.de+"“? (sprechen oder schreiben)"};
   if(q.t==="cl")return {text:(q.hdr?q.hdr+" ":"")+"Welches Wort passt? "+q.p,opts:q.o};
   return {text:""};
 }
@@ -1713,7 +1713,8 @@ function tchAnswer(txt,spoken){
   }
   if(!isCl&&!isMc&&o.tries<1){
     o.tries++;const red=(ev.words||[]).filter(w=>w.s<.85).map(w=>w.w).join(", ");
-    C.msgs.push({role:"assistant",text:"Fast – achte auf: "+(red||"…")+". Hör dir das Vorbild an und versuche es noch einmal. – "+LT.tp.again,goal:target});
+    const far=(ev.score||0)<35&&q.t!=="rep";
+    C.msgs.push({role:"assistant",text:(far?"Das war ein anderes Wort. Gesucht ist: „"+target+"“. Hör es dir an und versuche es noch einmal. – ":"Fast – achte auf: "+(red||"…")+". Hör dir das Vorbild an und versuche es noch einmal. – ")+LT.tp.again,goal:target});
     render();if(C.auto)speak(target,.7);o.last={say:target,gl:q.it?q.it.de:""};return;
   }
   o.n++;if(q.fin){o.fn++;}tchWrong(q);if(q.it)tchMark(q.it.id,false);
