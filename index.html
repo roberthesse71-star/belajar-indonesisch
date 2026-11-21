@@ -974,7 +974,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 09:15";
+const BUILD="21.11.2026 09:16";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -2041,7 +2041,7 @@ async function vmToggle(test){
     tlog("Mikrofon: "+(tr.label||"?")+" | "+tr.readyState+" | muted="+tr.muted+" | "+JSON.stringify(tr.getSettings?tr.getSettings():{}));
     tr.onmute=()=>tlog("Track stummgeschaltet (Unterbrechung durch iOS/andere App)");tr.onunmute=()=>tlog("Track wieder aktiv");tr.onended=()=>tlog("Track beendet");
   }catch(e){}
-  try{const AC=window.AudioContext||window.webkitAudioContext;Vm.ctx=new AC();if(Vm.ctx.resume)Vm.ctx.resume();
+  Vm.smp=null;if(Vm.test)try{const AC=window.AudioContext||window.webkitAudioContext;Vm.ctx=new AC();if(Vm.ctx.resume)Vm.ctx.resume();
     const an=Vm.ctx.createAnalyser();an.fftSize=512;Vm.ctx.createMediaStreamSource(Vm.stream).connect(an);const d=new Uint8Array(an.fftSize);
     Vm.smp=()=>{an.getByteTimeDomainData(d);let m=0;for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i]-128));Vm.max=Math.max(Vm.max,m);return m;};
     Vm.iv=setInterval(()=>{const m=Vm.smp();
@@ -2067,7 +2067,7 @@ async function vmDone(blob){
   if(Vm.test){Vm.busy=false;const url=URL.createObjectURL(blob);
     V.chat.msgs.push({role:"assistant",text:"Mikrofon-Test: "+Math.round(blob.size/1024)+" KB aufgenommen, Pegel "+Vm.max+"/128. "+(Vm.max<3||blob.size<1500?"Das Mikrofon liefert keinen Ton – siehe Hinweise unten.":"Spiele die Aufnahme ab: Hörst du dich? Dann funktioniert das Mikrofon."),audio:url});
     if(Vm.max<3||blob.size<1500)V.chat.err=VM_HELP;render();return;}
-  if(blob.size<1500||Vm.max<3){Vm.busy=false;V.chat.err=(blob.size<1500?"Die Aufnahme war leer. ":"Es kam kein Ton am Mikrofon an. ")+VM_HELP;render();return;}
+  if(blob.size<1500||(Vm.smp&&Vm.max<3)){Vm.busy=false;V.chat.err=(blob.size<1500?"Die Aufnahme war leer. ":"Es kam kein Ton am Mikrofon an. ")+VM_HELP;render();return;}
   try{
     vmStatus("⏳ Spracherkennung wird geladen (einmalig, danach offline) …");
     const text=await whTranscribe(blob,(p)=>vmStatus("⏳ Spracherkennung wird geladen … "+p+" %"));
