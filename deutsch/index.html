@@ -943,17 +943,32 @@ async function speak(text,rate,pitch,forceDefault){
 }
 /* Erklärungen in der Muttersprache der App vorlesen (z. B. Deutsch in der Indonesisch-/Englisch-App) */
 const natLang=()=>LT.nname==="German"?"de":"en";
+const SW_DE="der,die,das,den,dem,des,ein,eine,einen,einem,und,oder,aber,nicht,kein,keine,ist,sind,war,bin,bist,seid,wir,ihr,sie,ich,du,er,es,mir,dir,mich,dich,uns,euch,mit,für,von,zu,zum,zur,auf,aus,bei,nach,vor,über,unter,im,am,um,wie,was,wer,wo,wann,warum,wenn,dass,auch,noch,nur,sehr,gut,hier,jetzt,heute,gerne,bitte,danke,ja,nein,jede,jeder,mal,schon,dann,denn,doch,hat,haben,wird,werden,kann,kannst,können,muss,soll,will,mein,dein,sein,ihr,unser".split(",");
+const SW_EN="the,a,an,and,or,but,not,no,is,are,was,were,be,been,am,i,you,he,she,it,we,they,me,my,your,his,her,our,their,this,that,these,those,to,of,in,on,at,for,with,from,by,about,as,into,now,then,here,there,what,which,who,whom,how,why,when,where,do,does,did,have,has,had,will,would,can,could,should,must,may,let,lets,us,so,if,than,very,more,also,just,only,again,once,first,next,last,each,every,all,some,any,words,word,sentence,sentences,lesson,listen,repeat,say,tell,ask,question,answer,try,watch,almost,problem,correct,correctly,model,task,back,continue,learn,today,step,guide,basics,rule,practice,quiz".split(",");
+/* Sprache eines Textstücks erkennen: Muttersprache (Erklärung) oder Zielsprache (Lerninhalt, Lob, Anweisung) */
+function segLang(seg){
+  miniBuild();
+  const toks=mTok(seg);if(!toks.length)return "native";
+  const nat=new Set(LT.nname==="German"?SW_DE:SW_EN),tgtSW=new Set(CFG.tl==="en"?SW_EN:CFG.tl==="de"?SW_DE:[]);
+  if(!segLang.tp){segLang.tp=new Set();Object.values(LT.tp||{}).forEach(v=>(Array.isArray(v)?v:[v]).forEach(x=>mTok(x).forEach(w=>segLang.tp.add(w))));}
+  let n=0,t=0;
+  toks.forEach(w=>{if(segLang.tp.has(w)&&!nat.has(w))t++;else if(nat.has(w)&&!tgtSW.has(w))n++;else if(tgtSW.has(w)&&!nat.has(w))t++;else if(MINI.freq[w]&&!nat.has(w))t++;});
+  if(CFG.tl==="de"&&/[äöüß]/i.test(seg)&&!/[a-z]{3}/.test("")){t+=1;}
+  return (t>n||(t>0&&t>=n&&toks.length<=4))?"target":"native";
+}
 async function speakNative(text){
   if(micBusy)return;
-  const my=++playTok,l=natLang();
-  const clean=String(text).replace(/[„“”"]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF▶✅❓]/gu,"").replace(/\s+/g," ").trim();
-  const parts=(clean.match(/[^.!?:;]+[.!?:;]*/g)||[clean]).map(x=>x.trim()).filter(Boolean),chunks=[];
-  let cur="";for(const p of parts){if((cur+" "+p).length>170&&cur){chunks.push(cur);cur=p;}else cur=(cur?cur+" ":"")+p;}if(cur)chunks.push(cur);
-  for(const c of chunks){
+  const my=++playTok,nl=natLang();
+  const clean=String(text).replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF▶✅❓]/gu,"").replace(/\s+/g," ").trim();
+  const segs=clean.split(/(?<=[.!?:;])\s+|\s+[–—]\s+|[„“”"]/).map(x=>x.trim()).filter(x=>/[A-Za-zÄÖÜäöüß0-9]/.test(x));
+  const parts=[];
+  for(const g of segs){const l=segLang(g)==="target"?CFG.tl:nl,p=parts[parts.length-1];
+    if(p&&p.l===l&&(p.t+" "+g).length<170)p.t+=" "+g;else parts.push({l,t:g});}
+  for(const p of parts){
     if(my!==playTok)return;
-    const t=c.slice(0,190);let ok=false;
-    if((S.ttsMode||"online")!=="device")ok=await speakOnline(t,.95,l);
-    if(!ok&&my===playTok)await deviceSpeak(t,.95,1,false,l);
+    const t=p.t.slice(0,190);let ok=false;
+    if((S.ttsMode||"online")!=="device")ok=await speakOnline(t,.95,p.l);
+    if(!ok&&my===playTok)await deviceSpeak(t,.95,1,false,p.l===CFG.tl?undefined:p.l);
   }
 }
 async function playDialog(u,cb){
