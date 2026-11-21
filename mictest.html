@@ -6,6 +6,7 @@
 <button onclick="run('B: mit Echo-/Rauschfilter',{audio:{echoCancellation:true,noiseSuppression:true}})">B: mit Filtern</button>
 <button onclick="run('C: ohne Filter',{audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})">C: ohne Filter</button>
 <button onclick="run('D: einfach + Pegelmesser',{audio:true},true)">D: mit Pegelmesser (AudioContext)</button>
+<button onclick="persist()">F: Dauer-Mikrofon, 3 Aufnahmen hintereinander (wie die App)</button>
 <button onclick="sr()">E: Spracherkennung (Safari-Diktat)</button>
 <div id="o"></div><pre id="l"></pre><button onclick="navigator.clipboard.writeText(document.getElementById('l').textContent).then(()=>alert('Kopiert'))">Kopieren</button>
 <script>
@@ -29,4 +30,28 @@ function sr(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;i
  ['audiostart','soundstart','speechstart','end','nomatch'].forEach(n=>r['on'+n]=()=>log('SR '+n));
  r.onerror=e=>log('SR Fehler '+e.error);r.onresult=e=>log('SR Text: '+e.results[0][0].transcript);
  log('--- E: SR, sprich jetzt');r.start();setTimeout(()=>{try{r.stop()}catch(e){}},6000);}
+
+let PS=null;
+async function persist(){
+ log('--- F: Dauer-Mikrofon');
+ const AC=window.AudioContext||window.webkitAudioContext;const ctx=new AC();ctx.resume&&ctx.resume();
+ let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){log('FEHLER '+e.name);return;}
+ const tr=st.getAudioTracks()[0];log('Track: '+tr.label+' | '+tr.readyState+' | muted='+tr.muted+' | '+ctx.sampleRate+' Hz | ctx='+ctx.state);
+ const src=ctx.createMediaStreamSource(st),node=ctx.createScriptProcessor(4096,1,1),g=ctx.createGain();g.gain.value=0;
+ let rec=false,bufs=[],max=0;
+ node.onaudioprocess=e=>{if(!rec)return;const d=e.inputBuffer.getChannelData(0);bufs.push(new Float32Array(d));for(const v of d)max=Math.max(max,Math.abs(v));};
+ src.connect(node);node.connect(g);g.connect(ctx.destination);
+ for(let n=1;n<=3;n++){
+  log('Aufnahme '+n+' von 3 – sprich 3 Sekunden …');bufs=[];max=0;rec=true;await new Promise(r=>setTimeout(r,3000));rec=false;
+  const len=bufs.reduce((a,b)=>a+b.length,0);log('Aufnahme '+n+': '+(len/ctx.sampleRate).toFixed(1)+' s, Pegel '+Math.round(max*100)+' % | track muted='+tr.muted+' ctx='+ctx.state);
+  const all=new Float32Array(len);let o=0;for(const b of bufs){all.set(b,o);o+=b.length;}
+  const buf=ctx.createBuffer(1,len,ctx.sampleRate);buf.copyToChannel(all,0);
+  const wav=toWav(all,ctx.sampleRate);const a=document.createElement('audio');a.controls=true;a.src=URL.createObjectURL(wav);O.prepend(a);
+  await new Promise(r=>setTimeout(r,1500));
+ }
+ st.getTracks().forEach(t=>t.stop());ctx.close();log('F fertig');
+}
+function toWav(f,sr){const n=f.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i));};
+ w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+ for(let i=0;i<n;i++){const x=Math.max(-1,Math.min(1,f[i]));v.setInt16(44+i*2,x<0?x*32768:x*32767,true);}return new Blob([b],{type:'audio/wav'});}
 </script></body></html>

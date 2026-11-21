@@ -868,7 +868,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 09:16";
+const BUILD="21.11.2026 09:33";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -1036,7 +1036,7 @@ function scoreText(text){
 }
 const recMode=()=>S.recMode||(isIOS?"rec":"both");
 const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,curMode:"",usedRec:false,
- async start(cb,forceMode){
+ async start(cb,forceMode){pmClose("Sprechen-Ansicht");
   if(this.active)return;
   let mode=forceMode||recMode();if(isIOS&&mode==="both"&&SRC)mode="sr";   // iOS: Aufnahme + Erkennung gleichzeitig blockieren sich
   const gen=++this.gen,wantRec=mode!=="sr";
@@ -1196,7 +1196,7 @@ const GROUPS={today:["today"],path:["path","cards","speak","hear","ex"],rp:["rp"
 const SUBN={path:"Learn",cards:"Cards",speak:"Speak",hear:"Dictation",ex:"Practice",rp:"Role-play",hdlg:"Listening test",gram:"Grammar",dict:"Dictionary",sounds:"Sounds",prog:"Progress"};
 function grpOf(t){for(const g in GROUPS)if(GROUPS[g].includes(t))return g;return "today";}
 function tabsHtml(){const g=grpOf(V.tab);$("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" class="${g===k?"on":""}">${n}</button>`).join("");}
-function go(t){Rec.stop(true);if(t!=="chat"){liveStop();if(Vm.on)vmStop();}stopAudio();V.tab=t;if(t==="path"&&!V.unit)V.unit=nextUnit().id;render();window.scrollTo(0,0);}
+function go(t){Rec.stop(true);if(t!=="chat"){liveStop();if(Vm.on)vmStop();pmClose("Ansicht gewechselt");}stopAudio();V.tab=t;if(t==="path"&&!V.unit)V.unit=nextUnit().id;render();window.scrollTo(0,0);}
 function render(){
   tabsHtml();
   ({today:vToday,path:vPath,cards:vCards,speak:()=>{V.sp.mode="item";vSpeak();},rp:()=>{V.sp.mode="role";vSpeak();},hear:()=>{V.hear.mode="dict";vHear();},hdlg:()=>{V.hear.mode="dlg";vHear();},ex:vEx,gram:vGram,dict:vDict,sounds:vSounds,prog:vProg,chat:vChat})[V.tab]();
@@ -1846,7 +1846,7 @@ async function chatListen(retryIdx){
   if(retryIdx!=null)liveRetry=retryIdx;
   if(liveSR&&liveWant&&retryIdx==null){liveStop();tlog("Microphone aus");render();return;}   // Tipp = Microphone aus
   if(liveSR&&liveWant){return;}                                                          // läuft schon (Again-Knopf)
-  V.chat.err="";liveWant=true;liveFails=0;
+  V.chat.err="";pmClose("Dauer-Sitzung");liveWant=true;liveFails=0;
   try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
   liveOpen();
   render();
@@ -1911,7 +1911,7 @@ async function toPcm16k(blob){
 }
 async function whTranscribe(blob,onProg){
   const asr=await whLoad(onProg);
-  const pcm=await toPcm16k(blob);
+  const pcm=(blob&&blob.length!=null&&!blob.arrayBuffer)?blob:await toPcm16k(blob);
   tlog("Whisper: Audio "+(pcm.length/16000).toFixed(1)+" s → erkenne …");
   const t0=Date.now();
   const out=await asr(pcm,{language:WH_LANG[CFG.tl]||"english",task:"transcribe"});
@@ -1920,54 +1920,125 @@ async function whTranscribe(blob,onProg){
   return text;
 }
 const VM_HELP="The microphone delivers no sound. Check: are AirPods or a Bluetooth device connected (disconnect them)? Is a call, voice message or Siri running? Close the Safari tab completely and reopen it; Settings → Safari → Microphone → “Allow”; restart the iPhone briefly. You can still continue with ⌨️ keyboard dictation.";
-const Vm={mr:null,stream:null,chunks:[],on:false,busy:false,timer:0,ctx:null,iv:0,max:0,test:false};
+/* ---------- Dauer-Microphone: EIN Stream, rohe Samples (kein MediaRecorder), Neustart bei Stille ----------
+   Hintergrund (WebKit-Bugs 180748/204106/221192/267676): iOS-Safari liefert nach mehrfachem getUserMedia/Track-stop gern Stille.
+   Deshalb: Stream einmal öffnen und offen lassen; Aufnahme = nur ein Schalter im Audio-Graphen. */
+const PM={stream:null,ctx:null,src:null,node:null,rec:false,bufs:[],n:0,max:0,lvl:0,sr:44100,opening:null};
+function pmClose(why){
+  try{PM.node&&(PM.node.onaudioprocess=null,PM.node.disconnect());}catch(e){}
+  try{PM.src&&PM.src.disconnect();}catch(e){}
+  try{PM.stream&&PM.stream.getTracks().forEach(t=>{t.onmute=t.onunmute=t.onended=null;t.stop();});}catch(e){}
+  try{PM.ctx&&PM.ctx.state!=="closed"&&PM.ctx.close();}catch(e){}
+  if(PM.stream||PM.ctx)tlog("Microphone geschlossen"+(why?" ("+why+")":""));
+  PM.stream=PM.ctx=PM.src=PM.node=null;PM.rec=false;
+}
+function pmAlive(){
+  const tr=PM.stream&&PM.stream.getAudioTracks&&PM.stream.getAudioTracks()[0];
+  return !!(tr&&tr.readyState==="live"&&!tr.muted&&PM.ctx&&PM.ctx.state!=="closed");
+}
+async function pmOpen(){
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(pmAlive()){                                   // schon offen → nur sicherstellen, dass der Graph läuft
+    try{if(PM.ctx.state!=="running")await PM.ctx.resume();}catch(e){}
+    return;
+  }
+  if(PM.stream){await sleep(250);if(pmAlive())return;pmClose("Track stumm/beendet → neu öffnen");}   // kurze Gnadenfrist, dann frisch
+  // AudioContext SOFORT (im Fingertipp) anlegen, damit iOS ihn nicht blockiert
+  const ctx=new AC();try{ctx.resume&&ctx.resume();}catch(e){}
+  PM.ctx=ctx;
+  let st;
+  try{st=await getMic({audio:true});}catch(e){try{ctx.close();}catch(x){}PM.ctx=null;throw e;}
+  PM.stream=st;PM.sr=ctx.sampleRate||44100;
+  const tr=st.getAudioTracks()[0];
+  tlog("Microphone offen: "+(tr.label||"?")+" | "+tr.readyState+" | muted="+tr.muted+" | "+PM.sr+" Hz | "+JSON.stringify(tr.getSettings?tr.getSettings():{}));
+  tr.onmute=()=>tlog("Track stumm (iOS-Unterbrechung)");tr.onunmute=()=>tlog("Track wieder aktiv");tr.onended=()=>tlog("Track beendet");
+  ctx.onstatechange=()=>tlog("AudioContext: "+ctx.state);
+  try{if(ctx.state!=="running")await ctx.resume();}catch(e){}
+  PM.src=ctx.createMediaStreamSource(st);
+  PM.node=ctx.createScriptProcessor(4096,1,1);
+  PM.node.onaudioprocess=e=>{
+    const d=e.inputBuffer.getChannelData(0);let m=0;
+    for(let i=0;i<d.length;i++){const a=d[i]<0?-d[i]:d[i];if(a>m)m=a;}
+    PM.lvl=m;
+    if(!PM.rec)return;
+    if(m>PM.max)PM.max=m;
+    PM.bufs.push(new Float32Array(d));PM.n+=d.length;
+  };
+  const g=ctx.createGain();g.gain.value=0;PM.src.connect(PM.node);PM.node.connect(g);g.connect(ctx.destination);
+}
+function pmTo16k(){
+  const all=new Float32Array(PM.n);let o=0;for(const b of PM.bufs){all.set(b,o);o+=b.length;}
+  const r=PM.sr/16000,len=Math.max(1,Math.floor(all.length/r)),out=new Float32Array(len);
+  for(let i=0;i<len;i++){const a=Math.floor(i*r),b=Math.max(a+1,Math.min(all.length,Math.floor((i+1)*r)));let sum=0;for(let k=a;k<b;k++)sum+=all[k];out[i]=sum/(b-a);}
+  let pk=0;for(let i=0;i<len;i++){const a=out[i]<0?-out[i]:out[i];if(a>pk)pk=a;}
+  if(pk>0.003&&pk<0.5){const g=Math.min(8,0.8/pk);for(let i=0;i<len;i++)out[i]*=g;}   // leises iPhone-Mikro anheben
+  return {pcm:out,peak:pk};
+}
+function pmWav(pcm){
+  const n=pcm.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i));};
+  w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVEfmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,16000,true);v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){const x=Math.max(-1,Math.min(1,pcm[i]));v.setInt16(44+i*2,x<0?x*32768:x*32767,true);}
+  return new Blob([b],{type:"audio/wav"});
+}
+const Vm={on:false,busy:false,timer:0,iv:0,test:false,mr:null,chunks:[],fb:false};
 function vmStatus(t){const e=$("#cstat");if(e)e.textContent=t;}
 async function vmToggle(test){
   if(Vm.busy)return;
   if(Vm.on){vmStop();return;}
-  liveStop();stopAudio();releaseAudio();V.chat.err="";
-  if(!navigator.mediaDevices||!window.MediaRecorder){V.chat.err="Recording is not supported by this browser. Use ⌨️ keyboard dictation.";render();return;}
-  await sleep(isIOS?400:60);
-  try{Vm.stream=await getMic({audio:true});}
+  liveStop();stopAudio();releaseAudio();V.chat.err="";Vm.test=test===true;
+  if(!navigator.mediaDevices||!(window.AudioContext||window.webkitAudioContext)){V.chat.err="Recording is not supported by this browser. Use ⌨️ keyboard dictation.";render();return;}
+  try{await pmOpen();}
   catch(e){V.chat.err="Microphone blocked ("+((e&&e.name)||"Error")+"). Allow access for this page (iPhone: Settings → Safari → Microphone).";tlog("Microphone blockiert: "+(e&&e.name));render();return;}
-  Vm.test=test===true;Vm.max=0;
-  try{const tr=Vm.stream.getAudioTracks()[0];
-    tlog("Microphone: "+(tr.label||"?")+" | "+tr.readyState+" | muted="+tr.muted+" | "+JSON.stringify(tr.getSettings?tr.getSettings():{}));
-    tr.onmute=()=>tlog("Track stummgeschaltet (Unterbrechung durch iOS/andere App)");tr.onunmute=()=>tlog("Track wieder aktiv");tr.onended=()=>tlog("Track beendet");
-  }catch(e){}
-  Vm.smp=null;if(Vm.test)try{const AC=window.AudioContext||window.webkitAudioContext;Vm.ctx=new AC();if(Vm.ctx.resume)Vm.ctx.resume();
-    const an=Vm.ctx.createAnalyser();an.fftSize=512;Vm.ctx.createMediaStreamSource(Vm.stream).connect(an);const d=new Uint8Array(an.fftSize);
-    Vm.smp=()=>{an.getByteTimeDomainData(d);let m=0;for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i]-128));Vm.max=Math.max(Vm.max,m);return m;};
-    Vm.iv=setInterval(()=>{const m=Vm.smp();
-      const bars=Math.min(10,Math.round(m/6));vmStatus("🔴 Recording  "+"▮".repeat(bars)+"▯".repeat(10-bars)+(Vm.test?"  (test)":"  – tap ■ to send"));},120);
-  }catch(e){tlog("Pegelanzeige nicht möglich: "+(e&&e.name));}
-  const mime=pickMime();Vm.chunks=[];
-  try{Vm.mr=new MediaRecorder(Vm.stream,mime?{mimeType:mime}:undefined);}catch(e){Vm.mr=new MediaRecorder(Vm.stream);}
-  Vm.mr.ondataavailable=e=>{if(e.data&&e.data.size)Vm.chunks.push(e.data);};
-  Vm.mr.onstop=()=>vmDone(new Blob(Vm.chunks,{type:(Vm.mr&&Vm.mr.mimeType)||mime||"audio/mp4"}));
-  Vm.mr.start(250);Vm.on=true;tlog("Sprachnachricht: Aufnahme läuft");
-  clearTimeout(Vm.timer);Vm.timer=setTimeout(()=>{if(Vm.on)vmStop();},Vm.test?3500:20000);
+  PM.bufs=[];PM.n=0;PM.max=0;PM.rec=true;Vm.chunks=[];Vm.mr=null;Vm.fb=false;
+  try{   // Sicherheitsnetz: parallel normale Aufnahme (nur genutzt, wenn die rohen Samples stumm blieben)
+    if(window.MediaRecorder){const mime=pickMime();Vm.mr=new MediaRecorder(PM.stream,mime?{mimeType:mime}:undefined);
+      Vm.mr.ondataavailable=e=>{if(e.data&&e.data.size)Vm.chunks.push(e.data);};
+      Vm.mr.onstop=()=>{if(Vm.fb)vmFallback(new Blob(Vm.chunks,{type:(Vm.mr&&Vm.mr.mimeType)||"audio/mp4"}));};
+      Vm.mr.start(500);}
+  }catch(e){Vm.mr=null;}
+  Vm.on=true;tlog("Sprachnachricht: Aufnahme läuft"+(Vm.test?" (Test)":""));
+  clearInterval(Vm.iv);Vm.iv=setInterval(()=>{const bars=Math.min(10,Math.round(Math.sqrt(PM.lvl)*14));
+    vmStatus("🔴 Recording  "+"▮".repeat(bars)+"▯".repeat(10-bars)+(Vm.test?"  (test)":"  – tap ■ to send"));},120);
+  clearTimeout(Vm.timer);Vm.timer=setTimeout(()=>{if(Vm.on)vmStop();},Vm.test?3500:25000);
   render();vmStatus("🔴 Recording – speak now. Tap ■ to send.");
 }
 function vmStop(){
-  clearTimeout(Vm.timer);Vm.on=false;try{Vm.smp&&Vm.smp();}catch(e){}clearInterval(Vm.iv);try{Vm.ctx&&Vm.ctx.close();}catch(e){}Vm.ctx=null;tlog("Pegel max "+Vm.max+"/128");
-  try{if(Vm.mr&&Vm.mr.state!=="inactive")Vm.mr.stop();}catch(e){}
-  try{Vm.stream&&Vm.stream.getTracks().forEach(t=>t.stop());}catch(e){}
-  try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
+  clearTimeout(Vm.timer);clearInterval(Vm.iv);const was=Vm.on;Vm.on=false;PM.rec=false;
+  if(!was)return;
+  const {pcm,peak}=pmTo16k();
+  tlog("Aufnahme beendet: "+(PM.n/PM.sr).toFixed(1)+" s, Pegel "+Math.round(PM.max*100)+" %");
+  if(peak>=0.003){try{if(Vm.mr&&Vm.mr.state!=="inactive")Vm.mr.stop();}catch(e){}vmDone(pcm,peak);return;}
+  // rohe Samples stumm → MediaRecorder-Aufnahme prüfen
+  Vm.fb=true;
+  try{if(Vm.mr&&Vm.mr.state!=="inactive"){Vm.mr.stop();return;}}catch(e){}
+  vmFail();
 }
-async function vmDone(blob){
+function vmFail(){
+  Vm.busy=false;
+  tlog("Keine Signale vom Microphone → Microphone wird beim nächsten Tippen neu geöffnet");
+  pmClose("stumm");
+  V.chat.err="No sound reached the microphone. Ich habe das Microphone neu gestartet – tippe 🎤 und sprich noch einmal. "+VM_HELP;
+  render();
+}
+async function vmFallback(blob){
+  Vm.fb=false;
+  if(blob.size<1500){vmFail();return;}
+  tlog("Raw-Samples stumm, aber MediaRecorder lieferte "+Math.round(blob.size/1024)+" KB → nutze diese");
+  try{const pcm=await toPcm16k(blob);vmDone(pcm,1,blob);}catch(e){vmFail();}
+}
+async function vmDone(pcm,peak,blobIn){
   Vm.busy=true;render();
-  tlog("Sprachnachricht: "+Math.round(blob.size/1024)+" KB ("+blob.type+")");
-  if(Vm.test){Vm.busy=false;const url=URL.createObjectURL(blob);
-    V.chat.msgs.push({role:"assistant",text:"Microphone test: "+Math.round(blob.size/1024)+" KB recorded, level "+Vm.max+"/128. "+(Vm.max<3||blob.size<1500?"The microphone delivers no sound – see the notes below.":"Play the recording: can you hear yourself? Then the microphone works."),audio:url});
-    if(Vm.max<3||blob.size<1500)V.chat.err=VM_HELP;render();return;}
-  if(blob.size<1500||(Vm.smp&&Vm.max<3)){Vm.busy=false;V.chat.err=(blob.size<1500?"The recording was empty. ":"No sound reached the microphone. ")+VM_HELP;render();return;}
+  const wav=blobIn||pmWav(pcm);
+  tlog("Sprachnachricht: "+(pcm.length/16000).toFixed(1)+" s, Spitze "+Math.round(peak*100)+" %");
+  if(Vm.test){Vm.busy=false;
+    V.chat.msgs.push({role:"assistant",text:"Microphone test: "+(pcm.length/16000).toFixed(1)+" s aufgenommen, Pegel "+Math.round(peak*100)+" %. Play the recording: can you hear yourself? Then the microphone works.",audio:URL.createObjectURL(wav)});
+    render();return;}
   try{
     vmStatus("⏳ Loading speech recognition (once, then offline) …");
-    const text=await whTranscribe(blob,(p)=>vmStatus("⏳ Loading speech recognition … "+p+" %"));
+    const text=await whTranscribe(pcm,(p)=>vmStatus("⏳ Loading speech recognition … "+p+" %"));
     Vm.busy=false;
     if(!text){V.chat.err="I didn't catch that. Speak a little louder and closer to the microphone and try again.";render();return;}
-    V.chat.pendingAudio=URL.createObjectURL(blob);
+    V.chat.pendingAudio=URL.createObjectURL(wav);
     chatSend(text,true);
   }catch(e){
     Vm.busy=false;tlog("Whisper Fehler: "+((e&&e.message)||e));
@@ -2322,7 +2393,7 @@ document.addEventListener("click",e=>{
    case"toTutor":V.unit=nextUnit().id;V.chat.msgs=[];V.chat.ot=null;V.chat.result=null;go("chat");break;
    case"toLesson":openUnit(nextUnit().id);break;
    case"chatRetry":chatListen(+dsx.i);break;
-   case"micFix":{Rec.stop(true);liveStop();if(Vm.on)vmStop();V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Microphone reset – now tap 🎙.",4000);render();});break;}
+   case"micFix":{Rec.stop(true);liveStop();if(Vm.on)vmStop();pmClose("Neustart");V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Microphone reset – now tap 🎙.",4000);render();});break;}
    case"vmToggle":vmToggle();break;
    case"vmTest":vmToggle(true);break;
    case"chatLog":V.chat.showLog=!V.chat.showLog;render();break;
@@ -2437,6 +2508,7 @@ document.addEventListener("keydown",e=>{
   if(e.key===" "||e.key==="Enter"){e.preventDefault();if(!V.cards.flip){V.cards.flip=true;render();}}
   else if(V.cards.flip&&["1","2","3"].includes(e.key))rateCard(+e.key-1);
 });
+document.addEventListener("visibilitychange",()=>{if(document.hidden){try{if(Vm.on)vmStop();}catch(e){}pmClose("Seite im Hintergrund");}});
 document.addEventListener("pointerdown",()=>{if(!audUnlocked)unlockAudio();},{passive:true});
 window.addEventListener("beforeunload",()=>{try{speechSynthesis.cancel();}catch(e){}});
 header();render();
