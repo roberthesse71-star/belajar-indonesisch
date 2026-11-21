@@ -874,15 +874,16 @@ function toast(msg,ms){
   try{let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";document.body.appendChild(t);}
   t.textContent=msg;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none";},ms||7000);}catch(e){}
 }
-function stopAudio(){playTok++;try{speechSynthesis.cancel();}catch(e){}try{AUD.pause();}catch(e){}}
+function stopAudio(){playTok++;try{if(onlineFin)onlineFin(false);}catch(e){}try{speechSynthesis.cancel();}catch(e){}try{AUD.pause();}catch(e){}}
 /* Online-Stimme als normale Audiodatei (funktioniert auch, wenn die Speech output des Geräts stumm bleibt) */
 function releaseAudio(){   // Audio-Element wirklich freigeben, damit das Microphone die Audio-Session bekommt
   try{AUD.onended=null;AUD.onerror=null;AUD.pause();AUD.removeAttribute&&AUD.removeAttribute("src");AUD.load&&AUD.load();}catch(e){}
   try{speechSynthesis.cancel();}catch(e){}
 }
+let onlineFin=null;
 function speakOnline(text,rate,tlang){
   return new Promise(res=>{
-    let done=false;const fin=ok=>{if(!done){done=true;if(!ok)try{AUD.pause();}catch(e){}res(ok);}};
+    let done=false;const fin=ok=>{if(!done){done=true;if(onlineFin===fin)onlineFin=null;if(!ok)try{AUD.pause();}catch(e){}res(ok);}};onlineFin=fin;
     const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+(tlang||CFG.tl)+"&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
     tlog("Online voice: loading \""+text.slice(0,28)+"\"");
     try{
@@ -929,12 +930,15 @@ let micBusy=false;
 async function speak(text,rate,pitch,forceDefault){
   if(micBusy)return;   // während das Microphone lauscht, nichts abspielen (sonst verliert iOS die Aufnahme)
   if(S.ttsV!==2){S.ttsV=2;S.ttsMode="online";save();}   // einmalig: Online-Stimme als Standard für alle Lektionen
-  const mode=S.ttsMode||"online";
+  const mode=S.ttsMode||"online",tok=playTok;
   if(!forceDefault&&(mode==="online"||(mode==="auto"&&(S.ttsAutoOnline||!idVoice())))){
     if(await speakOnline(text,rate))return;
+    if(tok!==playTok||micBusy){tlog("Wiedergabe abgebrochen");return;}
     tlog("Online voice not possible → device voice");
   }
+  if(tok!==playTok||micBusy)return;
   const ok=await deviceSpeak(text,rate,pitch,forceDefault);
+  if(tok!==playTok||micBusy)return;
   if(!ok&&!forceDefault&&mode==="auto"&&!S.ttsAutoOnline){
     tlog("Device voice silent → trying online voice");
     if(await speakOnline(text,rate)){S.ttsAutoOnline=true;save();toast("The device voice stayed silent – now using the online voice (internet required).",6000);}
@@ -1032,7 +1036,8 @@ async function getMic(opts){
 let micUses=0,SRkeep=null;
 function srGet(reuse){if(reuse&&SRkeep)return SRkeep;SRkeep=new SRC();return SRkeep;}
 async function micReset(hard){
-  stopAudio();releaseAudio();
+  stopAudio();releaseAudio();try{if(SRkeep)SRkeep.abort();}catch(e){}SRkeep=null;try{speechSynthesis.cancel();}catch(e){}
+  tlog("Microphone-Neustart"+(hard?" (hart)":"")+" #"+micUses);
   try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
   if(hard){try{if(SRkeep)SRkeep.abort();}catch(e){}SRkeep=null;}
   if(isIOS&&(hard||micUses>0)&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
@@ -1099,8 +1104,9 @@ const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alt
     sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){
       if(e.results[i].isFinal){gotFinal=true;for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);}
       else this.interim=e.results[i][0].transcript;}};
-    sr.onerror=e=>{this.srErr=e.error;};
+    sr.onerror=e=>{this.srErr=e.error;tlog("Rec-SR Fehler: "+e.error);};
     sr.onend=()=>{
+      tlog("Rec-SR ende ("+this.alts.length+" Ergebnisse)");
       if(gen!==this.gen)return;
       // Zu früh beendet, noch nichts erkannt, Nutzer hat nicht gestoppt → neu starten (iOS bricht gern ab)
       const el=Date.now()-this.t0,soft=!this.srErr||this.srErr==="no-speech"||this.srErr==="aborted";
@@ -1844,8 +1850,8 @@ function chatSend(txt,spoken){tchHandle(txt,spoken);}
 let chatSR=null,chatSRgen=0;
 async function chatListen(retryIdx){
   if(!SRC){V.chat.err=LT.srUnsup;render();return;}
-  if(chatSR&&Date.now()-(chatSR._t0||0)>900){try{chatSR.abort();}catch(e){}chatSR=null;micBusy=false;chatSRgen++;const st0=$("#cstat");if(st0)st0.textContent="";return;}   // zweiter Tipp = abbrechen
-  if(chatSR){try{chatSR.abort();}catch(e){}chatSR=null;}
+  if(chatSR&&Date.now()-(chatSR._t0||0)<15000){tlog("Tipp während Aufnahme → Stopp");try{chatSR.stop();}catch(e){}return;}   // zweiter Tipp = fertig, auswerten
+  if(chatSR){try{chatSR.abort();}catch(e){}chatSR=null;micBusy=false;}
   const gen=++chatSRgen;
   micBusy=true;Rec.stop(true);V.chat.err="";
   await micReset();if(gen!==chatSRgen){return;}
@@ -1868,20 +1874,21 @@ async function chatListen(retryIdx){
     let r;try{r=srGet(tries>1&&tries%2===0);}catch(e){srErr="aborted";finish();return;}
     chatSR=r;r._t0=Date.now();r.lang=CFG.sr;r.interimResults=true;r.maxAlternatives=5;r.continuous=tries>=3;
     let got=false;
-    r.onstart=()=>say("🎙 I'm listening – speak now …");
+    r.onstart=()=>{tlog("SR start (Versuch "+tries+")");say("🎙 I'm listening – speak now …");};
     r.onresult=e=>{
       for(let i=e.resultIndex;i<e.results.length;i++){
         if(e.results[i].isFinal){got=true;for(let k=0;k<e.results[i].length;k++)alts.push(e.results[i][k].transcript);}
         else{interim=e.results[i][0].transcript;say("🎙 "+interim+" …");}
       }};
-    r.onerror=e=>{srErr=e.error;};
+    r.onerror=e=>{srErr=e.error;tlog("SR Fehler: "+e.error);};
     r.onend=()=>{
+      tlog("SR ende (Ergebnisse: "+alts.length+", Zwischen: "+(interim?1:0)+")");
       if(gen!==chatSRgen||finished)return;
       const soft=!srErr||srErr==="no-speech"||srErr==="aborted";
       if(!got&&!alts.length&&!interim&&soft&&tries<3&&Date.now()-t0<9000){srErr=null;setTimeout(()=>{if(gen===chatSRgen&&!finished)run();},tries>1?500:250);return;}
       finish();
     };
-    try{r.start();}catch(e){srErr="aborted";finish();}
+    try{r.start();}catch(e){srErr="aborted";tlog("SR start Ausnahme: "+(e&&e.name));finish();}
   };
   say("🎙 Preparing the microphone …");
   run();
@@ -1919,7 +1926,7 @@ function vOT(){
   $("#view").innerHTML=`<h2>${place?"Placement":"Teacher"}</h2>
    <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Sound on":"🔇 Sound off"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Ask a question</button>`:""}<button class="btn sm" data-act="chatReset">Restart</button><button class="btn sm" data-act="talkStart">💬 Ask freely</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
    ${prog}${start}${bub}${done}
-   ${C.err?`<div class="warn">${esc(C.err)}<div class="row" style="margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Reset microphone</button><button class="btn sm" data-act="chatKbd">⌨️ Keyboard dictation</button></div></div>`:""}
+   ${C.err?`<div class="warn">${esc(C.err)}<details style="margin-top:6px"><summary class="small">Log</summary><pre class="small" style="white-space:pre-wrap">${esc(TTSLOG.join("\n"))}</pre></details><div class="row" style="margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Reset microphone</button><button class="btn sm" data-act="chatKbd">⌨️ Keyboard dictation</button></div></div>`:""}
    ${inputOn?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><button class="btn" data-act="chatKbd" title="Keyboard dictation">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Ask your question …":"Speak or type …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Send</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
   const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter"){const v=i.value;i.value="";chatSend(v);}};
   const s2=$("#tunit");if(s2)s2.onchange=e=>{V.unit=e.target.value;};

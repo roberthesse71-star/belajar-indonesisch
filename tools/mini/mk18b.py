@@ -104,3 +104,5 @@ T.update({
 "Mikrofon zurückgesetzt – tippe jetzt noch einmal auf 🎙.":"Microphone reset – now tap 🎙 once more.",
 "Tippe auf das Mikrofon-Symbol deiner iPhone-Tastatur (unten rechts), sprich, dann auf „Senden“.":"Tap the microphone icon on your iPhone keyboard (bottom right), speak, then tap “Send”.",
 })
+
+T.update({">Protokoll</summary>":">Log</summary>"})
