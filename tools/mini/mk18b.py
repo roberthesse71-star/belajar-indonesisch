@@ -108,3 +108,10 @@ T.update({
 T.update({">Protokoll</summary>":">Log</summary>"})
 
 T.update({"🎙 Kein Ton erkannt – ich starte neu, bitte noch einmal sprechen …":"🎙 No sound detected – restarting, please speak again …"})
+T.update({
+"🎙 Mikrofon ist an – sprich jederzeit. Zum Beenden nochmal 🎙 tippen.":"🎙 Microphone is on – speak any time. Tap 🎙 again to switch it off.",
+"🎙 Mikrofon ist an – sprich jederzeit.":"🎙 Microphone is on – speak any time.",
+"Das Mikrofon hat sich beendet. Tippe auf 🎙, um es wieder anzuschalten – oder nutze ⌨️ Tastatur-Diktat.":"The microphone has stopped. Tap 🎙 to switch it on again – or use ⌨️ keyboard dictation.",
+"Spracherkennung konnte nicht starten.":"Speech recognition could not start.",
+"Mikrofon zurückgesetzt – tippe jetzt auf 🎙.":"Microphone reset – now tap 🎙.",
+})

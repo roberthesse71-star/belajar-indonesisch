@@ -837,7 +837,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 08:40";
+const BUILD="21.11.2026 08:46";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -853,11 +853,11 @@ function releaseAudio(){   // Audio-Element wirklich freigeben, damit das Mikrof
 let onlineFin=null;
 function speakOnline(text,rate,tlang){
   return new Promise(res=>{
-    let done=false;const fin=ok=>{if(!done){done=true;if(onlineFin===fin)onlineFin=null;if(!ok)try{AUD.pause();}catch(e){}res(ok);}};onlineFin=fin;
+    let done=false;const fin=ok=>{if(!done){done=true;ttsPlaying=false;audioEndedAt=Date.now();if(onlineFin===fin)onlineFin=null;if(!ok)try{AUD.pause();}catch(e){}res(ok);}};onlineFin=fin;
     const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+(tlang||CFG.tl)+"&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
     tlog("Online-Stimme: lade \""+text.slice(0,28)+"\"");
     try{
-      AUD.pause();AUD.onended=()=>{audioEndedAt=Date.now();tlog("→ Online beendet");try{AUD.onended=null;AUD.onerror=null;AUD.removeAttribute("src");AUD.load();}catch(e){}fin(true);};
+      ttsPlaying=true;AUD.pause();AUD.onended=()=>{ttsPlaying=false;audioEndedAt=Date.now();tlog("→ Online beendet");try{AUD.onended=null;AUD.onerror=null;AUD.removeAttribute("src");AUD.load();}catch(e){}fin(true);};
       AUD.onerror=()=>{tlog("→ Online-Stimme: Ladefehler");fin(false);};
       AUD.src=url;AUD.load&&AUD.load();
       const p=AUD.play();
@@ -896,7 +896,7 @@ function deviceSpeak(text,rate,pitch,forceDefault,lang){
     setTimeout(()=>fin(started),Math.max(7000,text.length*320));
   });
 }
-let micBusy=false;
+let micBusy=false;   // (nur noch Einzel-Aufnahme im Sprechen-Bereich)
 /* Nur Online-Stimme (Gerätestimme bewusst entfernt: sie funkte in die Aufnahme) */
 async function speak(text,rate){
   if(micBusy)return;
@@ -1169,7 +1169,7 @@ const GROUPS={today:["today"],path:["path","cards","speak","hear","ex"],rp:["rp"
 const SUBN={path:"Lernen",cards:"Karten",speak:"Sprechen",hear:"Diktat",ex:"Üben",rp:"Rollenspiel",hdlg:"Hörtest",gram:"Grammatik",dict:"Wörterbuch",sounds:"Laute",prog:"Fortschritt"};
 function grpOf(t){for(const g in GROUPS)if(GROUPS[g].includes(t))return g;return "today";}
 function tabsHtml(){const g=grpOf(V.tab);$("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" class="${g===k?"on":""}">${n}</button>`).join("");}
-function go(t){Rec.stop(true);stopAudio();V.tab=t;if(t==="path"&&!V.unit)V.unit=nextUnit().id;render();window.scrollTo(0,0);}
+function go(t){Rec.stop(true);if(t!=="chat")liveStop();stopAudio();V.tab=t;if(t==="path"&&!V.unit)V.unit=nextUnit().id;render();window.scrollTo(0,0);}
 function render(){
   tabsHtml();
   ({today:vToday,path:vPath,cards:vCards,speak:()=>{V.sp.mode="item";vSpeak();},rp:()=>{V.sp.mode="role";vSpeak();},hear:()=>{V.hear.mode="dict";vHear();},hdlg:()=>{V.hear.mode="dlg";vHear();},ex:vEx,gram:vGram,dict:vDict,sounds:vSounds,prog:vProg,chat:vChat})[V.tab]();
@@ -1799,65 +1799,57 @@ function tchPick(i){
   if(val==="Verstanden – weiter ▶"){C.msgs.push({role:"user",text:"Verstanden"});tchNext();return;}
   tchHandle(val,false);
 }
-function chatSend(txt,spoken){tchHandle(txt,spoken);}
-let chatSR=null,chatSRgen=0,lvlStop=null;
+function chatSend(txt,spoken){
+  const o=V.chat.ot;
+  if(spoken&&o&&o.mode==="teach"&&!o.ask&&!o.dlg&&!o.done&&o.cur&&["mc","cl","info"].includes(o.cur.t)){
+    const opts=o.cur.t==="mc"?(o.cur.opts0||[]):o.cur.t==="cl"?o.cur.o:[];
+    if(!opts.some(x=>norm(x)===norm(txt))){miniBuild();const ai=miniIntent(txt);if(["target","unknown"].includes(ai.intent)||ai.conf<.6){tlog("Gesprochen ignoriert (Auswahlaufgabe): "+txt);return;}}
+  }
+  tchHandle(txt,spoken);
+}
+/* Dauer-Sitzung: EINE Spracherkennung bleibt für die ganze Lektion offen.
+   Grund: Nach dem Ende der ersten Sitzung liefert das Mikrofon in manchen Browsern/auf iOS keinen Ton mehr. */
+let liveSR=null,liveWant=false,liveRetry=null,liveFails=0,ttsPlaying=false;
+const liveIgnore=()=>ttsPlaying||Date.now()-audioEndedAt<1600;
+function liveStop(){liveWant=false;const r=liveSR;liveSR=null;try{if(r){r.onend=null;r.abort();}}catch(e){}try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}const st=$("#cstat");if(st)st.textContent="";}
 async function chatListen(retryIdx){
   if(!SRC){V.chat.err=LT.srUnsup;render();return;}
-  if(chatSR&&Date.now()-(chatSR._t0||0)<15000){tlog("Tipp während Aufnahme → Stopp");try{chatSR.stop();}catch(e){}return;}   // zweiter Tipp = fertig, auswerten
-  if(chatSR){try{chatSR.abort();}catch(e){}chatSR=null;micBusy=false;}
-  const gen=++chatSRgen;
-  micBusy=true;Rec.stop(true);V.chat.err="";
-  await micReset();if(gen!==chatSRgen){return;}
-  const st=()=>$("#cstat"),say=t=>{const e=st();if(e)e.textContent=t;};
-  const alts=[];let interim="",srErr=null,tries=0,t0=Date.now(),finished=false,heard=false,deadT=null;
-  const finish=()=>{
-    if(finished)return;finished=true;clearTimeout(deadT);chatSR=null;micBusy=false;if(lvlStop)lvlStop();
-    try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
-    if(!alts.length&&interim)alts.push(interim);
-    if(!alts.length){
-      V.chat.err=((srErr&&SRERR[srErr])?SRERR[srErr]:"Nichts erkannt. Tippe auf 🎙, warte kurz, bis „Ich höre zu“ erscheint, und sprich dann deutlich. Du kannst auch tippen. (Die Spracherkennung braucht Internet.)")+" [Code: "+(srErr||"leer")+", Versuche: "+tries+"]";
-      say("");render();return;
-    }
-    say("");
-    if(retryIdx!=null){const m=V.chat.msgs[retryIdx];if(m&&m.cmp){const ev=evaluate(m.cmp.target,alts);m.cmp.retry={score:ev.score,words:ev.words};addXp(1);render();}}
-    else chatSend(alts[0],true);
+  if(retryIdx!=null)liveRetry=retryIdx;
+  if(liveSR&&liveWant&&retryIdx==null){liveStop();tlog("Mikrofon aus");render();return;}   // Tipp = Mikrofon aus
+  if(liveSR&&liveWant){return;}                                                          // läuft schon (Nochmal-Knopf)
+  V.chat.err="";liveWant=true;liveFails=0;
+  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
+  liveOpen();
+  render();
+}
+function liveOpen(){
+  let r;try{r=new SRC();}catch(e){V.chat.err="Spracherkennung konnte nicht starten.";liveWant=false;render();return;}
+  liveSR=r;r.lang=CFG.sr;r.continuous=true;r.interimResults=true;r.maxAlternatives=3;
+  const say=t=>{const e=$("#cstat");if(e)e.textContent=t;};
+  let sawSound=false;
+  r.onstart=()=>{tlog("v"+BUILD+" · Dauer-Mikro an");say("🎙 Mikrofon ist an – sprich jederzeit. Zum Beenden nochmal 🎙 tippen.");};
+  ["audiostart","soundstart","speechstart","speechend","audioend"].forEach(n=>{r["on"+n]=()=>{tlog("SR Ereignis: "+n);if(n==="soundstart")sawSound=true;};});
+  r.onresult=e=>{
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const res=e.results[i];
+      if(!res.isFinal){if(!liveIgnore())say("🎙 "+res[0].transcript+" …");continue;}
+      const alts=[];for(let k=0;k<res.length;k++)alts.push(res[k].transcript);
+      if(liveIgnore()){tlog("Ergebnis während Wiedergabe ignoriert: "+alts[0]);continue;}
+      tlog("Ergebnis: "+alts[0]);liveFails=0;say("🎙 Mikrofon ist an – sprich jederzeit.");
+      if(liveRetry!=null){const m=V.chat.msgs[liveRetry];liveRetry=null;if(m&&m.cmp){const ev=evaluate(m.cmp.target,alts);m.cmp.retry={score:ev.score,words:ev.words};addXp(1);render();continue;}}
+      chatSend(alts[0],true);
+    }};
+  r.onerror=e=>{tlog("SR Fehler: "+e.error+(e.message?" ("+e.message+")":""));
+    if(e.error==="not-allowed"||e.error==="service-not-allowed"){V.chat.err=SRERR[e.error];liveWant=false;}};
+  r.onend=()=>{
+    tlog("SR ende");
+    if(liveSR!==r)return;
+    if(liveWant&&liveFails<4){liveFails++;tlog("Sitzung beendet → automatisch neu (Versuch "+liveFails+")");setTimeout(()=>{if(liveWant&&liveSR===r)liveOpen();},400);return;}
+    liveSR=null;liveWant=false;
+    if(!V.chat.err)V.chat.err="Das Mikrofon hat sich beendet. Tippe auf 🎙, um es wieder anzuschalten – oder nutze ⌨️ Tastatur-Diktat.";
+    render();
   };
-  const run=()=>{
-    tries++;
-    let r;try{r=srGet(tries>1&&tries%2===0);}catch(e){srErr="aborted";finish();return;}
-    chatSR=r;r._t0=Date.now();r.lang=CFG.sr;r.interimResults=true;r.maxAlternatives=5;r.continuous=tries>=3;
-    let got=false;
-    r.onstart=()=>{tlog("SR start (Versuch "+tries+")");say("🎙 Ich höre zu – sprich jetzt …");};
-    r.onresult=e=>{
-      for(let i=e.resultIndex;i<e.results.length;i++){
-        if(e.results[i].isFinal){got=true;for(let k=0;k<e.results[i].length;k++)alts.push(e.results[i][k].transcript);}
-        else{interim=e.results[i][0].transcript;say("🎙 "+interim+" …");}
-      }};
-    ["audiostart","soundstart","speechstart","speechend","soundend","audioend","nomatch"].forEach(n=>{r["on"+n]=()=>{tlog("SR Ereignis: "+n);if(n==="soundstart"||n==="speechstart")heard=true;};});
-    heard=false;clearTimeout(deadT);
-    deadT=setTimeout(()=>{if(!heard&&!finished&&gen===chatSRgen&&tries<3&&!alts.length&&!interim){tlog("Kein Ton nach 6 s → Neustart");say("🎙 Kein Ton erkannt – ich starte neu, bitte noch einmal sprechen …");try{r.abort();}catch(e){}}},6000);
-    r.onerror=e=>{srErr=e.error;tlog("SR Fehler: "+e.error+(e.message?" ("+e.message+")":""));};
-    r.onend=()=>{
-      tlog("SR ende (Ergebnisse: "+alts.length+", Zwischen: "+(interim?1:0)+")");
-      if(gen!==chatSRgen||finished)return;
-      const soft=!srErr||srErr==="no-speech"||srErr==="aborted";
-      if(!got&&!alts.length&&!interim&&soft&&tries<3&&Date.now()-t0<22000){srErr=null;setTimeout(()=>{if(gen===chatSRgen&&!finished)run();},tries>1?500:250);return;}
-      finish();
-    };
-    try{r.start();}catch(e){srErr="aborted";tlog("SR start Ausnahme: "+(e&&e.name));finish();}
-  };
-  say("🎙 Mikrofon wird vorbereitet …");
-  run();
-  if(!isIOS&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&(window.AudioContext||window.webkitAudioContext)){
-    navigator.mediaDevices.getUserMedia({audio:true}).then(st=>{
-      const ctx=new (window.AudioContext||window.webkitAudioContext)(),an=ctx.createAnalyser();an.fftSize=512;ctx.createMediaStreamSource(st).connect(an);
-      const d=new Uint8Array(an.fftSize);let mx=0;const iv=setInterval(()=>{an.getByteTimeDomainData(d);for(let i=0;i<d.length;i++)mx=Math.max(mx,Math.abs(d[i]-128));},100);
-      const t=((st.getAudioTracks()[0]||{}).label)||"?";
-      lvlStop=()=>{clearInterval(iv);try{st.getTracks().forEach(x=>x.stop());}catch(e){}try{ctx.close();}catch(e){}tlog("Mikrofon \""+t+"\": Pegel max "+mx+"/128");lvlStop=null;};
-      if(finished)lvlStop();
-    }).catch(e=>tlog("Pegel-Messung nicht möglich: "+(e&&e.name)));
-  }
-  setTimeout(()=>{if(gen===chatSRgen&&!finished){if(chatSR){try{chatSR.stop();}catch(e){}}setTimeout(()=>{if(gen===chatSRgen&&!finished)finish();},1500);}},24000);   // Sicherheits-Stopp
+  try{r.start();}catch(e){tlog("SR start Ausnahme: "+(e&&e.name));liveWant=false;liveSR=null;V.chat.err="Spracherkennung konnte nicht starten.";render();}
 }
 function cmpHtml(m,i){
   if(!m.cmp)return "";
@@ -1892,7 +1884,7 @@ function vOT(){
    <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
    ${prog}${start}${bub}${done}
    ${C.err?`<div class="warn">${esc(C.err)}<details style="margin-top:6px"><summary class="small">Protokoll</summary><pre class="small" style="white-space:pre-wrap">${esc(TTSLOG.join("\n"))}</pre></details><div class="row" style="margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Mikrofon zurücksetzen</button><button class="btn sm" data-act="chatKbd">⌨️ Tastatur-Diktat</button></div></div>`:""}
-   ${inputOn?`<div class="chatbar"><button class="btn pri" data-act="chatListen">🎙</button><button class="btn" data-act="chatKbd" title="Tastatur-Diktat">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
+   ${inputOn?`<div class="chatbar"><button class="btn ${liveSR?"rec":"pri"}" data-act="chatListen">${liveSR?"⏹":"🎙"}</button><button class="btn" data-act="chatKbd" title="Tastatur-Diktat">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
   const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter"){const v=i.value;i.value="";chatSend(v);}};
   const s2=$("#tunit");if(s2)s2.onchange=e=>{V.unit=e.target.value;};
   window.scrollTo(0,1e6);
@@ -2206,7 +2198,7 @@ document.addEventListener("click",e=>{
    case"toTutor":V.unit=nextUnit().id;V.chat.msgs=[];V.chat.ot=null;V.chat.result=null;go("chat");break;
    case"toLesson":openUnit(nextUnit().id);break;
    case"chatRetry":chatListen(+dsx.i);break;
-   case"micFix":{Rec.stop(true);if(typeof chatSR!=="undefined"&&chatSR){try{chatSR.abort();}catch(e){}chatSR=null;chatSRgen++;}micBusy=false;V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt noch einmal auf 🎙.",4000);render();});break;}
+   case"micFix":{Rec.stop(true);liveStop();V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt auf 🎙.",4000);render();});break;}
    case"chatKbd":{const i=$("#cin");if(i)i.focus();toast("Tippe auf das Mikrofon-Symbol deiner iPhone-Tastatur (unten rechts), sprich, dann auf „Senden“.",6000);break;}
    case"kbScore":scoreText(($("#kbin")||{}).value);break;
    case"chatAuto":V.chat.auto=!V.chat.auto;render();break;
