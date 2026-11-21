@@ -986,10 +986,10 @@ function releaseAudio(){   // Audio-Element wirklich freigeben, damit das Mikrof
   try{AUD.onended=null;AUD.onerror=null;AUD.pause();AUD.removeAttribute&&AUD.removeAttribute("src");AUD.load&&AUD.load();}catch(e){}
   try{speechSynthesis.cancel();}catch(e){}
 }
-function speakOnline(text,rate){
+function speakOnline(text,rate,tlang){
   return new Promise(res=>{
     let done=false;const fin=ok=>{if(!done){done=true;if(!ok)try{AUD.pause();}catch(e){}res(ok);}};
-    const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+CFG.tl+"&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
+    const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+(tlang||CFG.tl)+"&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
     tlog("Online-Stimme: lade \""+text.slice(0,28)+"\"");
     try{
       AUD.pause();AUD.onended=()=>{tlog("→ Online beendet");try{AUD.onended=null;AUD.onerror=null;AUD.removeAttribute("src");AUD.load();}catch(e){}fin(true);};
@@ -1002,7 +1002,8 @@ function speakOnline(text,rate){
   });
 }
 let ttsUnlocked=false;
-function deviceSpeak(text,rate,pitch,forceDefault){
+function langVoice(l){const n=v=>(v.lang||"").replace("_","-").toLowerCase();return voices.find(v=>n(v)===(l==="de"?"de-de":"en-us"))||voices.find(v=>n(v).startsWith(l))||null;}
+function deviceSpeak(text,rate,pitch,forceDefault,lang){
   return new Promise(res=>{
     if(!("speechSynthesis" in window)){tlog("keine speechSynthesis");res(false);return;}
     try{loadVoices();}catch(e){}
@@ -1010,7 +1011,7 @@ function deviceSpeak(text,rate,pitch,forceDefault){
     const fin=ok=>{if(!done){done=true;res(!!ok);}};
     const say=()=>{
       tries++;
-      const u=new SpeechSynthesisUtterance(text),v=forceDefault?null:idVoice();
+      const u=new SpeechSynthesisUtterance(text),v=forceDefault?null:(lang?langVoice(lang):idVoice());
       tlog("Gerätestimme: \""+text.slice(0,28)+"\" – "+(v?v.name+" ("+v.lang+")":"Standard")+" – Versuch "+tries+" (Stimmen: "+voices.length+")");
       if(v){u.voice=v;u.lang=v.lang;}
       u.rate=rate||.95;u.pitch=pitch||1;u.volume=1;
@@ -1042,6 +1043,20 @@ async function speak(text,rate,pitch,forceDefault){
     tlog("Gerätestimme stumm → versuche Online-Stimme");
     if(await speakOnline(text,rate)){S.ttsAutoOnline=true;save();toast("Die Gerätestimme blieb stumm – ich nutze jetzt die Online-Stimme (Internet nötig).",6000);}
     else toast("Keine Sprachausgabe möglich: Gerätestimme stumm und Online-Stimme nicht erreichbar. Sieh im Tab „Laute“ ins Protokoll.",9000);
+  }
+}
+/* Erklärungen in der Muttersprache der App vorlesen (z. B. Deutsch in der Indonesisch-/Englisch-App) */
+const natLang=()=>LT.nname==="German"?"de":"en";
+async function speakNative(text){
+  const my=++playTok,l=natLang();
+  const clean=String(text).replace(/[„“”"]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF▶✅❓]/gu,"").replace(/\s+/g," ").trim();
+  const parts=(clean.match(/[^.!?:;]+[.!?:;]*/g)||[clean]).map(x=>x.trim()).filter(Boolean),chunks=[];
+  let cur="";for(const p of parts){if((cur+" "+p).length>170&&cur){chunks.push(cur);cur=p;}else cur=(cur?cur+" ":"")+p;}if(cur)chunks.push(cur);
+  for(const c of chunks){
+    if(my!==playTok)return;
+    const t=c.slice(0,190);let ok=false;
+    if((S.ttsMode||"online")!=="device")ok=await speakOnline(t,.95,l);
+    if(!ok&&my===playTok)await deviceSpeak(t,.95,1,false,l);
   }
 }
 async function playDialog(u,cb){
@@ -1283,6 +1298,7 @@ function vToday(){
   const plan=[["Karteikarten wiederholen","cards",d.cards,20,"cards"],["Sätze laut sprechen (mit Aufnahme)","speak",d.speak,5,"speak"],["Diktat schreiben","dict",d.dict,3,"hear"],["Übungsaufgaben lösen","ex",d.ex,10,"ex"]];
   $("#view").innerHTML=`
   <h2>${LT.greet()}</h2>${storageWarn()}${placeCard()}
+  <div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div style="flex:1"><b>👩‍🏫 Dein Lehrer</b><div class="small">${needPlace()?"Starte mit der Einstufung – der Lehrer findet dein Level.":"Er führt dich durch Lektion "+next.n+": "+esc(next.t)+" – erklärt, spricht vor, fragt ab."}</div></div><button class="btn pri" data-act="toTutor">${needPlace()?"Einstufung":"Lernen"}</button></div></div>
   <div class="card"><div class="row" style="justify-content:space-between"><b>Tagesziel: ${xp} / ${S.goal} XP</b>
    <select data-sel="goal">${[30,60,100,150].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></div>
    <div class="bar" style="margin-top:8px;height:12px"><i style="width:${pct}%"></i></div>
@@ -1918,7 +1934,7 @@ function vOT(){
   const last=C.msgs[C.msgs.length-1];
   const nl=t=>esc(t).replace(/\n/g,"<br>");
   const bub=C.msgs.map((m,i)=>m.role==="assistant"
-   ?`<div class="bub A"><b>${nl(m.text)}</b>${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button>${m.ph?`<div class="ph" style="font-size:13px">${esc(m.ph)}</div>`:""}${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.chips&&m===last?`<div class="row" style="margin-top:8px">${m.chips.map((c,k)=>`<button class="btn sm" data-act="miniChip" data-i="${i}" data-k="${k}">${esc(c[0])}</button>`).join("")}</div>`:""}${m.say&&!m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><b>${esc(m.say)}</b> <button class="btn sm" data-act="chatSayS" data-i="${i}">🔊</button>${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.opts&&m===last?`<div style="margin-top:8px">${m.opts.map((x,k)=>`<button class="btn opt" data-act="otPick" data-i="${k}">${esc(x)}</button>`).join("")}</div>`:""}</div>`
+   ?`<div class="bub A"><b>${nl(m.text)}</b>${(m.text||"").length>45?`<div style="margin-top:6px"><button class="btn sm" data-act="chatRead" data-i="${i}">🔊 Vorlesen</button></div>`:""}${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button>${m.ph?`<div class="ph" style="font-size:13px">${esc(m.ph)}</div>`:""}${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.chips&&m===last?`<div class="row" style="margin-top:8px">${m.chips.map((c,k)=>`<button class="btn sm" data-act="miniChip" data-i="${i}" data-k="${k}">${esc(c[0])}</button>`).join("")}</div>`:""}${m.say&&!m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><b>${esc(m.say)}</b> <button class="btn sm" data-act="chatSayS" data-i="${i}">🔊</button>${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.opts&&m===last?`<div style="margin-top:8px">${m.opts.map((x,k)=>`<button class="btn opt" data-act="otPick" data-i="${k}">${esc(x)}</button>`).join("")}</div>`:""}</div>`
    :`<div class="bub B"><b>${esc(m.text)}</b>${cmpHtml(m,i)}</div>`).join("");
   const manual=`<div class="small" style="margin:12px 0 6px">Oder wähle dein Level selbst:</div><div class="row">${LEVELS.map(l=>`<button class="btn sm" data-act="setLevel" data-l="${l}">${l}</button>`).join("")}</div>`;
   const teach=o&&o.mode==="teach",talk=o&&o.mode==="talk";
@@ -2247,12 +2263,14 @@ document.addEventListener("click",e=>{
    case"chatDone":V.chat.result=null;render();break;
    case"setLevel":S.level=dsx.l;S.placed=Date.now();save();V.chat.level=S.level;V.chat.msgs=[];V.chat.result=null;V.cards=null;V.ex=null;render();break;
    case"relevel":S.level=null;V.chat.msgs=[];V.chat.result=null;save();render();break;
+   case"toTutor":V.unit=nextUnit().id;V.chat.msgs=[];V.chat.ot=null;V.chat.result=null;go("chat");break;
    case"toLesson":openUnit(nextUnit().id);break;
    case"chatRetry":chatListen(+dsx.i);break;
    case"chatAuto":V.chat.auto=!V.chat.auto;render();break;
    case"chatSayT":speak(V.chat.msgs[+dsx.i].cmp.target,.9);break;
    case"chatSayG":speak(V.chat.msgs[+dsx.i].goal,.9);break;
    case"chatSay":speak(V.chat.msgs[+dsx.i].text,.9);break;
+   case"chatRead":speakNative(V.chat.msgs[+dsx.i].text);break;
    case"openUnit":openUnit(dsx.u);break;
    case"back":V.unit=null;render();break;
    case"utab":V.utab=dsx.t;stopAudio();render();break;
