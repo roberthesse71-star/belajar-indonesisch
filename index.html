@@ -779,6 +779,20 @@ const CFG={
  gsyn:[["saya","aku","Anda","kamu"],["kami","kita"],["di","pada","dalam"],["sangat","sekali","agak"]],
  tongue:["Kakak kaya kaya raya.","Saya suka makan ikan bakar.","Burung itu terbang tinggi.","Cinta tanah air.","Ayam goreng enak sekali."],
  t:{
+  greet:"Selamat datang! 👋",hintBtn:"💡 Hinweis (Deutsch)",transPh:"Auf Indonesisch …",testSent:"Selamat pagi. Apa kabar?",
+  srUnsup:"Indonesisch wird von der Spracherkennung dieses Geräts nicht unterstützt.",
+  lvl:{A1:"Anfänger – erste Gespräche",A2:"Grundlagen – Alltag meistern",B1:"Mittelstufe – flüssig & natürlich",B2:"Fortgeschritten – souverän & differenziert"},
+  quick:`<details class="card tip" open><summary>⚡ Die 10 wichtigsten Regeln auf einen Blick</summary><ol>
+   <li><b>Keine Artikel, keine Beugung:</b> <i>Saya makan, dia makan.</i></li>
+   <li><b>Satz = Subjekt – Verb – Objekt:</b> <i>Saya membaca buku.</i></li>
+   <li><b>Nomen vor Adjektiv, Besitzer hinter dem Nomen:</b> <i>rumah besar saya</i> (mein großes Haus).</li>
+   <li><b>Zeit durch Wörter:</b> <i>sudah</i> (schon), <i>belum</i> (noch nicht), <i>sedang</i> (gerade), <i>akan</i> (werden).</li>
+   <li><b>Vier Verneinungen:</b> <i>tidak</i> (Verb/Adj.), <i>bukan</i> (Nomen), <i>belum</i> (noch nicht), <i>jangan</i> (Verbot).</li>
+   <li><b>Fragewörter bleiben vorn oder hinten:</b> <i>Siapa nama Anda?</i> / <i>Anda dari mana?</i></li>
+   <li><b>di / ke / dari:</b> Ort / Richtung / Herkunft.</li>
+   <li><b>Mehrzahl durch Doppelung</b> (nur bei Bedarf): <i>anak-anak</i>; nach Zahlen nicht: <i>dua anak</i>.</li>
+   <li><b>Zählwörter:</b> <i>dua orang, tiga buah, lima ekor</i>.</li>
+   <li><b>Präfixe me-, ber-, di-, ter-, pe-:</b> ändern Rolle und Bedeutung – das Wortbildungssystem ist dein Hebel für großen Wortschatz.</li></ol></details>`,
   cm:[["id2de","Indonesisch → Deutsch"],["de2id","Deutsch → Indonesisch"],["listen","Hören → Bedeutung"]],
   howSay:"Wie sagt man auf Indonesisch?",dictWrite:"Höre den Satz und schreibe ihn auf Indonesisch.",transTo:"Übersetze ins Indonesische",
   dictHint:"Tippe ein indonesisches oder deutsches Wort.",dictPh:"Suche (Indonesisch oder Deutsch) …",test1:"🔊 Test 1: Indonesisch",voiceAuto:"Automatisch (Indonesisch → Malaiisch → Standard)",
@@ -846,7 +860,7 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 const sample=(a,n)=>shuffle(a).slice(0,n);
 const APPVER="3.3";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
+function norm(s){return String(s).toLowerCase().replace(/ß/g,"ss").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
 function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);
   for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
 const sim=(a,b)=>(!a.length&&!b.length)?1:1-lev(a,b)/Math.max(a.length,b.length);
@@ -990,7 +1004,7 @@ function unlockAudio(){
   if(audUnlocked)return;audUnlocked=true;
 }
 function pickMime(){const c=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];for(const t of c){try{if(window.MediaRecorder&&MediaRecorder.isTypeSupported(t))return t;}catch(e){}}return "";}
-const SRERR={"not-allowed":"Spracherkennung nicht erlaubt (Mikrofon-Berechtigung prüfen).","service-not-allowed":"Spracherkennung hier nicht erlaubt. iPhone: Einstellungen → Allgemein → Tastatur → „Diktierfunktion“ einschalten und die Seite im Safari-Tab statt als Home-Bildschirm-App testen.","no-speech":"Es wurde keine Sprache gehört.","audio-capture":"Kein Mikrofon gefunden.","network":"Keine Internetverbindung für die Spracherkennung.","language-not-supported":"Indonesisch wird von der Spracherkennung dieses Geräts nicht unterstützt.","aborted":"Erkennung abgebrochen."};
+const SRERR={"not-allowed":"Spracherkennung nicht erlaubt (Mikrofon-Berechtigung prüfen).","service-not-allowed":"Spracherkennung hier nicht erlaubt. iPhone: Einstellungen → Allgemein → Tastatur → „Diktierfunktion“ einschalten und die Seite im Safari-Tab statt als Home-Bildschirm-App testen.","no-speech":"Es wurde keine Sprache gehört.","audio-capture":"Kein Mikrofon gefunden.","network":"Keine Internetverbindung für die Spracherkennung.","language-not-supported":LT.srUnsup,"aborted":"Erkennung abgebrochen."};
 async function getMic(opts){
   releaseAudio();
   const as=t=>{try{if(navigator.audioSession)navigator.audioSession.type=t;}catch(e){}};
@@ -1174,7 +1188,7 @@ function vToday(){
   const next=nextUnit(),due=dueCount();
   const plan=[["Karteikarten wiederholen","cards",d.cards,20,"cards"],["Sätze laut sprechen (mit Aufnahme)","speak",d.speak,5,"speak"],["Diktat schreiben","dict",d.dict,3,"hear"],["Übungsaufgaben lösen","ex",d.ex,10,"ex"]];
   $("#view").innerHTML=`
-  <h2>Selamat datang! 👋</h2>${storageWarn()}
+  <h2>${LT.greet}</h2>${storageWarn()}
   <div class="card"><div class="row" style="justify-content:space-between"><b>Tagesziel: ${xp} / ${S.goal} XP</b>
    <select data-sel="goal">${[30,60,100,150].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></div>
    <div class="bar" style="margin-top:8px;height:12px"><i style="width:${pct}%"></i></div>
@@ -1197,7 +1211,7 @@ function vToday(){
 /* ===================== LERNPFAD ===================== */
 function vPath(){
   if(V.unit)return vUnit();
-  $("#view").innerHTML=`<h2>Lernpfad</h2>`+LEVELS.map(l=>`<h3><span class="lvl">${l}</span>${l==="A1"?"Anfänger – erste Gespräche":l==="A2"?"Grundlagen – Alltag meistern":"Mittelstufe – flüssig & natürlich"} <span class="small">· ${lvlPct(l)}%</span></h3>
+  $("#view").innerHTML=`<h2>Lernpfad</h2>`+LEVELS.map(l=>`<h3><span class="lvl">${l}</span>${LT.lvl[l]} <span class="small">· ${lvlPct(l)}%</span></h3>
    <div class="grid">${UNITS.filter(u=>u.lvl===l).map(u=>`<div class="card" style="cursor:pointer;margin:0" data-act="openUnit" data-u="${u.id}">
     <div style="font-size:26px">${u.e}</div><b>${u.n}. ${esc(u.t)}</b>
     <div class="small">${(u.vocab||[]).length} Wörter · ${(u.sent||[]).length} Sätze · Dialog</div>
@@ -1359,7 +1373,7 @@ function vHear(){
   }
   $("#view").innerHTML=`${head}<div class="card"><p>${LT.dictWrite}</p>
    <div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="dPlay">🔊 Abspielen</button><button class="btn" data-act="dPlay" data-slow="1">🐢 Langsam</button>
-   <button class="btn" data-act="dHint">💡 Hinweis (Deutsch)</button></div>
+   <button class="btn" data-act="dHint">${LT.hintBtn}</button></div>
    <div id="dhint" class="small" style="display:none;margin-bottom:8px">${esc(it.de)}</div>
    <input type="text" id="din" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res?"disabled":""} value="${esc(q.typed||"")}" placeholder="Schreibe, was du hörst …">
    ${q.res?"":`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="dCheck">Prüfen</button></div>`}</div>${res}`;
@@ -1466,7 +1480,7 @@ function vEx(){
   }
   if(q.t==="trans"){
     body=`<div class="small">${LT.transTo}</div><div class="big" style="font-size:24px">${esc(q.it.de)}</div>
-     <input type="text" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res!==undefined?"disabled":""} value="${esc(q.typed||"")}" placeholder="Auf Indonesisch …">
+     <input type="text" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res!==undefined?"disabled":""} value="${esc(q.typed||"")}" placeholder="${LT.transPh}">
      ${q.res===undefined?`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exTransCheck">Prüfen</button><button class="btn" data-act="exSkip">Weiß nicht</button></div>`:""}`;
     if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> <button class="btn sm" data-act="exPlay">🔊</button>`;
   }
@@ -1481,17 +1495,7 @@ function exTransCheck(){
 
 /* ===================== GRAMMATIK ===================== */
 function vGram(){
-  const quick=`<details class="card tip" open><summary>⚡ Die 10 wichtigsten Regeln auf einen Blick</summary><ol>
-   <li><b>Keine Artikel, keine Beugung:</b> <i>Saya makan, dia makan.</i></li>
-   <li><b>Satz = Subjekt – Verb – Objekt:</b> <i>Saya membaca buku.</i></li>
-   <li><b>Nomen vor Adjektiv, Besitzer hinter dem Nomen:</b> <i>rumah besar saya</i> (mein großes Haus).</li>
-   <li><b>Zeit durch Wörter:</b> <i>sudah</i> (schon), <i>belum</i> (noch nicht), <i>sedang</i> (gerade), <i>akan</i> (werden).</li>
-   <li><b>Vier Verneinungen:</b> <i>tidak</i> (Verb/Adj.), <i>bukan</i> (Nomen), <i>belum</i> (noch nicht), <i>jangan</i> (Verbot).</li>
-   <li><b>Fragewörter bleiben vorn oder hinten:</b> <i>Siapa nama Anda?</i> / <i>Anda dari mana?</i></li>
-   <li><b>di / ke / dari:</b> Ort / Richtung / Herkunft.</li>
-   <li><b>Mehrzahl durch Doppelung</b> (nur bei Bedarf): <i>anak-anak</i>; nach Zahlen nicht: <i>dua anak</i>.</li>
-   <li><b>Zählwörter:</b> <i>dua orang, tiga buah, lima ekor</i>.</li>
-   <li><b>Präfixe me-, ber-, di-, ter-, pe-:</b> ändern Rolle und Bedeutung – das Wortbildungssystem ist dein Hebel für großen Wortschatz.</li></ol></details>`;
+  const quick=LT.quick;
   $("#view").innerHTML=`<h2>Grammatik</h2>${quick}`+LEVELS.map(l=>`<h3><span class="lvl">${l}</span></h3>`+UNITS.filter(u=>u.lvl===l).map(u=>`<details class="card"><summary>${u.e} ${u.n}. ${esc(u.grammar.t)}</summary>${u.grammar.html}<div class="row"><button class="btn sm" data-act="openUnit" data-u="${u.id}">Zur Lektion</button><button class="btn sm" data-act="startEx" data-scope="u:${u.id}" data-type="cloze">Lückentext üben</button></div></details>`).join("")).join("");
 }
 
@@ -1642,9 +1646,9 @@ document.addEventListener("click",e=>{
    case"exTransCheck":exTransCheck();break;
    case"exSkip":{const q=V.ex.qs[V.ex.i];q.typed="";exFinish(q,false);break;}
    case"exNext":V.ex.i++;render();break;
-   case"diagSpeakOn":unlockAudio();speakOnline("Selamat pagi. Apa kabar?",.95).then(ok=>{if(!ok)toast("Online-Stimme nicht erreichbar oder blockiert (siehe Protokoll).");});break;
+   case"diagSpeakOn":unlockAudio();speakOnline(LT.testSent,.95).then(ok=>{if(!ok)toast("Online-Stimme nicht erreichbar oder blockiert (siehe Protokoll).");});break;
    case"diagSpeakDef":unlockAudio();speak("Hello. This is a test of the speech output.",1,1,true);break;
-   case"diagSpeak":unlockAudio();speak("Selamat pagi. Apa kabar?",.9);break;
+   case"diagSpeak":unlockAudio();speak(LT.testSent,.9);break;
    case"diagMic":diagMic();break;
    case"diagPlay":if(DIAG.url)playAud(DIAG.url);break;
    case"hideIos":S.hideIos=true;save();render();break;
@@ -1680,8 +1684,8 @@ document.addEventListener("change",e=>{
   if(k==="rpunit"){V.rp={u:v,role:V.rp.role,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
   if(k==="rprole"){V.rp={u:V.rp.u,role:v,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
   if(k==="hdlg"){V.hear.dlgU=v;stopAudio();render();}
-  if(k==="ttsmode"){S.ttsMode=v;S.ttsAutoOnline=false;save();unlockAudio();speak("Selamat pagi. Apa kabar?",.9);}
-  if(k==="voice"){S.voiceURI=v||undefined;save();unlockAudio();speak("Selamat pagi. Apa kabar?",.9);}
+  if(k==="ttsmode"){S.ttsMode=v;S.ttsAutoOnline=false;save();unlockAudio();speak(LT.testSent,.9);}
+  if(k==="voice"){S.voiceURI=v||undefined;save();unlockAudio();speak(LT.testSent,.9);}
   if(k==="recmode"){Rec.stop(true);S.recMode=v;save();render();}
   if(k==="goal"){S.goal=+v;save();render();}
   if(k==="newpd"){S.newPerDay=+v;save();}

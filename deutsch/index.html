@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Deutsch">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f2f2f7">
+<meta name="referrer" content="no-referrer">
+<title>Learn German (A1–B2)</title>
+<style>
+:root{--bg:#f2f2f7;--card:#ffffff;--ink:#000000;--ink2:#3c3c43;--mute:#8e8e93;--line:rgba(60,60,67,.14);--fill:rgba(120,120,128,.12);--red:#e11d2e;--redd:#b8101f;--ok:#34c759;--okd:#1f8a3d;--mid:#ff9f0a;--bad:#ff3b30;--soft:rgba(120,120,128,.10);--r:14px;--sh:0 0.5px 0 rgba(0,0,0,.04)}
+@media(prefers-color-scheme:dark){:root{--bg:#000000;--card:#1c1c1e;--ink:#ffffff;--ink2:#ebebf5;--mute:#8e8e93;--line:rgba(84,84,88,.55);--fill:rgba(120,120,128,.24);--red:#ff453a;--redd:#ff6961;--soft:rgba(120,120,128,.20);--okd:#30d158}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4;-webkit-font-smoothing:antialiased;letter-spacing:-.011em}
+header{position:sticky;top:0;z-index:15;background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);padding:calc(10px + env(safe-area-inset-top)) 20px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:.5px solid var(--line)}
+header h1{margin:0;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+header h1::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);margin-right:8px;vertical-align:1px}
+header .stats{margin-left:auto;display:flex;gap:6px;font-size:13px;font-weight:600;color:var(--ink2)}
+header .stats>*{background:var(--fill);padding:3px 10px;border-radius:999px}
+nav{display:flex;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 78%,transparent);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border-top:.5px solid var(--line);overflow-x:auto;position:fixed;left:0;right:0;bottom:0;z-index:20;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{border:0;background:none;color:var(--mute);font-size:12px;font-weight:500;font-family:inherit;padding:8px 12px;border-radius:10px;cursor:pointer;white-space:nowrap;transition:color .15s,background .15s}
+nav button.on{color:var(--red);background:color-mix(in srgb,var(--red) 10%,transparent);font-weight:600}
+main{max-width:760px;margin:0 auto;padding:6px 16px calc(90px + env(safe-area-inset-bottom))}
+h2{margin:14px 4px 12px;font-size:32px;font-weight:700;letter-spacing:-.03em;line-height:1.12}
+h3{margin:20px 4px 8px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--mute)}
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:var(--sh)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.btn{border:0;background:var(--fill);color:var(--red);padding:10px 16px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform .1s,opacity .15s,background .15s}
+.btn:hover{background:var(--soft)}
+.btn:active{transform:scale(.97);opacity:.7}
+.btn.pri{background:var(--red);color:#fff}
+.btn.pri:hover{background:var(--redd)}
+.btn.rec{background:var(--bad);color:#fff;animation:pulse 1.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,59,48,.45)}100%{box-shadow:0 0 0 12px rgba(255,59,48,0)}}
+.btn.sm{padding:5px 11px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar{height:6px;background:var(--fill);border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok);border-radius:999px;transition:width .4s}
+.big{font-size:32px;font-weight:700;margin:8px 0 2px;word-break:break-word;letter-spacing:-.03em;line-height:1.15}
+.de{color:var(--mute);font-size:17px}
+.ph{font-size:15px;color:var(--red);font-weight:600}
+.small{font-size:13px;color:var(--mute)}
+.lvl{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red);margin-right:6px}
+.warn{background:#fff4d6;color:#6b4e00;border-radius:12px;padding:11px 14px;font-size:14px;margin-bottom:12px}
+@media(prefers-color-scheme:dark){.warn{background:#3a3016;color:#f1d98a}}
+.word{display:inline-block;padding:3px 10px;border-radius:8px;margin:2px;font-weight:600;font-size:17px}
+.word.g{background:#d9f2e3;color:#14532d}.word.m{background:#fdecc0;color:#7a4b00}.word.r{background:#fbd5d1;color:#7f1d1d}
+@media(prefers-color-scheme:dark){.word.g{background:#12361f;color:#8ee6a8}.word.m{background:#3a2c0c;color:#ffd48a}.word.r{background:#401512;color:#ffaaa3}}
+.score{font-size:52px;font-weight:700;letter-spacing:-.04em;color:var(--red)}
+canvas{width:100%;height:50px;background:var(--fill);border-radius:12px;display:block}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px 16px;border-radius:12px;background:var(--fill);color:var(--ink);font-weight:500}
+.opt.ok{background:#d9f2e3;color:#14532d}
+.opt.no{background:#fbd5d1;color:#7f1d1d}
+@media(prefers-color-scheme:dark){.opt.ok{background:#12361f;color:#8ee6a8}.opt.no{background:#401512;color:#ffaaa3}}
+input[type=text],textarea{width:100%;padding:13px 14px;border-radius:12px;border:0;background:var(--fill);color:var(--ink);font-size:17px;font-family:inherit;outline:none}
+input[type=text]:focus,textarea:focus{box-shadow:0 0 0 2px var(--red)}
+textarea{font-size:13px;min-height:90px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:10px 4px;border-bottom:.5px solid var(--line);text-align:left;font-size:15px;vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);font-weight:600}
+tr:last-child td{border-bottom:0}
+table.g th{background:transparent}
+select{padding:9px 30px 9px 14px;border-radius:12px;border:0;background:var(--fill);color:var(--ink);font-size:15px;font-weight:500;font-family:inherit;max-width:100%}
+.flip{min-height:260px;text-align:center;display:flex;flex-direction:column;justify-content:center;cursor:pointer;border-radius:22px;padding:28px 20px;box-shadow:0 8px 30px -12px rgba(0,0,0,.18)}
+.chip{display:inline-block;padding:9px 14px;margin:4px;border-radius:10px;background:var(--fill);cursor:pointer;font-size:16px;font-weight:500;user-select:none}
+.chip:hover{background:var(--soft)}
+.ans{min-height:56px;padding:8px;border:1.5px dashed var(--line);border-radius:14px;margin:10px 0}
+.bub{max-width:84%;padding:9px 14px;border-radius:19px;margin:6px 0;background:var(--fill);color:var(--ink)}
+.bub.A{margin-right:auto;border-bottom-left-radius:5px}
+.bub.B{margin-left:auto;background:var(--red);color:#fff;border-bottom-right-radius:5px}
+.bub.B span{color:rgba(255,255,255,.78)}
+.bub.on{outline:2px solid var(--red);outline-offset:2px}
+.bub b{display:block;font-weight:600}
+.bub span{color:var(--mute);font-size:13px}
+.tabs2{display:flex;gap:2px;margin:10px 0;padding:2px;background:var(--fill);border-radius:10px;overflow-x:auto;scrollbar-width:none}
+.tabs2 button{flex:1;border:0;background:transparent;color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:500;font-family:inherit;white-space:nowrap}
+.tabs2 button.on{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.14);font-weight:600}
+details{margin-bottom:8px}
+summary{cursor:pointer;font-weight:600;padding:8px 2px}
+.chart{display:flex;align-items:flex-end;gap:6px;height:90px}
+.chart div{flex:1;background:var(--red);border-radius:5px 5px 2px 2px;min-height:3px;opacity:.9}
+.ring{display:flex;align-items:center;gap:12px}
+.check{font-size:20px;margin-right:6px}
+.tip li{margin:5px 0}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));background:rgba(44,44,46,.96);color:#fff;padding:13px 16px;border-radius:14px;z-index:50;font-size:14px;display:none;box-shadow:0 10px 30px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.ph:empty{display:none}
+
+</style>
+</head>
+<body>
+<header>
+  <h1>🇩🇪 Learn German</h1>
+  <div class="stats"><span id="sXp">⭐ 0 XP</span><span id="sStreak">🔥 0 days</span></div>
+</header>
+<nav id="tabs"></nav>
+<main id="view"></main>
+<script>
+"use strict";
+/* Gemeinsamer Kopf für Sprachen ohne regelbasierte Lautschrift */
+function phon(text){return "";}
+const UNITS=[];
+function U(o){UNITS.push(o);}
+
+/* ===== German A1 (interface English) ===== */
+U({id:"a1-01",lvl:"A1",e:"👋",t:"Greetings & Introductions",
+ intro:"Your first sentences in German: greeting people, introducing yourself and being polite.",
+ grammar:{t:"sein (to be) and the verb in position 2",html:`
+<table class="g"><tr><th>Person</th><th>sein</th></tr>
+<tr><td>ich</td><td><b>bin</b></td></tr><tr><td>du</td><td><b>bist</b></td></tr><tr><td>er / sie / es</td><td><b>ist</b></td></tr>
+<tr><td>wir</td><td><b>sind</b></td></tr><tr><td>ihr</td><td><b>seid</b></td></tr><tr><td>sie / Sie</td><td><b>sind</b></td></tr></table>
+<p><b>du</b> = informal (friends, family, children); <b>Sie</b> (capital S) = formal (strangers, work).</p>
+<p><b>Word order:</b> In a statement the verb is always in <b>position 2</b>: <i>Ich komme aus Spanien.</i> / <i>Aus Spanien komme ich.</i> In a question with a question word it is also position 2: <i>Woher kommst du?</i> In a yes/no question the verb is first: <i>Bist du Lehrer?</i></p>
+<p><b>Regular verbs:</b> ich komm<b>e</b>, du komm<b>st</b>, er komm<b>t</b>, wir komm<b>en</b>, ihr komm<b>t</b>, sie komm<b>en</b>.</p>`},
+ vocab:[["Hallo","hello"],["Guten Morgen","good morning"],["Guten Tag","good day / hello"],["Guten Abend","good evening"],["Gute Nacht","good night"],["Tschüss","bye"],["Auf Wiedersehen","goodbye (formal)"],["Bitte","please / you're welcome"],["Danke","thank you"],["Entschuldigung","excuse me / sorry"],["Ja","yes"],["Nein","no"],["der Name","name"],["Ich heiße …","my name is …"],["Wie geht's?","how are you?"],["gut","good / well"],["sehr gut","very good"],["Woher kommst du?","where are you from?"],["ich komme aus …","I come from …"],["Freut mich","nice to meet you"]],
+ sent:[["Hallo, ich heiße Anna.","Hello, my name is Anna."],["Wie heißen Sie?","What is your name? (formal)"],["Ich komme aus Amerika.","I come from America."],["Woher kommst du?","Where are you from?"],["Mir geht es gut, danke.","I'm fine, thank you."],["Freut mich, Sie kennenzulernen.","Nice to meet you. (formal)"],["Bist du Student?","Are you a student?"],["Nein, ich bin Lehrer.","No, I am a teacher."],["Guten Tag, Frau Schmidt.","Good day, Ms Schmidt."],["Entschuldigung, sind Sie Herr Müller?","Excuse me, are you Mr Müller?"]],
+ dlg:{t:"Meeting someone",lines:[["A","Hallo! Ich bin Sarah. Wie heißt du?","Hello! I'm Sarah. What's your name?"],["B","Hallo Sarah. Ich heiße Lukas.","Hi Sarah. My name is Lukas."],["A","Freut mich, Lukas. Woher kommst du?","Nice to meet you, Lukas. Where are you from?"],["B","Ich komme aus Berlin. Und du?","I come from Berlin. And you?"],["A","Ich komme aus London. Wie geht's?","I come from London. How are you?"],["B","Gut, danke!","Good, thanks!"]]},
+ ex:[["Ich ___ Anna. (sein)","bin",["bin","bist","ist","sind"],""],["Du ___ Student. (sein)","bist",["bist","bin","ist","seid"],""],["Wir ___ aus Berlin.","sind",["sind","ist","bin","seid"],""],["___ heißt du?","Wie",["Wie","Wo","Wann","Was"],""],["Ich ___ aus Spanien. (kommen)","komme",["komme","kommst","kommt","kommen"],""]]
+});
+U({id:"a1-02",lvl:"A1",e:"🔢",t:"Numbers, Days & Time",
+ intro:"Numbers, days of the week, months and telling the time are essential in everyday life.",
+ grammar:{t:"Numbers and telling time",html:`
+<p>1 <b>eins</b>, 2 <b>zwei</b>, 3 <b>drei</b>, 4 <b>vier</b>, 5 <b>fünf</b>, 6 <b>sechs</b>, 7 <b>sieben</b>, 8 <b>acht</b>, 9 <b>neun</b>, 10 <b>zehn</b>, 11 <b>elf</b>, 12 <b>zwölf</b>, 20 <b>zwanzig</b>, 100 <b>hundert</b>.</p>
+<p><b>21–99:</b> units first, then tens: <i>einundzwanzig</i> (one-and-twenty), <i>dreiundvierzig</i>.</p>
+<p><b>Time:</b> <i>Es ist drei Uhr.</i> / <i>halb vier</i> = 3:30 (half <b>to</b> four!) / <i>Viertel nach drei</i> / <i>Viertel vor vier</i> / <i>fünf nach drei</i>.</p>
+<p><b>Prepositions:</b> <i>um</i> 8 Uhr (at), <i>am</i> Montag (on), <i>im</i> Mai (in).</p>`},
+ vocab:[["eins","one"],["zwei","two"],["drei","three"],["vier","four"],["fünf","five"],["sechs","six"],["sieben","seven"],["acht","eight"],["neun","nine"],["zehn","ten"],["zwanzig","twenty"],["hundert","hundred"],["Montag","Monday"],["Dienstag","Tuesday"],["Mittwoch","Wednesday"],["Donnerstag","Thursday"],["Freitag","Friday"],["Samstag","Saturday"],["Sonntag","Sunday"],["die Uhr","clock / o'clock"],["halb","half (to the next hour)"],["heute","today"],["morgen","tomorrow"],["gestern","yesterday"]],
+ sent:[["Es ist sieben Uhr.","It is seven o'clock."],["Es ist halb neun.","It is half past eight."],["Ich habe am Montag Unterricht.","I have class on Monday."],["Das Geschäft öffnet um neun Uhr.","The shop opens at nine o'clock."],["Mein Geburtstag ist im Mai.","My birthday is in May."],["Wie spät ist es?","What time is it?"],["Bis morgen!","See you tomorrow!"],["Ich habe zwanzig Euro.","I have twenty euros."]],
+ dlg:{t:"Making an appointment",lines:[["A","Wann ist die Party?","When is the party?"],["B","Am Samstag.","On Saturday."],["A","Um wie viel Uhr?","At what time?"],["B","Um halb acht.","At half past seven."],["A","Super. Bis Samstag!","Great. See you Saturday!"],["B","Tschüss!","Bye!"]]},
+ ex:[["Der Film beginnt ___ acht Uhr.","um",["um","am","im","an"],"Clock time → um"],["Ich habe ___ Montag Zeit.","am",["am","um","im","in"],"Days → am"],["Mein Geburtstag ist ___ Juni.","im",["im","am","um","an"],"Months → im"],["3:30 = ___ vier","halb",["halb","viertel","nach","vor"],"halb vier = half to four"]]
+});
+U({id:"a1-03",lvl:"A1",e:"👨‍👩‍👧",t:"Family & People",
+ intro:"Talking about your family, saying who belongs to whom and describing people.",
+ grammar:{t:"Possessives and the three genders",html:`
+<p>German nouns have three genders: <b>der</b> (masculine), <b>die</b> (feminine), <b>das</b> (neuter). Plural: <b>die</b>. Always learn a noun with its article!</p>
+<table class="g"><tr><th>Person</th><th>my / your …</th></tr>
+<tr><td>ich</td><td><b>mein</b></td></tr><tr><td>du</td><td><b>dein</b></td></tr><tr><td>er / es</td><td><b>sein</b></td></tr><tr><td>sie</td><td><b>ihr</b></td></tr><tr><td>wir</td><td><b>unser</b></td></tr><tr><td>ihr</td><td><b>euer</b></td></tr><tr><td>sie / Sie</td><td><b>ihr / Ihr</b></td></tr></table>
+<p>Possessives take the same endings as <b>ein</b>: <i>mein Bruder</i> (masc.), <i>meine Schwester</i> (fem.), <i>mein Kind</i> (neut.), <i>meine Eltern</i> (pl.).</p>
+<p><b>haben</b> (to have): ich habe, du hast, er hat, wir haben, ihr habt, sie haben.</p>`},
+ vocab:[["die Mutter","mother"],["der Vater","father"],["die Eltern","parents"],["der Bruder","brother"],["die Schwester","sister"],["der Sohn","son"],["die Tochter","daughter"],["der Mann","husband / man"],["die Frau","wife / woman"],["die Oma","grandma"],["der Opa","grandpa"],["der Freund","friend (male) / boyfriend"],["die Freundin","friend (female) / girlfriend"],["das Kind","child"],["die Kinder","children"],["die Familie","family"],["groß","tall / big"],["klein","small / short"],["jung","young"],["alt","old"],["verheiratet","married"]],
+ sent:[["Das ist meine Familie.","This is my family."],["Ich habe zwei Brüder.","I have two brothers."],["Sie heißt Emma.","Her name is Emma."],["Meine Eltern kommen aus Hamburg.","My parents come from Hamburg."],["Toms Schwester ist Ärztin.","Tom's sister is a doctor."],["Sie haben drei Kinder.","They have three children."],["Er ist groß und jung.","He is tall and young."],["Unsere Oma ist achtzig Jahre alt.","Our grandma is eighty years old."]],
+ dlg:{t:"Talking about family",lines:[["A","Hast du Geschwister?","Do you have siblings?"],["B","Ja, ich habe eine Schwester.","Yes, I have one sister."],["A","Wie heißt sie?","What is her name?"],["B","Sie heißt Julia. Sie ist zwanzig.","Her name is Julia. She is twenty."],["A","Und deine Eltern?","And your parents?"],["B","Sie sind Lehrer. Sie wohnen in Köln.","They are teachers. They live in Cologne."]]},
+ ex:[["Das ist ___ Mutter. (my)","meine",["meine","mein","meiner","meinen"],"die Mutter → meine"],["Das ist ___ Bruder. (my)","mein",["mein","meine","meinem","meines"],"der Bruder → mein"],["Wir haben ___ Kind. (one, neuter)","ein",["ein","eine","einen","einem"],""],["Anna ___ zwei Schwestern. (haben)","hat",["hat","habe","hast","haben"],""]]
+});
+U({id:"a1-04",lvl:"A1",e:"🍎",t:"Food & Drink, the Accusative",
+ intro:"Ordering food, talking about what you like and the first important case: the accusative.",
+ grammar:{t:"The accusative case (direct object)",html:`
+<p>The direct object (what is eaten, bought, seen …) is in the <b>accusative</b>. Only the <b>masculine</b> changes:</p>
+<table class="g"><tr><th></th><th>Nominative (subject)</th><th>Accusative (object)</th></tr>
+<tr><td>masculine</td><td>der / ein Apfel</td><td>den / <b>einen</b> Apfel</td></tr>
+<tr><td>feminine</td><td>die / eine Banane</td><td>die / eine Banane</td></tr>
+<tr><td>neuter</td><td>das / ein Brot</td><td>das / ein Brot</td></tr>
+<tr><td>plural</td><td>die Äpfel</td><td>die Äpfel</td></tr></table>
+<p><i>Ich esse einen Apfel.</i> – <i>Ich möchte ein Brot.</i> <b>kein</b> = not a / no: <i>Ich habe keinen Hunger.</i></p>
+<p><b>Ordering:</b> <i>Ich möchte …</i> / <i>Ich hätte gern …</i> / <i>Die Rechnung, bitte.</i></p>`},
+ vocab:[["das Brot","bread"],["die Butter","butter"],["der Käse","cheese"],["die Milch","milk"],["das Wasser","water"],["der Kaffee","coffee"],["der Tee","tea"],["der Saft","juice"],["das Ei","egg"],["der Apfel","apple"],["die Banane","banana"],["der Reis","rice"],["das Hähnchen","chicken"],["der Fisch","fish"],["das Fleisch","meat"],["die Suppe","soup"],["der Salat","salad"],["das Frühstück","breakfast"],["das Mittagessen","lunch"],["das Abendessen","dinner"],["der Hunger","hunger"],["der Durst","thirst"],["lecker","tasty"],["die Rechnung","bill"]],
+ sent:[["Ich möchte einen Kaffee, bitte.","I would like a coffee, please."],["Ich hätte gern ein Brot.","I would like a bread."],["Hast du Milch?","Do you have milk?"],["Ich habe Hunger und Durst.","I'm hungry and thirsty."],["Die Suppe ist lecker.","The soup is tasty."],["Wir frühstücken um acht.","We have breakfast at eight."],["Sie isst jeden Tag einen Apfel.","She eats an apple every day."],["Die Rechnung, bitte.","The bill, please."]],
+ dlg:{t:"At the café",lines:[["A","Guten Morgen. Was möchten Sie?","Good morning. What would you like?"],["B","Ich möchte einen Tee und ein Brötchen, bitte.","I'd like a tea and a bread roll, please."],["A","Mit Butter?","With butter?"],["B","Ja, gern.","Yes, please."],["A","Das macht vier Euro fünfzig.","That's four euros fifty."],["B","Bitte schön. Danke!","Here you are. Thanks!"]]},
+ ex:[["Ich esse ___ Apfel. (masc.)","einen",["einen","ein","eine","einem"],"Accusative masculine → einen"],["Ich möchte ___ Banane. (fem.)","eine",["eine","einen","ein","einer"],""],["Ich habe ___ Hunger. (no)","keinen",["keinen","kein","keine","nicht"],""],["Er trinkt ___ Kaffee. (der Kaffee, definite)","den",["den","der","dem","das"],""]]
+});
+U({id:"a1-05",lvl:"A1",e:"⏰",t:"Daily Routine & Separable Verbs",
+ intro:"Describing your day with separable verbs and the present tense.",
+ grammar:{t:"Separable verbs",html:`
+<p>Many verbs have a prefix that jumps to the <b>end of the sentence</b>: <i>aufstehen</i> → <i>Ich stehe um sieben <b>auf</b>.</i></p>
+<table class="g"><tr><th>Infinitive</th><th>Sentence</th></tr>
+<tr><td>aufstehen</td><td>Ich <b>stehe</b> um 7 Uhr <b>auf</b>.</td></tr>
+<tr><td>einkaufen</td><td>Wir <b>kaufen</b> im Supermarkt <b>ein</b>.</td></tr>
+<tr><td>fernsehen</td><td>Er <b>sieht</b> abends <b>fern</b>.</td></tr>
+<tr><td>anrufen</td><td>Sie <b>ruft</b> mich <b>an</b>.</td></tr></table>
+<p><b>Stem-changing verbs:</b> <i>schlafen → er schläft</i>, <i>essen → er isst</i>, <i>fahren → er fährt</i>, <i>sehen → er sieht</i>.</p>
+<p><b>Time order:</b> time before place: <i>Ich gehe um acht ins Büro.</i> Words for frequency: <i>immer, oft, manchmal, nie</i>.</p>`},
+ vocab:[["aufstehen","get up"],["frühstücken","have breakfast"],["duschen","take a shower"],["Zähne putzen","brush teeth"],["zur Arbeit gehen","go to work"],["anfangen","begin"],["arbeiten","work"],["Feierabend haben","finish work"],["einkaufen","shop"],["kochen","cook"],["fernsehen","watch TV"],["schlafen","sleep"],["ins Bett gehen","go to bed"],["immer","always"],["oft","often"],["manchmal","sometimes"],["nie","never"],["jeden Tag","every day"],["morgens","in the morning"],["abends","in the evening"],["am Wochenende","at the weekend"]],
+ sent:[["Ich stehe um sieben Uhr auf.","I get up at seven o'clock."],["Sie frühstückt immer zu Hause.","She always has breakfast at home."],["Wir kaufen am Samstag ein.","We go shopping on Saturday."],["Er sieht abends fern.","He watches TV in the evening."],["Mein Bruder kocht nie.","My brother never cooks."],["Der Unterricht fängt um neun Uhr an.","The class starts at nine."],["Ich rufe dich später an.","I'll call you later."],["Um wie viel Uhr gehst du ins Bett?","What time do you go to bed?"]],
+ dlg:{t:"A normal day",lines:[["A","Wann stehst du normalerweise auf?","When do you usually get up?"],["B","Ich stehe um halb sieben auf.","I get up at half past six."],["A","Frühstückst du zu Hause?","Do you have breakfast at home?"],["B","Ja, immer. Und du?","Yes, always. And you?"],["A","Ich trinke nur einen Kaffee. Wann hast du Feierabend?","I only drink a coffee. When do you finish work?"],["B","Um fünf. Dann kaufe ich ein und koche.","At five. Then I do the shopping and cook."]]},
+ ex:[["Ich ___ um sieben ___ . (aufstehen)","stehe / auf",["stehe / auf","aufstehe / –","stehe auf / –","auf / stehe"],""],["Er ___ abends ___ . (fernsehen)","sieht / fern",["sieht / fern","sehen / fern","fernsieht / –","sieht fern / –"],""],["Sie ___ spät. (schlafen)","schläft",["schläft","schlaft","schlafst","schlafen"],"Stem change a → ä"],["Wir ___ am Samstag ___ . (einkaufen)","kaufen / ein",["kaufen / ein","einkaufen / –","kauft / ein","kaufen ein / –"],""]]
+});
+U({id:"a1-06",lvl:"A1",e:"🏠",t:"Home & Places",
+ intro:"Describing your home, rooms and furniture and saying where things are.",
+ grammar:{t:"Es gibt, in/auf/neben + dative (location)",html:`
+<p><b>es gibt</b> + accusative = there is/are: <i>Es gibt einen Garten.</i> <i>Es gibt zwei Schlafzimmer.</i></p>
+<p>For <b>location</b> (<i>Wo?</i>) prepositions like <b>in, auf, neben, unter, über, vor, hinter, zwischen, an</b> take the <b>dative</b>:</p>
+<table class="g"><tr><th>Gender</th><th>Dative</th></tr>
+<tr><td>der → <b>dem</b></td><td><i>Die Lampe steht auf dem Tisch.</i></td></tr>
+<tr><td>das → <b>dem</b></td><td><i>Das Buch liegt in dem (im) Regal.</i></td></tr>
+<tr><td>die → <b>der</b></td><td><i>Die Katze ist unter der Bank.</i></td></tr>
+<tr><td>plural → <b>den</b> (+n)</td><td><i>Die Bilder hängen an den Wänden.</i></td></tr></table>
+<p>Contractions: <i>in dem = im</i>, <i>an dem = am</i>, <i>zu dem = zum</i>.</p>`},
+ vocab:[["das Haus","house"],["die Wohnung","flat / apartment"],["das Zimmer","room"],["die Küche","kitchen"],["das Badezimmer","bathroom"],["das Schlafzimmer","bedroom"],["das Wohnzimmer","living room"],["der Garten","garden"],["die Tür","door"],["das Fenster","window"],["der Tisch","table"],["der Stuhl","chair"],["das Bett","bed"],["das Sofa","sofa"],["die Lampe","lamp"],["der Balkon","balcony"],["groß","big"],["klein","small"],["gemütlich","cosy"],["die Miete","rent"]],
+ sent:[["Es gibt eine große Küche.","There is a big kitchen."],["Wir haben zwei Schlafzimmer.","We have two bedrooms."],["Gibt es einen Garten?","Is there a garden?"],["Die Lampe steht auf dem Tisch.","The lamp is on the table."],["Die Katze schläft unter dem Stuhl.","The cat sleeps under the chair."],["Das Bad ist neben der Küche.","The bathroom is next to the kitchen."],["Es gibt keinen Balkon.","There is no balcony."],["Mein Zimmer ist klein, aber gemütlich.","My room is small but cosy."]],
+ dlg:{t:"Viewing a flat",lines:[["A","Willkommen! Das ist das Wohnzimmer.","Welcome! This is the living room."],["B","Es ist sehr groß. Gibt es einen Balkon?","It's very big. Is there a balcony?"],["A","Ja, neben der Küche.","Yes, next to the kitchen."],["B","Wie viele Schlafzimmer gibt es?","How many bedrooms are there?"],["A","Es gibt zwei. Und ein Bad.","There are two. And one bathroom."],["B","Wie hoch ist die Miete?","How high is the rent?"]]},
+ ex:[["Es ___ einen Garten.","gibt",["gibt","ist","hat","sind"],""],["Das Buch liegt auf ___ Tisch. (der Tisch)","dem",["dem","den","der","das"],"Dative masculine → dem"],["Die Lampe steht neben ___ Sofa. (das Sofa)","dem",["dem","das","den","der"],""],["Die Katze ist unter ___ Bett. (das Bett)","dem",["dem","der","den","das"],""]]
+});
+U({id:"a1-07",lvl:"A1",e:"🛍️",t:"Shopping & Prices",
+ intro:"In shops: asking prices, sizes, colours and paying.",
+ grammar:{t:"Prices, colours, plural forms",html:`
+<p><b>Prices:</b> <i>Was kostet das? – Das kostet 12 Euro 50.</i> / <i>Wie viel kostet die Jacke?</i> Plural: <i>Was kosten die Schuhe?</i></p>
+<p><b>Plural forms</b> are irregular – learn them with the noun: <i>das Buch – die Bücher</i>, <i>der Tisch – die Tische</i>, <i>die Frau – die Frauen</i>, <i>das Kind – die Kinder</i>, <i>der Apfel – die Äpfel</i>, <i>das Auto – die Autos</i>.</p>
+<p><b>Adjectives after sein</b> don't change: <i>Die Jacke ist rot.</i> Before a noun they take endings (later).</p>
+<p><b>nicht / kein:</b> <i>kein</i> negates nouns with ein/no article (<i>Ich habe kein Geld</i>); <i>nicht</i> negates verbs/adjectives (<i>Das ist nicht teuer</i>).</p>`},
+ vocab:[["das Geschäft","shop"],["der Supermarkt","supermarket"],["der Preis","price"],["billig","cheap"],["teuer","expensive"],["das Geld","money"],["bezahlen","pay"],["kaufen","buy"],["verkaufen","sell"],["die Größe","size"],["die Farbe","colour"],["rot","red"],["blau","blue"],["grün","green"],["schwarz","black"],["weiß","white"],["die Schuhe","shoes"],["das Hemd","shirt"],["die Tasche","bag"],["anprobieren","try on"],["zu groß","too big"],["die Quittung","receipt"],["bar","in cash"],["mit Karte","by card"]],
+ sent:[["Was kostet das Hemd?","How much does the shirt cost?"],["Was kosten die Schuhe?","How much do the shoes cost?"],["Das kostet zwanzig Euro.","That costs twenty euros."],["Das ist mir zu teuer.","That's too expensive for me."],["Kann ich es anprobieren?","Can I try it on?"],["Haben Sie das in Blau?","Do you have this in blue?"],["Ich nehme es.","I'll take it."],["Kann ich mit Karte zahlen?","Can I pay by card?"]],
+ dlg:{t:"In a clothes shop",lines:[["A","Kann ich Ihnen helfen?","Can I help you?"],["B","Ja, was kostet diese Jacke?","Yes, how much is this jacket?"],["A","Sechzig Euro.","Sixty euros."],["B","Das ist leider zu teuer. Haben Sie eine billigere?","That's too expensive, unfortunately. Do you have a cheaper one?"],["A","Diese hier kostet vierzig Euro.","This one costs forty euros."],["B","Gut, die nehme ich.","Good, I'll take this one."]]},
+ ex:[["Was ___ die Schuhe? (kosten)","kosten",["kosten","kostet","kosten sie","kostest"],"Plural → kosten"],["Ich habe ___ Geld. (no)","kein",["kein","keine","nicht","keinen"],"das Geld → kein"],["Das ist ___ teuer. (not)","nicht",["nicht","kein","keine","nichts"],""],["Mein Auto ist ___ . (red)","rot",["rot","roten","rote","roter"],"Adjective after sein: no ending"]]
+});
+U({id:"a1-08",lvl:"A1",e:"🎸",t:"Hobbies & Modal Verbs",
+ intro:"Talking about free time, abilities and wishes with können, möchten and mögen.",
+ grammar:{t:"Modal verbs: können, möchten, müssen …",html:`
+<table class="g"><tr><th></th><th>können (can)</th><th>müssen (must)</th><th>wollen (want)</th><th>möchten (would like)</th></tr>
+<tr><td>ich</td><td>kann</td><td>muss</td><td>will</td><td>möchte</td></tr>
+<tr><td>du</td><td>kannst</td><td>musst</td><td>willst</td><td>möchtest</td></tr>
+<tr><td>er/sie/es</td><td>kann</td><td>muss</td><td>will</td><td>möchte</td></tr>
+<tr><td>wir/sie/Sie</td><td>können</td><td>müssen</td><td>wollen</td><td>möchten</td></tr></table>
+<p><b>Sentence frame:</b> the modal verb is in position 2, the <b>infinitive goes to the end</b>: <i>Ich kann gut schwimmen.</i> <i>Er muss heute arbeiten.</i></p>
+<p><b>gern</b> = like doing: <i>Ich spiele gern Fußball.</i> / <i>Ich lese nicht gern.</i></p>`},
+ vocab:[["das Hobby","hobby"],["die Freizeit","free time"],["die Musik","music"],["singen","sing"],["tanzen","dance"],["schwimmen","swim"],["laufen","run"],["lesen","read"],["zeichnen","draw"],["Fußball spielen","play football"],["Gitarre spielen","play the guitar"],["kochen","cook"],["reisen","travel"],["fotografieren","take photos"],["Rad fahren","cycle"],["Filme ansehen","watch films"],["gern","gladly (like to)"],["lieber","rather / prefer"],["am liebsten","most of all"],["können","can"],["müssen","must"],["wollen","want"],["möchten","would like to"]],
+ sent:[["Ich spiele gern Fußball.","I like playing football."],["Sie kann Gitarre spielen.","She can play the guitar."],["Ich kann nicht tanzen.","I can't dance."],["Kannst du kochen?","Can you cook?"],["Er will nach Berlin reisen.","He wants to travel to Berlin."],["Was machst du in deiner Freizeit?","What do you do in your free time?"],["Wir müssen heute arbeiten.","We have to work today."],["Ich möchte schwimmen gehen.","I would like to go swimming."]],
+ dlg:{t:"Comparing hobbies",lines:[["A","Was machst du in deiner Freizeit?","What do you do in your free time?"],["B","Ich lese gern und spiele Gitarre.","I like reading and playing guitar."],["A","Kannst du auch singen?","Can you sing too?"],["B","Nein, aber ich kann ein bisschen tanzen.","No, but I can dance a little."],["A","Ich möchte am Sonntag Rad fahren.","I'd like to cycle on Sunday."],["B","Gute Idee! Ich komme mit.","Good idea! I'll come along."]]},
+ ex:[["Ich ___ gut schwimmen. (können)","kann",["kann","kannst","können","könnt"],""],["Er ___ heute arbeiten. (müssen)","muss",["muss","müsst","musst","müssen"],""],["Ich kann gut ___ . (schwimmen, infinitive)","schwimmen",["schwimmen","schwimme","schwimmt","geschwommen"],"Infinitive at the end"],["Ich ___ gern Fußball. (spielen)","spiele",["spiele","spielst","spielen","spielt"],""]]
+});
+U({id:"a1-09",lvl:"A1",e:"🧭",t:"Directions & the Dative",
+ intro:"Asking the way, understanding directions and the prepositions that always take the dative.",
+ grammar:{t:"Imperative and fixed dative prepositions",html:`
+<p><b>Imperative (formal Sie):</b> verb first + Sie: <i>Gehen Sie geradeaus.</i> <i>Biegen Sie links ab.</i> <i>Entschuldigen Sie, …</i> Informal: <i>Geh geradeaus!</i></p>
+<p><b>Always dative:</b> <b>aus, bei, mit, nach, seit, von, zu</b> (also <i>gegenüber</i>):</p>
+<ul><li><i>Ich fahre mit dem Bus.</i> (der Bus → dem)</li><li><i>Wie komme ich zum Bahnhof?</i> (zu dem = zum)</li><li><i>Gehen Sie nach links / nach rechts.</i></li><li><i>Das Café ist gegenüber der Bank.</i></li></ul>
+<table class="g"><tr><th>German</th><th>English</th></tr><tr><td>links / rechts / geradeaus</td><td>left / right / straight on</td></tr><tr><td>an der Ampel</td><td>at the traffic lights</td></tr><tr><td>an der Ecke</td><td>at the corner</td></tr></table>`},
+ vocab:[["die Straße","street"],["die Ecke","corner"],["der Bahnhof","station"],["die Haltestelle","stop"],["die Bank","bank"],["die Post","post office"],["das Krankenhaus","hospital"],["der Park","park"],["das Museum","museum"],["die Brücke","bridge"],["die Ampel","traffic lights"],["der Stadtplan","city map"],["links","left"],["rechts","right"],["geradeaus","straight ahead"],["gegenüber","opposite"],["abbiegen","turn"],["überqueren","cross"],["weit","far"],["in der Nähe","nearby"]],
+ sent:[["Entschuldigung, wo ist der Bahnhof?","Excuse me, where is the station?"],["Biegen Sie an der Ampel links ab.","Turn left at the traffic lights."],["Gehen Sie geradeaus.","Go straight ahead."],["Die Bank ist gegenüber dem Park.","The bank is opposite the park."],["Wie komme ich zum Museum?","How do I get to the museum?"],["Ist es weit von hier?","Is it far from here?"],["Ich fahre mit dem Bus.","I go by bus."],["Das Café ist in der Nähe.","The café is nearby."]],
+ dlg:{t:"Asking the way",lines:[["A","Entschuldigung, wie komme ich zur Post?","Excuse me, how do I get to the post office?"],["B","Gehen Sie geradeaus und biegen Sie bei der Bank links ab.","Go straight on and turn left at the bank."],["A","Ist es weit?","Is it far?"],["B","Nein, nur fünf Minuten zu Fuß.","No, only five minutes on foot."],["A","Und liegt sie neben dem Park?","And is it next to the park?"],["B","Ja, genau. Sie können sie nicht verfehlen.","Yes, exactly. You can't miss it."]]},
+ ex:[["___ Sie geradeaus. (gehen, formal)","Gehen",["Gehen","Gehe","Geht","Gehst"],"Formal imperative: verb + Sie"],["Ich fahre ___ dem Bus. (mit)","mit",["mit","für","ohne","durch"],"mit + dative"],["Wie komme ich ___ Bahnhof? (zu dem)","zum",["zum","zur","zu den","zu das"],""],["Das Café ist ___ der Bank. (opposite)","gegenüber",["gegenüber","unter","über","zwischen"],""]]
+});
+U({id:"a1-10",lvl:"A1",e:"🌦️",t:"Weather, Seasons & Word Order",
+ intro:"Talking about the weather and getting the basic sentence structure right: main clauses with und, aber, oder, denn.",
+ grammar:{t:"Conjunctions that don't change word order",html:`
+<p><b>und, aber, oder, denn, sondern</b> connect two main clauses without changing the word order (position 0):</p>
+<ul><li><i>Es regnet, <b>aber</b> ich gehe spazieren.</i></li><li><i>Ich bleibe zu Hause, <b>denn</b> es ist kalt.</i></li><li><i>Es ist nicht warm, <b>sondern</b> kalt.</i></li></ul>
+<p><b>Weather:</b> <i>Es regnet. Es schneit. Die Sonne scheint. Es ist windig / kalt / heiß.</i></p>
+<p><b>Seasons:</b> <i>der Frühling, der Sommer, der Herbst, der Winter</i> – <i>im Winter</i> (in winter).</p>
+<p><b>Inverted order:</b> If something other than the subject starts the sentence, the verb stays in position 2: <i>Heute regnet es.</i> / <i>Im Sommer ist es heiß.</i></p>`},
+ vocab:[["das Wetter","weather"],["die Sonne","sun"],["der Regen","rain"],["der Schnee","snow"],["der Wind","wind"],["die Wolke","cloud"],["der Sturm","storm"],["die Temperatur","temperature"],["der Grad","degree"],["sonnig","sunny"],["bewölkt","cloudy"],["windig","windy"],["kalt","cold"],["warm","warm"],["heiß","hot"],["kühl","cool"],["der Regenschirm","umbrella"],["der Frühling","spring"],["der Sommer","summer"],["der Herbst","autumn"],["der Winter","winter"],["regnen","to rain"],["schneien","to snow"]],
+ sent:[["Heute regnet es.","It is raining today."],["Wie ist das Wetter?","What's the weather like?"],["Es ist sonnig und warm.","It is sunny and warm."],["Im Winter ist es kalt.","It is cold in winter."],["Es regnet, aber ich gehe spazieren.","It's raining, but I'm going for a walk."],["Ich bleibe zu Hause, denn es ist kalt.","I'm staying home because it's cold."],["Es hat zehn Grad.","It's ten degrees."],["Ich liebe den Sommer, aber ich mag den Winter nicht.","I love summer but I don't like winter."]],
+ dlg:{t:"On the phone",lines:[["A","Hallo Anna, was machst du gerade?","Hi Anna, what are you doing?"],["B","Ich gehe im Park spazieren. Es ist sonnig!","I'm walking in the park. It's sunny!"],["A","Du hast Glück. Hier regnet es.","Lucky you. It's raining here."],["B","Arbeitest du?","Are you working?"],["A","Nein, ich koche das Abendessen.","No, I'm cooking dinner."],["B","Guten Appetit! Bis später.","Enjoy your meal! Talk later."]]},
+ ex:[["Es regnet, ___ ich gehe spazieren. (but)","aber",["aber","denn","oder","weil"],""],["Ich bleibe zu Hause, ___ es ist kalt. (because)","denn",["denn","aber","sondern","dass"],"denn: no word order change"],["Es ist nicht warm, ___ kalt. (but rather)","sondern",["sondern","aber","denn","oder"],""],["Im ___ schneit es oft. (winter)","Winter",["Winter","Sommer","Frühling","Herbst"],""]]
+});
+
+/* ===== German A2 ===== */
+U({id:"a2-11",lvl:"A2",e:"⏪",t:"Perfect Tense with haben",
+ intro:"Talking about the past in everyday German: the Perfekt is the spoken past tense.",
+ grammar:{t:"Perfekt = haben + past participle",html:`
+<p>The <b>Perfekt</b> is used in conversation. <b>haben</b> (conjugated, position 2) + <b>past participle</b> (at the end): <i>Ich <b>habe</b> Fußball <b>gespielt</b>.</i></p>
+<table class="g"><tr><th>Type</th><th>Participle</th><th>Example</th></tr>
+<tr><td>regular</td><td><b>ge-</b>…<b>-t</b></td><td>machen → <i>gemacht</i>, spielen → <i>gespielt</i></td></tr>
+<tr><td>irregular</td><td><b>ge-</b>…<b>-en</b></td><td>essen → <i>gegessen</i>, trinken → <i>getrunken</i>, sehen → <i>gesehen</i>, schreiben → <i>geschrieben</i></td></tr>
+<tr><td>separable</td><td>prefix + <b>-ge-</b></td><td>einkaufen → <i>eingekauft</i>, anrufen → <i>angerufen</i></td></tr>
+<tr><td>inseparable / -ieren</td><td>no ge-</td><td>besuchen → <i>besucht</i>, studieren → <i>studiert</i>, verstehen → <i>verstanden</i></td></tr></table>
+<p><b>Negation:</b> <i>Ich habe nicht gearbeitet.</i> / <i>Ich habe kein Brot gekauft.</i></p>`},
+ vocab:[["gestern","yesterday"],["letzte Woche","last week"],["vor zwei Tagen","two days ago"],["gemacht","made / done"],["gespielt","played"],["gearbeitet","worked"],["gekauft","bought"],["gesehen","seen"],["gegessen","eaten"],["getrunken","drunk"],["gelernt","learned"],["geschrieben","written"],["gelesen","read"],["gehört","heard"],["besucht","visited"],["telefoniert","phoned"],["angerufen","called"],["eingekauft","shopped"],["gekocht","cooked"],["geholfen","helped"]],
+ sent:[["Ich habe gestern Fußball gespielt.","I played football yesterday."],["Wir haben am Sonntag unsere Oma besucht.","We visited our grandma on Sunday."],["Sie hat mich nicht angerufen.","She didn't call me."],["Hast du den Film gesehen?","Did you see the film?"],["Er hat den ganzen Tag gearbeitet.","He worked all day."],["Ich habe Brot und Käse gekauft.","I bought bread and cheese."],["Was habt ihr gestern gemacht?","What did you do yesterday?"],["Ich habe viel Deutsch gelernt.","I learned a lot of German."]],
+ dlg:{t:"The weekend",lines:[["A","Was hast du am Wochenende gemacht?","What did you do at the weekend?"],["B","Ich habe meine Eltern besucht und gekocht.","I visited my parents and cooked."],["A","Hast du das Fußballspiel gesehen?","Did you see the football match?"],["B","Nein, ich habe nicht ferngesehen.","No, I didn't watch TV."],["A","Hast du Sport gemacht?","Did you do sport?"],["B","Ja, ich habe zwei Stunden Tennis gespielt.","Yes, I played tennis for two hours."]]},
+ ex:[["Ich ___ gestern Fußball gespielt.","habe",["habe","bin","hat","wurde"],""],["Sie hat Deutsch ___ . (lernen)","gelernt",["gelernt","gelernen","lernt","geler"],""],["Wir haben Brot ___ . (kaufen)","gekauft",["gekauft","gekaufen","kaufte","kauft"],""],["Er hat mich ___ . (anrufen)","angerufen",["angerufen","gerufen an","anrufte","geanrufen"],"Separable: an-ge-rufen"]]
+});
+U({id:"a2-12",lvl:"A2",e:"🚶",t:"Perfect with sein & Irregular Verbs",
+ intro:"Verbs of movement and change use sein in the Perfekt – plus the most important irregular participles.",
+ grammar:{t:"sein or haben?",html:`
+<p><b>sein</b> + participle for verbs of <b>movement</b> (<i>gehen, fahren, kommen, fliegen, laufen</i>) and <b>change of state</b> (<i>aufwachen, einschlafen, werden</i>), plus <b>sein</b> and <b>bleiben</b>.</p>
+<table class="g"><tr><th>Infinitive</th><th>Participle</th></tr>
+<tr><td>gehen</td><td>ist <b>gegangen</b></td></tr><tr><td>fahren</td><td>ist <b>gefahren</b></td></tr><tr><td>kommen</td><td>ist <b>gekommen</b></td></tr><tr><td>fliegen</td><td>ist <b>geflogen</b></td></tr><tr><td>bleiben</td><td>ist <b>geblieben</b></td></tr><tr><td>sein</td><td>ist <b>gewesen</b></td></tr><tr><td>aufstehen</td><td>ist <b>aufgestanden</b></td></tr></table>
+<p><i>Ich bin nach Spanien geflogen.</i> – <i>Wir sind zu Hause geblieben.</i> – <i>Sie ist um sieben aufgestanden.</i></p>
+<p>Tip: if you can answer „Wohin?“ (where to) – it is probably sein.</p>`},
+ vocab:[["gegangen","gone"],["gefahren","driven / travelled"],["gekommen","come"],["geflogen","flown"],["geblieben","stayed"],["gewesen","been"],["aufgestanden","got up"],["eingeschlafen","fell asleep"],["gelaufen","run / walked"],["gereist","travelled"],["geschwommen","swum"],["angekommen","arrived"],["abgefahren","departed"],["passiert","happened"],["umgezogen","moved house"],["gestorben","died"],["geworden","become"],["der Urlaub","holiday"],["die Reise","trip"],["das Flugzeug","plane"]],
+ sent:[["Ich bin nach Spanien geflogen.","I flew to Spain."],["Wir sind zu Hause geblieben.","We stayed at home."],["Sie ist um sieben Uhr aufgestanden.","She got up at seven."],["Bist du schon in Berlin gewesen?","Have you been to Berlin?"],["Er ist mit dem Zug gefahren.","He travelled by train."],["Der Zug ist um acht angekommen.","The train arrived at eight."],["Wir sind letztes Jahr umgezogen.","We moved last year."],["Was ist passiert?","What happened?"]],
+ dlg:{t:"Holiday report",lines:[["A","Wohin bist du in den Urlaub gefahren?","Where did you go on holiday?"],["B","Wir sind nach Italien gefahren. Es war toll!","We went to Italy. It was great!"],["A","Was habt ihr dort gemacht?","What did you do there?"],["B","Wir sind viel gelaufen und haben Pasta gegessen.","We walked a lot and ate pasta."],["A","Wie lange seid ihr geblieben?","How long did you stay?"],["B","Zwei Wochen. Das Wetter war jeden Tag sonnig.","Two weeks. The weather was sunny every day."]]},
+ ex:[["Ich ___ nach Wien gefahren.","bin",["bin","habe","hat","wurde"],"Movement → sein"],["Wir ___ zu Hause geblieben.","sind",["sind","haben","seid","wurden"],""],["Sie ___ um sieben ___ . (aufstehen)","ist / aufgestanden",["ist / aufgestanden","hat / aufgestanden","ist / gestanden auf","hat / aufgestehen"],""],["Er ist schon ___ . (kommen)","gekommen",["gekommen","gekommt","gekomt","gekam"],""]]
+});
+U({id:"a2-13",lvl:"A2",e:"✈️",t:"Travel & Two-Way Prepositions",
+ intro:"Booking trips, using public transport and the two-way prepositions: accusative for motion, dative for location.",
+ grammar:{t:"Wechselpräpositionen: wohin? (acc.) – wo? (dat.)",html:`
+<p><b>an, auf, in, neben, über, unter, vor, hinter, zwischen</b> take:</p>
+<ul><li><b>Accusative</b> for <b>direction / movement</b> (<i>Wohin?</i>): <i>Ich gehe <b>in die</b> Stadt.</i></li><li><b>Dative</b> for <b>location</b> (<i>Wo?</i>): <i>Ich bin <b>in der</b> Stadt.</i></li></ul>
+<table class="g"><tr><th></th><th>Wohin? (acc.)</th><th>Wo? (dat.)</th></tr>
+<tr><td>der</td><td>in den Park</td><td>in dem (im) Park</td></tr><tr><td>die</td><td>in die Stadt</td><td>in der Stadt</td></tr><tr><td>das</td><td>in das (ins) Kino</td><td>in dem (im) Kino</td></tr></table>
+<p><b>Cities/countries without article:</b> <i>nach</i> Berlin / <i>nach</i> Italien, but <i>in die</i> Schweiz, <i>in die</i> USA. <b>Verbs:</b> <i>legen/stellen/setzen/hängen</i> (acc.) vs. <i>liegen/stehen/sitzen/hängen</i> (dat.).</p>`},
+ vocab:[["die Reise","trip"],["der Urlaub","holiday"],["die Fahrkarte","ticket"],["der Pass","passport"],["das Gepäck","luggage"],["der Koffer","suitcase"],["der Flug","flight"],["der Flughafen","airport"],["das Gleis","platform"],["der Zug","train"],["der Bus","bus"],["das Taxi","taxi"],["das Hotel","hotel"],["die Reservierung","reservation"],["buchen","book"],["hin und zurück","return"],["einfach","one way"],["die Verspätung","delay"],["die Abfahrt","departure"],["die Ankunft","arrival"]],
+ sent:[["Ich fahre morgen in die Stadt.","I'm going into town tomorrow."],["Ich bin schon in der Stadt.","I'm already in town."],["Wir fliegen nach Spanien.","We fly to Spain."],["Der Zug fährt von Gleis vier ab.","The train leaves from platform four."],["Ich möchte eine Fahrkarte nach München, hin und zurück.","I'd like a return ticket to Munich."],["Der Zug hat zehn Minuten Verspätung.","The train is ten minutes late."],["Ich lege das Buch auf den Tisch.","I put the book on the table."],["Das Buch liegt auf dem Tisch.","The book lies on the table."]],
+ dlg:{t:"At the ticket office",lines:[["A","Guten Tag. Ich möchte zwei Fahrkarten nach Hamburg.","Hello. I'd like two tickets to Hamburg."],["B","Einfach oder hin und zurück?","One way or return?"],["A","Hin und zurück, bitte.","Return, please."],["B","Das macht neunzig Euro.","That's ninety euros."],["A","Von welchem Gleis fährt der Zug?","Which platform does the train leave from?"],["B","Von Gleis sechs, um zehn nach neun.","Platform six, at ten past nine."]]},
+ ex:[["Ich gehe ___ Kino. (das Kino, Wohin?)","ins",["ins","im","in dem","in der"],"Direction → accusative"],["Ich bin ___ Kino. (Wo?)","im",["im","ins","in das","in den"],"Location → dative"],["Wir fahren ___ Italien.","nach",["nach","in","zu","an"],"Countries without article → nach"],["Das Buch liegt auf ___ Tisch. (Wo?)","dem",["dem","den","der","das"],""]]
+});
+U({id:"a2-14",lvl:"A2",e:"📏",t:"Comparisons & Superlatives",
+ intro:"Comparing things and people: bigger, faster, the best.",
+ grammar:{t:"Komparativ and Superlativ",html:`
+<table class="g"><tr><th>Positive</th><th>Comparative (-er)</th><th>Superlative (am -sten)</th></tr>
+<tr><td>klein</td><td>kleiner</td><td>am kleinsten</td></tr>
+<tr><td>schnell</td><td>schneller</td><td>am schnellsten</td></tr>
+<tr><td>alt</td><td><b>ä</b>lter</td><td>am <b>ä</b>ltesten</td></tr>
+<tr><td>groß</td><td><b>grö</b>ßer</td><td>am <b>grö</b>ßten</td></tr>
+<tr><td>gut</td><td><b>besser</b></td><td>am <b>besten</b></td></tr>
+<tr><td>viel</td><td><b>mehr</b></td><td>am <b>meisten</b></td></tr>
+<tr><td>gern</td><td><b>lieber</b></td><td>am <b>liebsten</b></td></tr></table>
+<p><b>Comparison:</b> <i>als</i> (than): <i>Berlin ist größer als Hamburg.</i> Equality: <i>so … wie</i>: <i>Er ist so alt wie ich.</i></p>
+<p><b>Before a noun</b> endings are added: <i>der größere Hund</i>, <i>das beste Essen</i>.</p>`},
+ vocab:[["größer","bigger"],["kleiner","smaller"],["schneller","faster"],["langsamer","slower"],["billiger","cheaper"],["teurer","more expensive"],["besser","better"],["schlechter","worse"],["älter","older"],["jünger","younger"],["mehr","more"],["weniger","less"],["am besten","best"],["am meisten","most"],["lieber","rather / prefer"],["als","than"],["so … wie","as … as"],["schwer","heavy / difficult"],["leicht","light / easy"],["gefährlich","dangerous"]],
+ sent:[["Mein Bruder ist größer als ich.","My brother is taller than me."],["Dieses Buch ist interessanter als das andere.","This book is more interesting than the other."],["Sie ist die beste Schülerin.","She is the best pupil."],["Züge sind schneller als Busse.","Trains are faster than buses."],["Berlin ist größer als Hamburg.","Berlin is bigger than Hamburg."],["Das ist das teuerste Hotel der Stadt.","That is the most expensive hotel in town."],["Er ist so alt wie ich.","He is as old as me."],["Ich trinke lieber Tee als Kaffee.","I prefer tea to coffee."]],
+ dlg:{t:"Comparing phones",lines:[["A","Welches Handy ist besser?","Which phone is better?"],["B","Dieses ist billiger, aber jenes ist schneller.","This one is cheaper, but that one is faster."],["A","Welches ist am teuersten?","Which is the most expensive?"],["B","Das schwarze. Es ist auch das schwerste.","The black one. It's also the heaviest."],["A","Ich finde, das billigere reicht.","I think the cheaper one is enough."],["B","Ich auch. Es ist die beste Wahl.","Me too. It's the best choice."]]},
+ ex:[["Mein Auto ist ___ als deins. (schnell)","schneller",["schneller","schnellere","am schnellsten","mehr schnell"],""],["Das ist das ___ Essen. (gut, Superlativ)","beste",["beste","bessere","gutste","besten"],""],["Er ist ___ alt wie ich.","so",["so","als","wie","mehr"],"so … wie"],["Ich trinke ___ Tee als Kaffee. (prefer)","lieber",["lieber","besser","mehr","gern"],""]]
+});
+U({id:"a2-15",lvl:"A2",e:"🩺",t:"Health & Reflexive Verbs",
+ intro:"At the doctor's: describing symptoms and giving advice. Reflexive verbs are part of everyday German.",
+ grammar:{t:"Reflexive verbs and sollen",html:`
+<p>Reflexive verbs need a reflexive pronoun: <b>mich, dich, sich, uns, euch, sich</b> (accusative):</p>
+<p><i>Ich fühle <b>mich</b> krank.</i> – <i>Er ruht <b>sich</b> aus.</i> – <i>Wir treffen <b>uns</b> um acht.</i> – <i>Hast du <b>dich</b> erkältet?</i></p>
+<p><b>sollen</b> (should, as advice) – <i>Du sollst zum Arzt gehen.</i> <b>Body parts:</b> <i>Mein Kopf tut weh.</i> / <i>Ich habe Kopfschmerzen / Husten / Fieber / Schnupfen.</i></p>
+<p><b>Dative for body parts:</b> <i>Ich putze <b>mir</b> die Zähne.</i> (dative reflexive + body part)</p>`},
+ vocab:[["der Arzt / die Ärztin","doctor"],["das Krankenhaus","hospital"],["die Apotheke","pharmacy"],["das Medikament","medicine"],["die Kopfschmerzen","headache"],["die Bauchschmerzen","stomach ache"],["der Husten","cough"],["das Fieber","fever"],["der Schnupfen","cold / runny nose"],["die Halsschmerzen","sore throat"],["der Schmerz","pain"],["wehtun","hurt"],["sich ausruhen","rest"],["sich erkälten","catch a cold"],["der Termin","appointment"],["das Rezept","prescription"],["gesund","healthy"],["krank","ill"],["müde","tired"],["der Rücken","back"]],
+ sent:[["Ich habe starke Kopfschmerzen.","I have a terrible headache."],["Ich fühle mich nicht gut.","I don't feel well."],["Du sollst zum Arzt gehen.","You should go to the doctor."],["Mein Rücken tut weh.","My back hurts."],["Er hat sich erkältet.","He has caught a cold."],["Ruh dich aus und trink viel Wasser.","Rest and drink plenty of water."],["Ich brauche einen Termin.","I need an appointment."],["Nehmen Sie die Tabletten dreimal am Tag.","Take the tablets three times a day."]],
+ dlg:{t:"At the doctor's",lines:[["A","Guten Morgen. Was fehlt Ihnen?","Good morning. What's wrong?"],["B","Ich habe Halsschmerzen und Husten.","I have a sore throat and a cough."],["A","Seit wann fühlen Sie sich so?","Since when have you felt like this?"],["B","Seit Montag. Ich habe auch Fieber.","Since Monday. I also have a fever."],["A","Sie sollten zu Hause bleiben und sich ausruhen.","You should stay at home and rest."],["B","Muss ich Medikamente nehmen?","Do I have to take medicine?"]]},
+ ex:[["Ich fühle ___ krank.","mich",["mich","mir","sich","dich"],""],["Wir treffen ___ um acht. (uns)","uns",["uns","wir","unser","euch"],""],["Du ___ zum Arzt gehen. (should)","solltest",["solltest","sollen","sollst zu","solle"],""],["Ich putze ___ die Zähne.","mir",["mir","mich","sich","ich"],"Dative with body parts"]]
+});
+U({id:"a2-16",lvl:"A2",e:"🔮",t:"Future, Plans & Subordinate Clauses",
+ intro:"Talking about plans and reasons: the future with werden and the first subordinate clauses (weil, dass, wenn).",
+ grammar:{t:"werden, weil / dass / wenn",html:`
+<p><b>Future:</b> often just present + time word: <i>Morgen fahre ich nach Berlin.</i> With <b>werden</b> (for predictions/promises): <i>Ich werde dir helfen.</i> – <i>Es wird morgen regnen.</i></p>
+<table class="g"><tr><th>werden</th></tr><tr><td>ich werde, du wirst, er wird, wir werden, ihr werdet, sie werden</td></tr></table>
+<p><b>Subordinate clauses</b> send the <b>conjugated verb to the end</b>:</p>
+<ul><li><b>weil</b> (because): <i>Ich bleibe zu Hause, weil ich krank <b>bin</b>.</i></li><li><b>dass</b> (that): <i>Ich glaube, dass er <b>kommt</b>.</i></li><li><b>wenn</b> (if/when): <i>Wenn es regnet, <b>bleibe</b> ich zu Hause.</i> (verb right after the comma in the main clause!)</li></ul>`},
+ vocab:[["der Plan","plan"],["der Traum","dream"],["die Zukunft","future"],["bald","soon"],["später","later"],["nächste Woche","next week"],["nächstes Jahr","next year"],["vielleicht","maybe"],["wahrscheinlich","probably"],["sicher","sure / certainly"],["hoffen","hope"],["glauben","believe"],["denken","think"],["versprechen","promise"],["entscheiden","decide"],["weil","because"],["dass","that"],["wenn","if / when"],["deshalb","therefore"],["werden","will / become"]],
+ sent:[["Ich werde dir helfen.","I will help you."],["Morgen fahre ich nach Berlin.","Tomorrow I'm going to Berlin."],["Ich bleibe zu Hause, weil ich krank bin.","I'm staying home because I'm ill."],["Ich glaube, dass er kommt.","I think he's coming."],["Wenn es regnet, bleibe ich zu Hause.","If it rains, I'll stay at home."],["Ich hoffe, dass du Zeit hast.","I hope you have time."],["Vielleicht ziehen wir nach Kanada.","Maybe we'll move to Canada."],["Ich verspreche, dass ich pünktlich komme.","I promise I'll be on time."]],
+ dlg:{t:"Spontaneous help",lines:[["A","Oh nein, ich habe meinen Geldbeutel vergessen!","Oh no, I forgot my wallet!"],["B","Keine Sorge. Ich bezahle.","Don't worry. I'll pay."],["A","Danke! Ich gebe dir das Geld morgen zurück.","Thanks! I'll give you the money back tomorrow."],["B","Kein Problem. Was machst du später?","No problem. What are you doing later?"],["A","Ich besuche meine Oma, weil sie Geburtstag hat.","I'm visiting my grandma because it's her birthday."],["B","Grüß sie von mir. Ich glaube, dass sie sich freut.","Say hello. I think she'll be happy."]]},
+ ex:[["Ich bleibe zu Hause, ___ ich krank bin.","weil",["weil","denn","dass","aber"],"weil: verb at the end"],["Ich glaube, ___ er kommt.","dass",["dass","das","weil","wenn"],""],["Wenn es regnet, ___ ich zu Hause. (bleiben)","bleibe",["bleibe","ich bleibe","bleiben","blieb"],"Inversion after the subordinate clause"],["Es ___ morgen regnen. (werden)","wird",["wird","wirst","werden","wurde"],""]]
+});
+U({id:"a2-17",lvl:"A2",e:"📜",t:"Simple Past (Präteritum)",
+ intro:"The written past tense: stories, reports and the most common verbs in everyday speech.",
+ grammar:{t:"Präteritum of sein, haben and modals",html:`
+<p>In speech the <b>Perfekt</b> is normal, but <b>sein, haben</b> and the <b>modal verbs</b> usually use the <b>Präteritum</b>. In writing (stories, news) it is used for all verbs.</p>
+<table class="g"><tr><th></th><th>sein</th><th>haben</th><th>können</th><th>müssen</th></tr>
+<tr><td>ich</td><td>war</td><td>hatte</td><td>konnte</td><td>musste</td></tr>
+<tr><td>du</td><td>warst</td><td>hattest</td><td>konntest</td><td>musstest</td></tr>
+<tr><td>er/sie/es</td><td>war</td><td>hatte</td><td>konnte</td><td>musste</td></tr>
+<tr><td>wir/sie</td><td>waren</td><td>hatten</td><td>konnten</td><td>mussten</td></tr></table>
+<p><b>Regular:</b> stem + <b>-te</b>: <i>machte, spielte, arbeitete</i>. <b>Irregular:</b> vowel change: <i>ging, kam, sah, aß, fuhr, schrieb</i>. <i>Als ich ein Kind war, spielte ich oft draußen.</i></p>`},
+ vocab:[["war","was"],["waren","were"],["hatte","had"],["konnte","could"],["musste","had to"],["wollte","wanted"],["ging","went"],["kam","came"],["sah","saw"],["aß","ate"],["fuhr","drove"],["schrieb","wrote"],["machte","did / made"],["sagte","said"],["spielte","played"],["wohnte","lived"],["arbeitete","worked"],["als","when (past, once)"],["früher","formerly"],["damals","back then"]],
+ sent:[["Ich war gestern krank.","I was ill yesterday."],["Wir hatten keine Zeit.","We had no time."],["Er konnte nicht kommen.","He couldn't come."],["Als ich klein war, spielte ich oft draußen.","When I was small, I often played outside."],["Damals wohnten wir in Köln.","Back then we lived in Cologne."],["Sie musste lange arbeiten.","She had to work long."],["Er ging nach Hause und aß.","He went home and ate."],["Ich wollte dich anrufen.","I wanted to call you."]],
+ dlg:{t:"Childhood memories",lines:[["A","Wo wohntest du als Kind?","Where did you live as a child?"],["B","Ich wohnte in einem kleinen Dorf.","I lived in a small village."],["A","Was warst du in der Schule?","What were you like at school?"],["B","Ich war fleißig, aber ich hatte viele Hobbys.","I was diligent, but I had a lot of hobbies."],["A","Konntest du schon Fahrrad fahren?","Could you ride a bike already?"],["B","Ja, mit fünf Jahren konnte ich es schon.","Yes, I could at five."]]},
+ ex:[["Gestern ___ ich krank. (sein)","war",["war","wäre","bin","war ich"],""],["Wir ___ keine Zeit. (haben)","hatten",["hatten","haben","hatt","hättet"],""],["Er ___ nicht kommen. (können)","konnte",["konnte","kann","könnte","konntest"],""],["Als ich klein ___ , spielte ich oft. (sein)","war",["war","bin","wäre","wurde"],"Als + Präteritum"]]
+});
+U({id:"a2-18",lvl:"A2",e:"🎯",t:"Adjective Endings & Articles",
+ intro:"The famous German adjective endings: the system is simpler than it looks.",
+ grammar:{t:"Adjective endings after der / ein / no article",html:`
+<table class="g"><tr><th></th><th>masc.</th><th>fem.</th><th>neut.</th><th>plural</th></tr>
+<tr><td>Nom. (der)</td><td>der gut<b>e</b> Mann</td><td>die gut<b>e</b> Frau</td><td>das gut<b>e</b> Kind</td><td>die gut<b>en</b> Kinder</td></tr>
+<tr><td>Acc. (der)</td><td>den gut<b>en</b> Mann</td><td>die gut<b>e</b> Frau</td><td>das gut<b>e</b> Kind</td><td>die gut<b>en</b> Kinder</td></tr>
+<tr><td>Dat. (der)</td><td>dem gut<b>en</b> Mann</td><td>der gut<b>en</b> Frau</td><td>dem gut<b>en</b> Kind</td><td>den gut<b>en</b> Kindern</td></tr></table>
+<p><b>After ein-:</b> <i>ein gut<b>er</b> Mann</i>, <i>eine gut<b>e</b> Frau</i>, <i>ein gut<b>es</b> Kind</i> (nom.) / <i>einen gut<b>en</b> Mann</i> (acc.).</p>
+<p>Simple rule: after the definite article almost always <b>-e</b> or <b>-en</b>; masculine/neuter after <i>ein</i> need <b>-er / -es</b> to show the gender.</p>`},
+ vocab:[["neu","new"],["alt","old"],["schön","beautiful"],["hässlich","ugly"],["groß","big"],["klein","small"],["lang","long"],["kurz","short"],["teuer","expensive"],["billig","cheap"],["freundlich","friendly"],["interessant","interesting"],["langweilig","boring"],["modern","modern"],["bequem","comfortable"],["leise","quiet"],["laut","loud"],["sauber","clean"],["dunkel","dark"],["hell","bright"]],
+ sent:[["Das ist ein schönes Haus.","That is a beautiful house."],["Ich kaufe einen neuen Computer.","I'm buying a new computer."],["Die alte Frau wohnt neben uns.","The old woman lives next to us."],["Hast du den roten Pullover gesehen?","Have you seen the red sweater?"],["Wir haben eine kleine Wohnung.","We have a small flat."],["Mit dem neuen Auto fahre ich nach Berlin.","I'm driving to Berlin in the new car."],["Das ist ein interessantes Buch.","That is an interesting book."],["Er hat ein bequemes Sofa.","He has a comfortable sofa."]],
+ dlg:{t:"Buying a car",lines:[["A","Ich suche ein neues Auto.","I'm looking for a new car."],["B","Möchten Sie ein großes oder ein kleines?","Would you like a big or a small one?"],["A","Ein kleines, aber modernes.","A small one, but modern."],["B","Dieses blaue Auto ist sehr beliebt.","This blue car is very popular."],["A","Das gefällt mir. Hat es einen großen Kofferraum?","I like it. Does it have a big boot?"],["B","Ja, und einen leisen Motor.","Yes, and a quiet engine."]]},
+ ex:[["Das ist ein ___ Haus. (schön, neut.)","schönes",["schönes","schöne","schöner","schönen"],""],["Ich sehe den ___ Mann. (alt)","alten",["alten","alte","alter","altes"],"Acc. masc. → -en"],["Die ___ Frau ist nett. (jung)","junge",["junge","jungen","junger","junges"],""],["Er hat einen ___ Hund. (groß)","großen",["großen","große","großer","großes"],""]]
+});
+
+/* ===== German B1 ===== */
+U({id:"b1-19",lvl:"B1",e:"🏗️",t:"The Passive Voice",
+ intro:"When the action matters more than who does it: the Vorgangspassiv and the Zustandspassiv.",
+ grammar:{t:"werden + past participle",html:`
+<table class="g"><tr><th>Tense</th><th>Active</th><th>Passive</th></tr>
+<tr><td>Present</td><td>Man baut das Haus.</td><td>Das Haus <b>wird gebaut</b>.</td></tr>
+<tr><td>Präteritum</td><td>Man baute das Haus.</td><td>Das Haus <b>wurde gebaut</b>.</td></tr>
+<tr><td>Perfekt</td><td>Man hat das Haus gebaut.</td><td>Das Haus <b>ist gebaut worden</b>.</td></tr>
+<tr><td>Future</td><td>Man wird es bauen.</td><td>Es <b>wird gebaut werden</b>.</td></tr>
+<tr><td>Modal</td><td>Man muss es bauen.</td><td>Es <b>muss gebaut werden</b>.</td></tr></table>
+<p><b>Agent:</b> <i>von</i> + dative (person), <i>durch</i> + accusative (means): <i>Das Buch wurde <b>von einem Autor</b> geschrieben.</i></p>
+<p><b>Zustandspassiv</b> (state): <i>sein</i> + participle: <i>Die Tür <b>ist geschlossen</b>.</i> (The door is closed.)</p>
+<p>Perfekt passive: participle <i>worden</i> (not geworden)!</p>`},
+ vocab:[["bauen","build"],["herstellen","produce"],["erfinden","invent"],["entdecken","discover"],["stehlen","steal"],["zerstören","destroy"],["reparieren","repair"],["einladen","invite"],["veröffentlichen","publish"],["liefern","deliver"],["absagen","cancel"],["verschieben","postpone"],["ankündigen","announce"],["erfordern","require"],["von","by (agent)"],["durch","through / by (means)"],["der Besitzer","owner"],["der Schaden","damage"],["das Ergebnis","result"],["die Fabrik","factory"]],
+ sent:[["Das Haus wird gebaut.","The house is being built."],["Mein Fahrrad wurde gestohlen.","My bike was stolen."],["Die Brücke ist repariert worden.","The bridge has been repaired."],["Das Buch wurde von einem berühmten Autor geschrieben.","The book was written by a famous author."],["Die Besprechung wurde abgesagt.","The meeting was cancelled."],["Hier werden Autos produziert.","Cars are produced here."],["Die Fenster müssen geputzt werden.","The windows have to be cleaned."],["Das Geschäft ist am Sonntag geschlossen.","The shop is closed on Sundays."]],
+ dlg:{t:"In the office",lines:[["A","Wurde der Bericht schon geschickt?","Has the report already been sent?"],["B","Ja, er wurde heute Morgen verschickt.","Yes, it was sent this morning."],["A","Und die Besprechung?","And the meeting?"],["B","Sie ist auf Freitag verschoben worden.","It has been moved to Friday."],["A","Wer wurde eingeladen?","Who was invited?"],["B","Alle Manager wurden von Frau Clark eingeladen.","All the managers were invited by Ms Clark."]]},
+ ex:[["Das Haus ___ gebaut. (Präsens)","wird",["wird","wurde","ist","hat"],""],["Mein Auto ___ gestohlen. (past)","wurde",["wurde","wird","war","ist"],""],["Der Brief ist geschrieben ___ . (Perfekt passive)","worden",["worden","geworden","wurde","werden"],""],["Das Buch wurde ___ einem Autor geschrieben.","von",["von","durch","mit","bei"],"Person → von"]]
+});
+U({id:"b1-20",lvl:"B1",e:"💭",t:"Konjunktiv II: Wishes & Politeness",
+ intro:"Polite requests, wishes and unreal situations – the subjunctive II.",
+ grammar:{t:"würde + infinitive, wäre, hätte, könnte",html:`
+<p>Konjunktiv II expresses <b>unreal</b> or <b>polite</b> statements:</p>
+<table class="g"><tr><th>Verb</th><th>Konjunktiv II</th></tr>
+<tr><td>sein</td><td>ich <b>wäre</b>, du wärest, er wäre, wir wären</td></tr>
+<tr><td>haben</td><td>ich <b>hätte</b>, du hättest, wir hätten</td></tr>
+<tr><td>können</td><td>ich <b>könnte</b></td></tr>
+<tr><td>müssen / sollen</td><td>ich müsste / sollte</td></tr>
+<tr><td>other verbs</td><td><b>würde</b> + infinitive: <i>ich würde gehen</i></td></tr></table>
+<ul><li><b>Wish:</b> <i>Ich wäre gern reich.</i> / <i>Wenn ich mehr Zeit hätte, würde ich reisen.</i></li>
+<li><b>Polite request:</b> <i>Könnten Sie mir helfen?</i> / <i>Ich hätte gern einen Kaffee.</i></li>
+<li><b>Advice:</b> <i>An deiner Stelle würde ich ihn anrufen.</i></li></ul>
+<p><b>Past:</b> <i>Wenn ich das gewusst hätte, wäre ich gekommen.</i> (hätte/wäre + participle)</p>`},
+ vocab:[["wäre","would be"],["hätte","would have"],["könnte","could"],["würde","would"],["sollte","should"],["müsste","would have to"],["wenn","if"],["an deiner Stelle","in your place"],["der Wunsch","wish"],["wünschen","wish"],["die Möglichkeit","possibility"],["vorstellen","imagine"],["gewinnen","win"],["im Lotto gewinnen","win the lottery"],["verpassen","miss"],["bereuen","regret"],["hoffentlich","hopefully"],["leider","unfortunately"],["eigentlich","actually"],["vielleicht","perhaps"]],
+ sent:[["Wenn ich Zeit hätte, würde ich reisen.","If I had time, I would travel."],["Ich wäre gern reich.","I would like to be rich."],["Könnten Sie mir bitte helfen?","Could you please help me?"],["An deiner Stelle würde ich ihn anrufen.","If I were you, I would call him."],["Ich hätte gern einen Kaffee.","I would like a coffee."],["Was würdest du tun, wenn du im Lotto gewinnst?","What would you do if you won the lottery?"],["Wenn ich das gewusst hätte, wäre ich gekommen.","If I had known that, I would have come."],["Du solltest mehr schlafen.","You should sleep more."]],
+ dlg:{t:"What if …?",lines:[["A","Was würdest du tun, wenn du eine Million hättest?","What would you do if you had a million?"],["B","Ich würde ein Haus am Meer kaufen.","I would buy a house by the sea."],["A","Wirklich? Ich würde um die Welt reisen.","Really? I would travel around the world."],["B","Dann hätten wir keine Zeit mehr füreinander.","Then we would have no more time for each other."],["A","Das wäre schade. Wir könnten zusammen reisen.","That would be a pity. We could travel together."],["B","Gute Idee. Das würde ich gern machen.","Good idea. I'd like that."]]},
+ ex:[["Wenn ich Zeit ___ , würde ich reisen. (haben)","hätte",["hätte","habe","hatte","hätten"],""],["Ich ___ gern reich. (sein)","wäre",["wäre","wäre er","wurde","bin"],""],["___ Sie mir bitte helfen? (können, polite)","Könnten",["Könnten","Können","Konnten","Kannten"],""],["An deiner Stelle ___ ich das nicht tun. (würde)","würde",["würde","wurde","werde","wirde"],""]]
+});
+U({id:"b1-21",lvl:"B1",e:"🔗",t:"Relative Clauses",
+ intro:"Adding information with der / die / das and other relative pronouns.",
+ grammar:{t:"Relative pronouns and verb at the end",html:`
+<table class="g"><tr><th>Case</th><th>masc.</th><th>fem.</th><th>neut.</th><th>plural</th></tr>
+<tr><td>Nom.</td><td>der</td><td>die</td><td>das</td><td>die</td></tr>
+<tr><td>Acc.</td><td>den</td><td>die</td><td>das</td><td>die</td></tr>
+<tr><td>Dat.</td><td>dem</td><td>der</td><td>dem</td><td>denen</td></tr>
+<tr><td>Gen.</td><td>dessen</td><td>deren</td><td>dessen</td><td>deren</td></tr></table>
+<p>The pronoun matches the <b>gender and number of the noun</b>, its <b>case</b> depends on the role in the relative clause. The verb goes <b>to the end</b>; set it off with commas:</p>
+<ul><li><i>Der Mann, <b>der</b> neben uns wohnt, ist Arzt.</i> (subject → nom.)</li><li><i>Das Buch, <b>das</b> ich lese, ist spannend.</i> (object → acc.)</li><li><i>Die Frau, <b>der</b> ich geholfen habe, ist nett.</i> (dative: helfen)</li><li><i>Der Junge, <b>dessen</b> Fahrrad gestohlen wurde, ist traurig.</i> (genitive)</li><li><i>Die Stadt, <b>in der</b> ich wohne, ist klein.</i> (with preposition)</li></ul>`},
+ vocab:[["der Nachbar","neighbour"],["der Kollege","colleague"],["der Chef","boss"],["der Kunde","customer"],["der Fremde","stranger"],["der Autor","author"],["der Roman","novel"],["das Dorf","village"],["der Artikel","article"],["die Erfindung","invention"],["der Preis","prize / price"],["das Gebäude","building"],["spannend","exciting"],["berühmt","famous"],["wohnen","live"],["gewinnen","win"],["stehlen","steal"],["treffen","meet"],["kennen","know (someone)"],["der Film","film"]],
+ sent:[["Der Mann, der neben uns wohnt, ist Arzt.","The man who lives next to us is a doctor."],["Das Buch, das ich lese, ist spannend.","The book I'm reading is exciting."],["Die Frau, der ich geholfen habe, ist nett.","The woman I helped is nice."],["Die Stadt, in der ich wohne, ist klein.","The town where I live is small."],["Der Junge, dessen Fahrrad gestohlen wurde, ist traurig.","The boy whose bike was stolen is sad."],["Das ist der Film, den ich gesehen habe.","That's the film I saw."],["Kennst du die Frau, die dort steht?","Do you know the woman standing there?"],["Mein Bruder, der in Spanien lebt, ist Koch.","My brother, who lives in Spain, is a chef."]],
+ dlg:{t:"Describing someone",lines:[["A","Kennst du den Mann, der mit Anna spricht?","Do you know the man talking to Anna?"],["B","Ja, das ist der Chef, dessen Büro im dritten Stock ist.","Yes, that's the boss whose office is on the third floor."],["A","Ist er der, der die Rede gehalten hat?","Is he the one who gave the speech?"],["B","Genau. Und die Frau neben ihm ist die Autorin, die den Roman geschrieben hat.","Exactly. And the woman next to him is the author who wrote the novel."],["A","Den Roman, den ich letzte Woche gekauft habe?","The novel that I bought last week?"],["B","Ja, vielleicht unterschreibt sie ihn!","Yes, maybe she'll sign it!"]]},
+ ex:[["Der Mann, ___ dort steht, ist mein Chef.","der",["der","den","dem","dessen"],"Subject → nominative"],["Das Buch, ___ ich lese, ist gut.","das",["das","dem","der","dessen"],"Object → accusative"],["Die Stadt, in ___ ich wohne, ist klein.","der",["der","die","den","dem"],"in + dative fem."],["Der Junge, ___ Fahrrad gestohlen wurde, weint.","dessen",["dessen","deren","den","dem"],""]]
+});
+U({id:"b1-22",lvl:"B1",e:"🧩",t:"Subordinate Clauses & Connectors",
+ intro:"Express reasons, contrasts, purposes and time relations: obwohl, damit, während, nachdem, bevor.",
+ grammar:{t:"Connectors with verb at the end",html:`
+<table class="g"><tr><th>Connector</th><th>Meaning</th><th>Example</th></tr>
+<tr><td>obwohl</td><td>although</td><td><i>Obwohl es regnet, gehen wir spazieren.</i></td></tr>
+<tr><td>damit</td><td>so that</td><td><i>Ich spare, damit ich ein Auto kaufen kann.</i></td></tr>
+<tr><td>während</td><td>while</td><td><i>Während ich koche, hört er Musik.</i></td></tr>
+<tr><td>nachdem</td><td>after</td><td><i>Nachdem ich gegessen hatte, ging ich.</i></td></tr>
+<tr><td>bevor</td><td>before</td><td><i>Bevor du gehst, ruf mich an.</i></td></tr>
+<tr><td>seit(dem)</td><td>since</td><td><i>Seit ich hier wohne, bin ich glücklich.</i></td></tr>
+<tr><td>falls</td><td>in case</td><td><i>Falls du Zeit hast, komm vorbei.</i></td></tr>
+<tr><td>ob</td><td>whether</td><td><i>Ich weiß nicht, ob er kommt.</i></td></tr></table>
+<p><b>Main-clause adverbs</b> (position 1 + verb): <i>deshalb, deswegen, trotzdem, außerdem, dann, also</i>: <i>Es regnet. Trotzdem gehen wir spazieren.</i></p>`},
+ vocab:[["obwohl","although"],["damit","so that"],["während","while"],["nachdem","after"],["bevor","before"],["seit","since"],["falls","in case"],["ob","whether"],["als","when (once in the past)"],["wenn","if / whenever"],["sobald","as soon as"],["solange","as long as"],["trotzdem","nevertheless"],["deshalb","therefore"],["außerdem","besides"],["dagegen","on the other hand"],["zuerst","first"],["danach","afterwards"],["schließlich","finally"],["inzwischen","meanwhile"]],
+ sent:[["Obwohl es regnet, gehen wir spazieren.","Although it's raining, we're going for a walk."],["Ich spare Geld, damit ich ein Auto kaufen kann.","I'm saving money so I can buy a car."],["Während ich koche, hört er Musik.","While I cook, he listens to music."],["Nachdem ich gegessen hatte, ging ich nach Hause.","After I had eaten, I went home."],["Bevor du gehst, ruf mich bitte an.","Before you go, please call me."],["Ich weiß nicht, ob er kommt.","I don't know whether he's coming."],["Es regnet. Trotzdem gehen wir spazieren.","It's raining. Nevertheless we're going for a walk."],["Sobald ich fertig bin, rufe ich dich an.","As soon as I'm done, I'll call you."]],
+ dlg:{t:"Weighing a decision",lines:[["A","Sollen wir in die Stadt ziehen?","Should we move to the city?"],["B","Einerseits gibt es dort mehr Jobs, andererseits ist es teurer.","On the one hand there are more jobs, on the other it's more expensive."],["A","Obwohl es teurer ist, sparen wir Zeit.","Although it's more expensive, we'd save time."],["B","Außerdem sind die Schulen besser.","Besides, the schools are better."],["A","Trotzdem würden wir unseren Garten verlieren.","Nevertheless we'd lose our garden."],["B","Lass uns erst Wohnungen ansehen, bevor wir uns entscheiden.","Let's look at flats before we decide."]]},
+ ex:[["___ es regnet, gehen wir raus. (obwohl)","Obwohl",["Obwohl","Trotzdem","Deshalb","Weil"],""],["Ich lerne, ___ ich eine gute Note bekomme.","damit",["damit","um","weil","obwohl"],""],["Es regnet. ___ gehen wir spazieren. (nevertheless)","Trotzdem",["Trotzdem","Obwohl","Damit","Weil"],"Main-clause adverb: verb directly after"],["Ich weiß nicht, ___ er kommt.","ob",["ob","wenn","dass","als"],""]]
+});
+U({id:"b1-23",lvl:"B1",e:"✂️",t:"Infinitive with zu & um … zu",
+ intro:"Infinitive clauses: when to use zu, and how to express purpose with um … zu.",
+ grammar:{t:"zu + infinitive",html:`
+<p>Many verbs/adjectives are followed by an <b>infinitive with zu</b> (at the end, separated by a comma when it has additions):</p>
+<ul><li><i>Ich habe vergessen, dich <b>anzurufen</b>.</i> (separable verbs: <i>an<b>zu</b>rufen</i>)</li><li><i>Es ist schwer, Deutsch <b>zu lernen</b>.</i></li><li><i>Ich habe keine Lust, heute <b>zu arbeiten</b>.</i></li><li><i>Er hat angefangen, <b>zu kochen</b>.</i></li></ul>
+<p><b>um … zu</b> (in order to) – same subject in both clauses: <i>Ich lerne Deutsch, <b>um</b> in Deutschland <b>zu</b> arbeiten.</i> If the subjects differ: <b>damit</b> + full clause.</p>
+<p><b>(an)statt … zu</b> (instead of), <b>ohne … zu</b> (without): <i>Er ging, ohne ein Wort zu sagen.</i></p>
+<p><b>No zu</b> after modals (<i>können, müssen</i>), <i>werden</i>, <i>lassen</i>, <i>gehen</i>.</p>`},
+ vocab:[["vergessen","forget"],["versuchen","try"],["anfangen","start"],["aufhören","stop"],["beginnen","begin"],["vorhaben","plan"],["beschließen","decide"],["empfehlen","recommend"],["erlauben","allow"],["verbieten","forbid"],["die Lust","desire"],["die Zeit","time"],["die Absicht","intention"],["schwer","difficult"],["leicht","easy"],["wichtig","important"],["möglich","possible"],["ohne","without"],["anstatt","instead of"],["um","in order to"]],
+ sent:[["Ich habe vergessen, dich anzurufen.","I forgot to call you."],["Es ist schwer, Deutsch zu lernen.","It's hard to learn German."],["Ich habe keine Lust, heute zu arbeiten.","I don't feel like working today."],["Ich lerne Deutsch, um in Berlin zu arbeiten.","I'm learning German in order to work in Berlin."],["Er ging, ohne ein Wort zu sagen.","He left without saying a word."],["Sie hat angefangen, Gitarre zu spielen.","She has started playing guitar."],["Es ist wichtig, pünktlich zu sein.","It's important to be on time."],["Anstatt zu lernen, sieht er fern.","Instead of studying, he watches TV."]],
+ dlg:{t:"Good intentions",lines:[["A","Hast du vergessen, die Karten zu bestellen?","Did you forget to order the tickets?"],["B","Nein, ich habe versucht, sie zu bestellen, aber die Seite war down.","No, I tried to order them but the site was down."],["A","Es ist wichtig, früh zu buchen.","It's important to book early."],["B","Ich habe vor, es heute Abend noch einmal zu probieren.","I plan to try again this evening."],["A","Gut. Ohne Karten zu fahren hat keinen Sinn.","Good. There's no point going without tickets."],["B","Stimmt. Ich rufe an, um nachzufragen.","True. I'll call to check."]]},
+ ex:[["Ich habe keine Lust, ___ arbeiten. (zu)","zu",["zu","um","für","an"],""],["Ich lerne, ___ in Berlin zu arbeiten.","um",["um","zu","für","damit"],"Same subject → um … zu"],["Ich habe vergessen, dich ___ . (anrufen)","anzurufen",["anzurufen","zu anrufen","an zu rufen","angerufen"],"Separable verbs: an-zu-rufen"],["Er ging, ___ ein Wort zu sagen. (without)","ohne",["ohne","statt","um","damit"],""]]
+});
+U({id:"b1-24",lvl:"B1",e:"🔗",t:"Verbs with Prepositions",
+ intro:"Many German verbs are tied to a fixed preposition (and case). They have to be learned together.",
+ grammar:{t:"Verb + preposition + case",html:`
+<table class="g"><tr><th>Verb</th><th>Preposition + case</th><th>Example</th></tr>
+<tr><td>warten</td><td><b>auf</b> + acc.</td><td><i>Ich warte auf den Bus.</i></td></tr>
+<tr><td>sich freuen</td><td><b>auf</b> + acc. (future) / <b>über</b> + acc. (present)</td><td><i>Ich freue mich auf den Urlaub. / über das Geschenk.</i></td></tr>
+<tr><td>denken</td><td><b>an</b> + acc.</td><td><i>Ich denke an dich.</i></td></tr>
+<tr><td>sich interessieren</td><td><b>für</b> + acc.</td><td><i>Er interessiert sich für Musik.</i></td></tr>
+<tr><td>sprechen</td><td><b>über</b> + acc. / <b>mit</b> + dat.</td><td><i>Wir sprechen über das Wetter.</i></td></tr>
+<tr><td>teilnehmen</td><td><b>an</b> + dat.</td><td><i>Sie nimmt an dem Kurs teil.</i></td></tr>
+<tr><td>fragen</td><td><b>nach</b> + dat.</td><td><i>Er fragt nach dem Weg.</i></td></tr></table>
+<p><b>Question words:</b> <i>Worauf wartest du?</i> (things), <i>Auf wen wartest du?</i> (people). <b>Pronoun replacement:</b> <i>darauf, daran, dafür …</i>: <i>Ich warte darauf.</i></p>`},
+ vocab:[["warten auf","wait for"],["sich freuen auf","look forward to"],["sich freuen über","be happy about"],["denken an","think of"],["sich interessieren für","be interested in"],["sprechen über","talk about"],["sprechen mit","talk to"],["teilnehmen an","take part in"],["fragen nach","ask about"],["sich erinnern an","remember"],["sich beschweren über","complain about"],["sich bewerben um","apply for"],["träumen von","dream of"],["abhängen von","depend on"],["sich verlieben in","fall in love with"],["glauben an","believe in"],["bestehen aus","consist of"],["Angst haben vor","be afraid of"],["sich ärgern über","be annoyed about"],["achten auf","pay attention to"]],
+ sent:[["Ich warte auf den Bus.","I'm waiting for the bus."],["Ich freue mich auf den Urlaub.","I'm looking forward to the holiday."],["Er interessiert sich für Musik.","He is interested in music."],["Wir sprechen über das Wetter.","We're talking about the weather."],["Sie nimmt an dem Kurs teil.","She takes part in the course."],["Ich denke oft an dich.","I often think of you."],["Er beschwert sich über den Lärm.","He's complaining about the noise."],["Ich habe mich um die Stelle beworben.","I applied for the job."]],
+ dlg:{t:"Weekend plans",lines:[["A","Worauf freust du dich am meisten?","What are you most looking forward to?"],["B","Ich freue mich auf den Urlaub in Italien.","I'm looking forward to the holiday in Italy."],["A","Interessierst du dich für Kunst?","Are you interested in art?"],["B","Ja, ich möchte an einer Führung teilnehmen.","Yes, I'd like to take part in a tour."],["A","Hast du dich schon über die Preise informiert?","Have you already found out about the prices?"],["B","Nein, aber ich denke darüber nach.","No, but I'm thinking about it."]]},
+ ex:[["Ich warte ___ den Bus.","auf",["auf","an","für","über"],""],["Er interessiert sich ___ Musik.","für",["für","an","auf","von"],""],["Wir sprechen ___ das Wetter.","über",["über","auf","von","an"],""],["Ich freue mich ___ den Urlaub. (future)","auf",["auf","über","an","für"],"auf = future, über = present"]]
+});
+U({id:"b1-25",lvl:"B1",e:"🏠",t:"Everyday Life & Colloquial German",
+ intro:"How people really talk: particles, contractions and everyday expressions.",
+ grammar:{t:"Modal particles & colloquial speech",html:`
+<p><b>Particles</b> add attitude: <i>doch, mal, ja, eigentlich, halt, eben, schon</i>.</p>
+<ul><li><i>Komm <b>doch</b> mit!</i> – softens an invitation.</li><li><i>Schau <b>mal</b>!</i> – casual request.</li><li><i>Das ist <b>ja</b> toll!</i> – surprise.</li><li><i>Wie spät ist es <b>eigentlich</b>?</i> – by the way.</li><li><i>Das ist <b>halt</b> so.</i> – that's just how it is.</li></ul>
+<table class="g"><tr><th>Colloquial</th><th>Standard</th></tr>
+<tr><td>Ich hab's.</td><td>Ich habe es.</td></tr><tr><td>Gibt's was Neues?</td><td>Gibt es etwas Neues?</td></tr><tr><td>nee / ja / jo</td><td>nein / ja</td></tr><tr><td>Alles klar? / Passt schon.</td><td>Ist alles in Ordnung? / Das ist in Ordnung.</td></tr><tr><td>krass / geil / cool</td><td>sehr gut / beeindruckend</td></tr></table>`},
+ vocab:[["doch","but / yes (contradict) / softener"],["mal","just (softener)"],["ja","you know / indeed"],["eigentlich","actually"],["halt","simply"],["eben","just so"],["schon","already / surely"],["na ja","oh well"],["übrigens","by the way"],["echt","really"],["krass","wow / extreme"],["cool","cool"],["Alles klar?","everything OK?"],["Passt schon","it's fine"],["keine Ahnung","no idea"],["Kein Problem","no problem"],["Genau","exactly"],["Stimmt","that's right"],["Quatsch","nonsense"],["Mensch!","gosh!"]],
+ sent:[["Komm doch mit!","Come along!"],["Schau mal, wer da ist!","Look who's there!"],["Das ist ja toll!","That's great!"],["Wie spät ist es eigentlich?","What time is it, by the way?"],["Das ist halt so.","That's just how it is."],["Keine Ahnung, ehrlich.","No idea, honestly."],["Na ja, es geht so.","Oh well, so-so."],["Gibt's was Neues?","Anything new?"]],
+ dlg:{t:"Chatting with friends",lines:[["A","Hey, alles klar?","Hey, everything OK?"],["B","Ja, passt schon. Und bei dir?","Yeah, fine. And you?"],["A","Na ja, ich hab viel Stress. Komm doch heute Abend vorbei!","Oh well, I have a lot of stress. Come over tonight!"],["B","Gern. Soll ich was mitbringen?","Sure. Should I bring something?"],["A","Nee, nicht nötig. Es gibt ja genug.","No, not necessary. There's plenty."],["B","Super, bis später!","Great, see you later!"]]},
+ ex:[["Komm ___ mit! (softener)","doch",["doch","ja","eben","schon"],""],["Wie spät ist es ___ ? (by the way)","eigentlich",["eigentlich","halt","ja","mal"],""],["Schau ___ , wer da ist!","mal",["mal","halt","eben","ja"],""],["Das ist ___ so. (that's just how it is)","halt",["halt","mal","doch","gern"],""]]
+});
+
+/* ===== German B2 ===== */
+U({id:"b2-26",lvl:"B2",e:"📑",t:"Nominalization & Formal Written Style",
+ intro:"Written German turns verbs into nouns: the nominal style of news, reports and official letters.",
+ grammar:{t:"Verb → noun",html:`
+<table class="g"><tr><th>Verbal</th><th>Nominal</th></tr>
+<tr><td>Weil er krank war, …</td><td><b>Wegen seiner Krankheit</b>, …</td></tr>
+<tr><td>Obwohl es regnete, …</td><td><b>Trotz des Regens</b>, …</td></tr>
+<tr><td>Nachdem er angekommen war, …</td><td><b>Nach seiner Ankunft</b>, …</td></tr>
+<tr><td>Wenn man früh bucht, …</td><td><b>Bei früher Buchung</b>, …</td></tr>
+<tr><td>Man verbessert die Qualität.</td><td><b>Die Verbesserung der Qualität</b> …</td></tr></table>
+<p><b>Common suffixes:</b> <b>-ung</b> (die Entwicklung), <b>-heit / -keit</b> (die Gesundheit, die Möglichkeit), <b>-ion</b> (die Information), <b>-tion</b>; the infinitive as noun (<i>das Lesen</i>, <i>beim Essen</i>).</p>
+<p><b>Genitive prepositions:</b> <i>wegen, trotz, während, aufgrund, innerhalb, außerhalb, anstelle</i> + genitive: <i>aufgrund des schlechten Wetters</i>.</p>
+<p><b>Rule of thumb:</b> nominal style is dense and impersonal – good for writing, too heavy for talking.</p>`},
+ vocab:[["die Entwicklung","development"],["die Verbesserung","improvement"],["die Entscheidung","decision"],["die Veränderung","change"],["die Möglichkeit","possibility"],["die Gesundheit","health"],["die Schwierigkeit","difficulty"],["die Ankunft","arrival"],["die Abreise","departure"],["die Teilnahme","participation"],["wegen","because of"],["trotz","despite"],["aufgrund","due to"],["innerhalb","within"],["außerhalb","outside"],["anstelle","instead of"],["hinsichtlich","regarding"],["bezüglich","concerning"],["infolge","as a result of"],["zwecks","for the purpose of"]],
+ sent:[["Wegen seiner Krankheit konnte er nicht kommen.","Because of his illness he couldn't come."],["Trotz des Regens gingen wir spazieren.","Despite the rain we went for a walk."],["Nach seiner Ankunft rief er uns an.","After his arrival he called us."],["Aufgrund des schlechten Wetters wurde das Fest abgesagt.","Due to the bad weather the party was cancelled."],["Die Verbesserung der Qualität ist unser Ziel.","The improvement of quality is our goal."],["Innerhalb einer Woche erhalten Sie eine Antwort.","Within a week you will receive an answer."],["Bezüglich Ihrer Anfrage melden wir uns bald.","Regarding your enquiry, we'll be in touch soon."],["Beim Lesen schlafe ich oft ein.","I often fall asleep while reading."]],
+ dlg:{t:"At the office",lines:[["A","Warum wurde das Treffen verschoben?","Why was the meeting postponed?"],["B","Wegen der Krankheit des Chefs.","Because of the boss's illness."],["A","Und wann ist der neue Termin?","And when's the new date?"],["B","Innerhalb der nächsten Woche, aufgrund des Zeitplans.","Within the next week, due to the schedule."],["A","Bezüglich der Unterlagen: Sind sie schon fertig?","Regarding the documents: Are they ready?"],["B","Ja, trotz der Verspätung sind sie komplett.","Yes, despite the delay they're complete."]]},
+ ex:[["___ des Regens gingen wir raus. (despite)","Trotz",["Trotz","Wegen","Während","Bei"],"trotz + Genitiv"],["___ seiner Krankheit fehlte er. (because of)","Wegen",["Wegen","Trotz","Obwohl","Weil"],""],["Die ___ der Qualität ist wichtig. (verbessern)","Verbesserung",["Verbesserung","Verbessern","Verbessert","Verbesse"],""],["___ des schlechten Wetters wurde es abgesagt.","Aufgrund",["Aufgrund","Obwohl","Dank für","Trotz"],""]]
+});
+U({id:"b2-27",lvl:"B2",e:"🗞️",t:"Indirect Speech (Konjunktiv I)",
+ intro:"Reporting what others said, the formal way: Konjunktiv I in newspapers and reports.",
+ grammar:{t:"Konjunktiv I",html:`
+<p>Direct: <i>Er sagt: „Ich bin müde.“</i> Indirect (formal): <i>Er sagt, er <b>sei</b> müde.</i></p>
+<table class="g"><tr><th>Person</th><th>sein</th><th>haben</th><th>kommen</th><th>können</th></tr>
+<tr><td>ich</td><td>sei</td><td>habe</td><td>komme</td><td>könne</td></tr>
+<tr><td>er/sie/es</td><td><b>sei</b></td><td><b>habe</b></td><td><b>komme</b></td><td><b>könne</b></td></tr>
+<tr><td>wir</td><td>seien</td><td>haben</td><td>kommen</td><td>können</td></tr>
+<tr><td>sie (pl.)</td><td><b>seien</b></td><td>haben</td><td>kommen</td><td>können</td></tr></table>
+<p><b>Rule:</b> use the 3rd person Konjunktiv I (<i>er sei, habe, komme, könne</i>). If it looks identical to the indicative (<i>wir kommen</i>), use <b>Konjunktiv II</b> instead: <i>Sie sagten, sie <b>kämen</b> morgen.</i> or <i>würden … kommen</i>.</p>
+<p><b>Past:</b> <i>Er sagte, er <b>sei</b> krank <b>gewesen</b> / <b>habe</b> viel gearbeitet.</i> <b>Questions:</b> <i>Sie fragte, ob er Zeit <b>habe</b>.</i></p>
+<p>In everyday speech Germans often use the normal indicative or Konjunktiv II instead.</p>`},
+ vocab:[["laut","according to"],["behaupten","claim"],["berichten","report"],["erklären","explain"],["mitteilen","inform"],["betonen","stress"],["bestätigen","confirm"],["bestreiten","deny"],["zugeben","admit"],["der Sprecher","spokesperson"],["die Zeitung","newspaper"],["der Bericht","report"],["der Zeuge","witness"],["der Minister","minister"],["die Aussage","statement"],["angeblich","allegedly"],["offenbar","apparently"],["sei","(he) be – Konj. I"],["habe","(he) have – Konj. I"],["werde","(he) will – Konj. I"]],
+ sent:[["Er sagt, er sei müde.","He says he is tired."],["Der Minister erklärte, es gebe keine Probleme.","The minister explained that there were no problems."],["Sie berichtete, sie habe viel gearbeitet.","She reported that she had worked a lot."],["Die Zeugin sagte, sie habe nichts gesehen.","The witness said she hadn't seen anything."],["Er fragte, ob sie Zeit habe.","He asked whether she had time."],["Der Sprecher betonte, man werde das prüfen.","The spokesman stressed that they would examine it."],["Sie behaupten, sie kämen morgen.","They claim they'll come tomorrow."],["Laut Zeitung sei die Lage ernst.","According to the paper, the situation is serious."]],
+ dlg:{t:"Reporting news",lines:[["A","Was hat der Minister gesagt?","What did the minister say?"],["B","Er sagte, die Lage sei unter Kontrolle.","He said the situation was under control."],["A","Und die Opposition?","And the opposition?"],["B","Sie behauptet, die Regierung habe Fehler gemacht.","They claim the government has made mistakes."],["A","Wann soll die Entscheidung fallen?","When is the decision due?"],["B","Der Sprecher meinte, man werde bald entscheiden.","The spokesman said they'd decide soon."]]},
+ ex:[["Er sagt, er ___ müde. (sein, Konj. I)","sei",["sei","ist","wäre","war"],""],["Sie sagte, sie ___ keine Zeit. (haben, Konj. I)","habe",["habe","hat","hätte","hatte"],""],["Er sagt, er ___ morgen. (kommen, Konj. I)","komme",["komme","kommt","käme","kam"],""],["Sie sagen, sie ___ morgen. (wir = kommen identical → Konj. II)","kämen",["kämen","kommen","kommt","kommen sie"],""]]
+});
+U({id:"b2-28",lvl:"B2",e:"🧱",t:"Participle Constructions & Passive Alternatives",
+ intro:"Compact written German: extended participial attributes and ways to avoid the passive.",
+ grammar:{t:"Partizip I / II as adjectives, lassen, sein … zu",html:`
+<p><b>Partizip I</b> (infinitive + d) = ongoing: <i>der <b>schlafende</b> Hund</i> (the sleeping dog), <i>die <b>kommende</b> Woche</i>.</p>
+<p><b>Partizip II</b> = completed/passive: <i>das <b>geschlossene</b> Fenster</i> (the closed window), <i>die <b>verlorene</b> Zeit</i>.</p>
+<p><b>Extended attribute:</b> <i>Das von Studenten <b>geschriebene</b> Buch</i> = <i>Das Buch, das von Studenten geschrieben wurde.</i></p>
+<table class="g"><tr><th>Passive alternative</th><th>Example</th></tr>
+<tr><td><b>man</b></td><td><i>Man spricht hier Deutsch.</i></td></tr>
+<tr><td><b>sich lassen + inf.</b> (can be done)</td><td><i>Das lässt sich leicht erklären.</i></td></tr>
+<tr><td><b>sein + zu + inf.</b> (must/can be done)</td><td><i>Das Problem ist leicht zu lösen.</i></td></tr>
+<tr><td><b>-bar / -lich</b> adjectives</td><td><i>machbar, lesbar, verständlich</i></td></tr></table>`},
+ vocab:[["schlafend","sleeping"],["kommend","coming"],["laufend","ongoing / running"],["geschlossen","closed"],["verloren","lost"],["gebrochen","broken"],["bekannt","well-known"],["gebildet","educated"],["man","one / people"],["sich lassen","can be … (passive)"],["leicht zu lösen","easy to solve"],["machbar","feasible"],["lesbar","readable"],["verständlich","understandable"],["unvergesslich","unforgettable"],["unbezahlbar","priceless"],["die Bedingung","condition"],["die Regelung","regulation"],["das Verfahren","procedure"],["das Dokument","document"]],
+ sent:[["Der schlafende Hund liegt auf dem Sofa.","The sleeping dog is lying on the sofa."],["In der kommenden Woche habe ich Urlaub.","I'm on holiday next week."],["Das geschlossene Fenster ist kaputt.","The closed window is broken."],["Das von Studenten geschriebene Buch ist gut.","The book written by students is good."],["Man spricht hier Deutsch.","German is spoken here."],["Das lässt sich leicht erklären.","That can be easily explained."],["Das Problem ist leicht zu lösen.","The problem is easy to solve."],["Der Text ist gut verständlich.","The text is easy to understand."]],
+ dlg:{t:"At the repair shop",lines:[["A","Ist das defekte Gerät noch zu reparieren?","Can the defective device still be repaired?"],["B","Das lässt sich nicht sagen, ohne es zu öffnen.","I can't say without opening it."],["A","Wie lange dauert die geplante Reparatur?","How long does the planned repair take?"],["B","Das ist schwer vorherzusagen.","That's hard to predict."],["A","Dann nehme ich das beschädigte Gerät wieder mit.","Then I'll take the damaged device back."],["B","Vernünftig. Eine neue Anschaffung ist machbar.","Sensible. A new purchase is feasible."]]},
+ ex:[["das ___ Kind (schlafen, Partizip I)","schlafende",["schlafende","geschlafene","schlafte","schlafen"],""],["das ___ Fenster (schließen, Partizip II)","geschlossene",["geschlossene","schließende","geschloss","schließte"],""],["Das Problem ist leicht ___ lösen.","zu",["zu","zum","um","für"],"sein + zu + Infinitiv"],["Das ___ sich leicht erklären. (passive alt.)","lässt",["lässt","lasst","lassen","lies"],""]]
+});
+U({id:"b2-29",lvl:"B2",e:"⚖️",t:"Advanced Connectors",
+ intro:"Two-part connectors and elegant ways to link arguments.",
+ grammar:{t:"Doppelkonjunktionen and more",html:`
+<table class="g"><tr><th>Connector</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>nicht nur … sondern auch</b></td><td>not only … but also</td><td><i>Er ist nicht nur klug, sondern auch fleißig.</i></td></tr>
+<tr><td><b>sowohl … als auch</b></td><td>both … and</td><td><i>Sowohl er als auch sie kommen.</i></td></tr>
+<tr><td><b>entweder … oder</b></td><td>either … or</td><td><i>Entweder du kommst, oder ich gehe.</i></td></tr>
+<tr><td><b>weder … noch</b></td><td>neither … nor</td><td><i>Ich habe weder Zeit noch Lust.</i></td></tr>
+<tr><td><b>je … desto</b></td><td>the more … the more</td><td><i>Je mehr du lernst, desto besser wirst du.</i></td></tr>
+<tr><td><b>zwar … aber</b></td><td>admittedly … but</td><td><i>Es ist zwar teuer, aber gut.</i></td></tr>
+<tr><td><b>einerseits … andererseits</b></td><td>on the one hand … on the other</td><td></td></tr></table>
+<p><b>Further:</b> <i>indem</i> (by doing), <i>sodass</i> (so that), <i>insofern als</i>, <i>es sei denn</i> (unless), <i>vorausgesetzt, dass</i> (provided that), <i>statt dass</i>.</p>`},
+ vocab:[["nicht nur … sondern auch","not only … but also"],["sowohl … als auch","both … and"],["entweder … oder","either … or"],["weder … noch","neither … nor"],["je … desto","the … the"],["zwar … aber","admittedly … but"],["einerseits … andererseits","on the one hand … on the other"],["indem","by (doing)"],["sodass","so that"],["es sei denn","unless"],["vorausgesetzt","provided"],["statt dass","instead of"],["dennoch","nevertheless"],["folglich","consequently"],["somit","thus"],["allerdings","however"],["jedoch","however"],["hingegen","on the contrary"],["nämlich","namely"],["beziehungsweise","respectively"]],
+ sent:[["Er ist nicht nur klug, sondern auch fleißig.","He is not only clever but also diligent."],["Sowohl er als auch sie kommen zur Party.","Both he and she are coming to the party."],["Ich habe weder Zeit noch Lust.","I have neither time nor desire."],["Je mehr du lernst, desto besser wirst du.","The more you study, the better you get."],["Es ist zwar teuer, aber es lohnt sich.","It is expensive, but it's worth it."],["Man lernt eine Sprache, indem man viel spricht.","One learns a language by speaking a lot."],["Ich komme, es sei denn, es regnet.","I'll come unless it rains."],["Er arbeitet viel, sodass er wenig Zeit hat.","He works a lot, so he has little time."]],
+ dlg:{t:"Arguing a point",lines:[["A","Ich finde, Homeoffice ist sowohl praktisch als auch effizient.","I think home office is both practical and efficient."],["B","Einerseits ja, andererseits fehlt der persönliche Kontakt.","On the one hand yes, on the other hand personal contact is missing."],["A","Je mehr wir online arbeiten, desto weniger fahren wir.","The more we work online, the less we commute."],["B","Das stimmt zwar, aber Teamgeist entsteht nicht von allein.","True, but team spirit doesn't arise by itself."],["A","Wir könnten entweder drei Tage zu Hause oder zwei im Büro arbeiten.","We could work either three days at home or two in the office."],["B","Das ist ein guter Kompromiss.","That's a good compromise."]]},
+ ex:[["Er ist ___ nur klug, sondern auch fleißig.","nicht",["nicht","kein","weder","nie"],""],["Ich habe ___ Zeit ___ Lust. (neither … nor)","weder / noch",["weder / noch","nicht / oder","kein / noch","sowohl / als"],""],["___ mehr du lernst, ___ besser wirst du.","Je / desto",["Je / desto","Wie / als","Mehr / weniger","Je / als"],""],["Ich komme, ___ es regnet. (unless)","es sei denn",["es sei denn","obwohl","falls","weil"],""]]
+});
+U({id:"b2-30",lvl:"B2",e:"🪶",t:"Idioms & Proverbs",
+ intro:"Fixed expressions make German sound natural – and they are often funny when translated literally.",
+ grammar:{t:"Redewendungen",html:`
+<table class="g"><tr><th>Idiom</th><th>Literally</th><th>Meaning</th></tr>
+<tr><td><i>Das ist nicht mein Bier.</i></td><td>That's not my beer</td><td>That's not my business</td></tr>
+<tr><td><i>Ich verstehe nur Bahnhof.</i></td><td>I only understand station</td><td>I don't understand a thing</td></tr>
+<tr><td><i>Da steppt der Bär.</i></td><td>The bear tap-dances there</td><td>It's a lively party</td></tr>
+<tr><td><i>Jemandem die Daumen drücken.</i></td><td>Press thumbs for someone</td><td>Keep fingers crossed</td></tr>
+<tr><td><i>Tomaten auf den Augen haben.</i></td><td>Have tomatoes on the eyes</td><td>Not notice the obvious</td></tr>
+<tr><td><i>Das ist mir Wurst.</i></td><td>That's sausage to me</td><td>I don't care</td></tr>
+<tr><td><i>Die Katze im Sack kaufen.</i></td><td>Buy the cat in the bag</td><td>Buy a pig in a poke</td></tr>
+<tr><td><i>Ich drücke dir die Daumen.</i></td><td></td><td>Good luck!</td></tr></table>
+<p><b>Proverbs:</b> <i>Übung macht den Meister.</i> (Practice makes perfect.) · <i>Aller Anfang ist schwer.</i> (All beginnings are difficult.) · <i>Wer rastet, der rostet.</i> (If you rest you rust.) · <i>Morgenstund hat Gold im Mund.</i> (The early bird catches the worm.)</p>`},
+ vocab:[["das Bier","beer"],["der Bahnhof","station"],["der Bär","bear"],["der Daumen","thumb"],["die Tomate","tomato"],["die Wurst","sausage"],["die Katze","cat"],["der Sack","sack"],["das Sprichwort","proverb"],["die Redewendung","idiom"],["der Meister","master"],["der Anfang","beginning"],["rasten","rest"],["rosten","rust"],["die Morgenstund","early morning"],["das Gold","gold"],["der Mund","mouth"],["drücken","press"],["verstehen","understand"],["egal","doesn't matter"]],
+ sent:[["Das ist nicht mein Bier.","That's not my business."],["Ich verstehe nur Bahnhof.","I don't understand a thing."],["Ich drücke dir die Daumen!","I'll keep my fingers crossed for you!"],["Das ist mir Wurst.","I don't care."],["Du hast wohl Tomaten auf den Augen!","You must have tomatoes on your eyes!"],["Übung macht den Meister.","Practice makes perfect."],["Aller Anfang ist schwer.","All beginnings are difficult."],["Wer rastet, der rostet.","He who rests rusts."]],
+ dlg:{t:"Before the exam",lines:[["A","Morgen ist meine Prüfung. Ich verstehe noch nur Bahnhof!","My exam is tomorrow. I still understand nothing!"],["B","Keine Panik. Aller Anfang ist schwer.","Don't panic. All beginnings are difficult."],["A","Ich habe aber so wenig Zeit.","But I have so little time."],["B","Übung macht den Meister. Ich drücke dir die Daumen!","Practice makes perfect. Fingers crossed!"],["A","Danke. Wollen wir danach feiern gehen?","Thanks. Shall we go celebrate afterwards?"],["B","Klar, da steppt der Bär!","Sure, it'll be lively!"]]},
+ ex:[["Das ist nicht mein ___ . (idiom: not my business)","Bier",["Bier","Wein","Kaffee","Tee"],""],["Ich verstehe nur ___ . (nothing)","Bahnhof",["Bahnhof","Haus","Bus","Zug"],""],["Ich ___ dir die Daumen.","drücke",["drücke","halte","presse","schiebe"],""],["Aller ___ ist schwer. (beginning)","Anfang",["Anfang","Ende","Morgen","Weg"],""]]
+});
+U({id:"b2-31",lvl:"B2",e:"✉️",t:"Formal Letters & Emails",
+ intro:"Writing official German: complaints, enquiries, applications and polite phrases.",
+ grammar:{t:"Formal register",html:`
+<table class="g"><tr><th>Part</th><th>Phrases</th></tr>
+<tr><td>Salutation</td><td><i>Sehr geehrte Damen und Herren,</i> / <i>Sehr geehrter Herr Müller,</i> / <i>Sehr geehrte Frau Schmidt,</i></td></tr>
+<tr><td>Reference</td><td><i>Bezugnehmend auf Ihr Schreiben vom 3. Mai …</i></td></tr>
+<tr><td>Purpose</td><td><i>Hiermit möchte ich mich bei Ihnen über … beschweren.</i> / <i>Ich interessiere mich für …</i></td></tr>
+<tr><td>Request</td><td><i>Ich wäre Ihnen dankbar, wenn Sie … könnten.</i> / <i>Bitte senden Sie mir …</i></td></tr>
+<tr><td>Attachment</td><td><i>Anbei finden Sie …</i></td></tr>
+<tr><td>Closing</td><td><i>Mit freundlichen Grüßen</i> / <i>Ich freue mich auf Ihre Antwort.</i></td></tr></table>
+<p><b>Tone:</b> Sie, Konjunktiv II for politeness, no colloquial contractions. <b>Informal email:</b> <i>Liebe Anna, … Viele Grüße / Liebe Grüße</i>.</p>`},
+ vocab:[["Sehr geehrte Damen und Herren","Dear Sir or Madam"],["Mit freundlichen Grüßen","Yours sincerely"],["Viele Grüße","best wishes"],["das Schreiben","letter"],["die Anfrage","enquiry"],["die Bewerbung","application"],["die Beschwerde","complaint"],["die Bestätigung","confirmation"],["die Rückmeldung","feedback"],["anbei","attached"],["bezüglich","regarding"],["hiermit","hereby"],["dankbar","grateful"],["umgehend","immediately"],["baldmöglichst","as soon as possible"],["die Frist","deadline"],["der Anhang","attachment"],["sich entschuldigen","apologise"],["die Unannehmlichkeit","inconvenience"],["Ich freue mich auf Ihre Antwort","I look forward to your reply"]],
+ sent:[["Sehr geehrte Damen und Herren, ich interessiere mich für Ihre Stelle.","Dear Sir or Madam, I'm interested in your position."],["Anbei finden Sie meinen Lebenslauf.","Attached you will find my CV."],["Ich wäre Ihnen dankbar, wenn Sie mir antworten könnten.","I would be grateful if you could reply."],["Bitte entschuldigen Sie die Unannehmlichkeiten.","Please excuse the inconvenience."],["Bezugnehmend auf Ihr Schreiben vom 3. Mai …","With reference to your letter of 3 May …"],["Ich freue mich auf Ihre Antwort.","I look forward to your reply."],["Bitte bestätigen Sie den Termin umgehend.","Please confirm the appointment immediately."],["Mit freundlichen Grüßen, Anna Schmidt","Yours sincerely, Anna Schmidt"]],
+ dlg:{t:"Correcting an email",lines:[["A","Kannst du meine Mail an den Kunden prüfen?","Can you check my email to the client?"],["B","Klar. „Hallo Herr Schmidt“ ist zu informell.","Sure. „Hallo Herr Schmidt“ is too informal."],["A","Soll ich „Sehr geehrter Herr Schmidt“ schreiben?","Should I write „Sehr geehrter Herr Schmidt“?"],["B","Ja. Und ersetze „Kannst du“ durch „Könnten Sie bitte“.","Yes. And replace „Kannst du“ with „Könnten Sie bitte“."],["A","Wie beende ich sie?","How do I end it?"],["B","Mit „Mit freundlichen Grüßen“ und deinem Namen.","With „Mit freundlichen Grüßen“ and your name."]]},
+ ex:[["Sehr ___ Damen und Herren,","geehrte",["geehrte","geehrter","geehrten","geehrtes"],""],["Ich wäre Ihnen ___ , wenn Sie antworten könnten.","dankbar",["dankbar","danke","dank","dankend"],""],["___ finden Sie meinen Lebenslauf. (attached)","Anbei",["Anbei","Hiermit","Außerdem","Danach"],""],["Mit ___ Grüßen","freundlichen",["freundlichen","freundliche","freundlicher","freundlich"],""]]
+});
+U({id:"b2-32",lvl:"B2",e:"💼",t:"Work & Job Applications",
+ intro:"Careers, CV and interviews – plus German workplace culture.",
+ grammar:{t:"The application process",html:`
+<p><b>Typical documents (Bewerbungsunterlagen):</b> <i>Anschreiben</i> (cover letter), <i>Lebenslauf</i> (CV, tabular), <i>Zeugnisse</i> (certificates). <b>Job interview:</b> <i>Vorstellungsgespräch</i>.</p>
+<table class="g"><tr><th>Situation</th><th>Phrase</th></tr>
+<tr><td>Introduce yourself</td><td><i>Ich habe Betriebswirtschaft studiert und arbeite seit drei Jahren als …</i></td></tr>
+<tr><td>Strengths</td><td><i>Zu meinen Stärken zählen Teamfähigkeit und Zuverlässigkeit.</i></td></tr>
+<tr><td>Motivation</td><td><i>Mich reizt an dieser Stelle die Verantwortung.</i></td></tr>
+<tr><td>Salary</td><td><i>Meine Gehaltsvorstellung liegt bei … brutto im Jahr.</i></td></tr>
+<tr><td>Ask</td><td><i>Wie sieht ein typischer Arbeitstag aus?</i></td></tr></table>
+<p><b>Culture:</b> punctuality is essential; formal <i>Sie</i> is common until offered <i>Du</i>; Feierabend (end of work) is respected; <i>Betriebsrat</i> = works council.</p>`},
+ vocab:[["die Stelle","job / position"],["die Bewerbung","application"],["das Anschreiben","cover letter"],["der Lebenslauf","CV"],["das Zeugnis","reference / certificate"],["das Vorstellungsgespräch","job interview"],["die Erfahrung","experience"],["die Qualifikation","qualification"],["die Stärke","strength"],["die Schwäche","weakness"],["das Gehalt","salary"],["brutto / netto","gross / net"],["der Vertrag","contract"],["befristet","fixed-term"],["unbefristet","permanent"],["die Probezeit","probation"],["der Urlaub","holiday"],["die Überstunden","overtime"],["der Betriebsrat","works council"],["kündigen","resign / terminate"]],
+ sent:[["Ich bewerbe mich um die Stelle als Projektleiter.","I'm applying for the position of project manager."],["Zu meinen Stärken zählen Zuverlässigkeit und Teamfähigkeit.","My strengths include reliability and teamwork."],["Ich habe fünf Jahre Berufserfahrung.","I have five years of work experience."],["Meine Gehaltsvorstellung liegt bei 50.000 Euro brutto.","My salary expectation is 50,000 euros gross."],["Der Vertrag ist unbefristet.","The contract is permanent."],["Die Probezeit dauert sechs Monate.","The probation period lasts six months."],["Wie sieht ein typischer Arbeitstag aus?","What does a typical working day look like?"],["Ich möchte kündigen.","I would like to resign."]],
+ dlg:{t:"Job interview",lines:[["A","Guten Tag, Frau Weber. Erzählen Sie etwas über sich.","Good day, Ms Weber. Tell us about yourself."],["B","Ich habe Informatik studiert und arbeite seit drei Jahren als Entwicklerin.","I studied computer science and have worked as a developer for three years."],["A","Warum möchten Sie wechseln?","Why do you want to change?"],["B","Mich reizt die größere Verantwortung und das internationale Team.","I'm drawn to the greater responsibility and the international team."],["A","Wie ist Ihre Gehaltsvorstellung?","What's your salary expectation?"],["B","Ich stelle mir etwa 55.000 Euro brutto vor.","I imagine about 55,000 euros gross."]]},
+ ex:[["Ich ___ mich um die Stelle. (apply)","bewerbe",["bewerbe","bewirbe","bewerb","bewerbt"],"sich bewerben um"],["Der Vertrag ist ___ . (permanent)","unbefristet",["unbefristet","befristet","lang","dauernd"],""],["Meine ___ liegt bei 50.000 Euro. (salary expectation)","Gehaltsvorstellung",["Gehaltsvorstellung","Gehaltserhöhung","Probezeit","Bewerbung"],""],["Ich habe fünf Jahre ___ . (work experience)","Berufserfahrung",["Berufserfahrung","Berufsschule","Berufsrat","Berufsrente"],""]]
+});
+U({id:"b2-33",lvl:"B2",e:"📣",t:"Media, Society & Argumentation",
+ intro:"Discussing news, social media and social issues: giving opinions with arguments.",
+ grammar:{t:"Argumentation structure",html:`
+<table class="g"><tr><th>Function</th><th>Phrase</th></tr>
+<tr><td>Opinion</td><td><i>Meiner Meinung nach … / Ich bin der Ansicht, dass … / Ich finde, dass …</i></td></tr>
+<tr><td>Agree</td><td><i>Da stimme ich Ihnen zu. / Das sehe ich genauso.</i></td></tr>
+<tr><td>Partly agree</td><td><i>Das stimmt zwar, aber … / Einerseits … andererseits …</i></td></tr>
+<tr><td>Disagree</td><td><i>Das sehe ich anders. / Da muss ich widersprechen.</i></td></tr>
+<tr><td>Evidence</td><td><i>Studien zeigen, dass … / Laut Experten …</i></td></tr>
+<tr><td>Conclude</td><td><i>Zusammenfassend lässt sich sagen, dass … / Alles in allem …</i></td></tr></table>
+<p><b>Hedge:</b> <i>Es scheint, dass …, vermutlich, möglicherweise, tendenziell, in der Regel.</i></p>`},
+ vocab:[["die Meinung","opinion"],["die Ansicht","view"],["das Argument","argument"],["der Beweis","proof"],["die Studie","study"],["die Medien","media"],["die sozialen Medien","social media"],["die Falschmeldung","fake news"],["die Privatsphäre","privacy"],["der Einfluss","influence"],["die Auswirkung","impact"],["die Gesellschaft","society"],["die Ungleichheit","inequality"],["nachhaltig","sustainable"],["umstritten","controversial"],["voreingenommen","biased"],["zuverlässig","reliable"],["die Debatte","debate"],["widersprechen","contradict"],["zustimmen","agree"]],
+ sent:[["Meiner Meinung nach haben soziale Medien Vor- und Nachteile.","In my opinion social media has advantages and disadvantages."],["Da stimme ich Ihnen zu.","I agree with you there."],["Das sehe ich anders.","I see that differently."],["Studien zeigen, dass junge Menschen weniger schlafen.","Studies show that young people sleep less."],["Es scheint, dass die Privatsphäre unwichtiger wird.","It seems privacy is becoming less important."],["Falschmeldungen können Wahlen beeinflussen.","Fake news can influence elections."],["Das ist ein umstrittenes Thema.","That is a controversial topic."],["Zusammenfassend lässt sich sagen, dass Bildung entscheidend ist.","In summary, education is crucial."]],
+ dlg:{t:"A discussion",lines:[["A","Meiner Meinung nach schadet Social Media mehr, als es nützt.","In my opinion social media harms more than it helps."],["B","Das stimmt zwar, aber es verbindet auch Menschen.","True, but it also connects people."],["A","Allerdings verbreiten sich Falschmeldungen sehr schnell.","However, fake news spreads very quickly."],["B","Da muss ich zustimmen. Wir müssen Quellen prüfen.","I have to agree. We must check sources."],["A","Studien zeigen, dass viele jungen Leuten zu sehr vertrauen.","Studies show many people trust too much."],["B","Das sehe ich genauso. Bildung ist entscheidend.","I see it the same way. Education is key."]]},
+ ex:[["___ Meinung nach schadet es mehr. (my)","Meiner",["Meiner","Meine","Mein","Meinen"],"meiner Meinung nach"],["Da muss ich ___ . (disagree)","widersprechen",["widersprechen","widersprechend","zusprechen","entsprechen"],""],["Studien ___ , dass das stimmt. (show)","zeigen",["zeigen","zeigt","zeigten","zeigte"],""],["Zusammenfassend ___ sich sagen, … (lässt)","lässt",["lässt","lasst","ließ","lässt sich"],""]]
+});
+U({id:"b2-34",lvl:"B2",e:"🏛️",t:"Germany's Institutions & Politics",
+ intro:"How Germany works: states, parliament, elections – vocabulary for news and civic life.",
+ grammar:{t:"Politics vocabulary and the passive in reports",html:`
+<p>Germany is a <b>federal republic</b> (<i>Bundesrepublik</i>) with 16 states (<i>Bundesländer</i>). Key institutions:</p>
+<table class="g"><tr><th>German</th><th>English</th></tr>
+<tr><td>der Bundestag</td><td>federal parliament</td></tr><tr><td>der Bundesrat</td><td>federal council (states)</td></tr><tr><td>der Bundeskanzler / die Bundeskanzlerin</td><td>chancellor (head of government)</td></tr><tr><td>der Bundespräsident</td><td>federal president (head of state)</td></tr><tr><td>das Bundesverfassungsgericht</td><td>Federal Constitutional Court</td></tr><tr><td>das Grundgesetz</td><td>Basic Law (constitution)</td></tr><tr><td>die Wahl / wählen</td><td>election / to vote</td></tr><tr><td>die Erststimme / Zweitstimme</td><td>first vote (candidate) / second vote (party)</td></tr><tr><td>die Koalition</td><td>coalition</td></tr><tr><td>die Fünf-Prozent-Hürde</td><td>5% threshold</td></tr></table>
+<p>News style often uses <b>passive</b> and <b>nominal style</b>: <i>Der Gesetzentwurf wurde im Bundestag beschlossen.</i></p>`},
+ vocab:[["der Bundestag","federal parliament"],["der Bundesrat","federal council"],["der Kanzler","chancellor"],["der Bundespräsident","federal president"],["das Grundgesetz","Basic Law"],["die Verfassung","constitution"],["die Wahl","election"],["wählen","vote / elect"],["die Partei","party"],["die Koalition","coalition"],["die Opposition","opposition"],["die Regierung","government"],["das Gesetz","law"],["der Gesetzentwurf","bill"],["beschließen","pass / decide"],["das Bundesland","federal state"],["der Bürger","citizen"],["die Demokratie","democracy"],["die Mehrheit","majority"],["die Stimme","vote / voice"]],
+ sent:[["Der Bundestag wird alle vier Jahre gewählt.","The Bundestag is elected every four years."],["Das Grundgesetz garantiert die Menschenwürde.","The Basic Law guarantees human dignity."],["Die Koalition hat das Gesetz beschlossen.","The coalition has passed the law."],["Jeder Bürger hat zwei Stimmen.","Every citizen has two votes."],["Die Opposition kritisiert die Regierung.","The opposition criticises the government."],["Deutschland hat sechzehn Bundesländer.","Germany has sixteen federal states."],["Eine Partei braucht fünf Prozent der Stimmen.","A party needs five percent of the votes."],["Der Gesetzentwurf wurde im Bundestag diskutiert.","The bill was debated in the Bundestag."]],
+ dlg:{t:"Election talk",lines:[["A","Wen wirst du bei der Wahl wählen?","Whom will you vote for in the election?"],["B","Das weiß ich noch nicht. Ich lese die Programme der Parteien.","I don't know yet. I'm reading the parties' programmes."],["A","Hast du verstanden, was die Zweitstimme bedeutet?","Do you understand what the second vote means?"],["B","Ja, mit ihr wählt man eine Partei.","Yes, with it you vote for a party."],["A","Wichtig ist, dass man überhaupt wählt.","What's important is that one votes at all."],["B","Absolut. Jede Stimme zählt.","Absolutely. Every vote counts."]]},
+ ex:[["Der Bundestag ___ alle vier Jahre gewählt.","wird",["wird","ist","wurde","hat"],""],["Jeder Bürger hat zwei ___ . (votes)","Stimmen",["Stimmen","Wahlen","Parteien","Regeln"],""],["Die ___ hat das Gesetz beschlossen. (government/coalition)","Koalition",["Koalition","Kartoffel","Bank","Ampel"],""],["Eine Partei braucht fünf ___ der Stimmen.","Prozent",["Prozent","Euro","Mal","Jahre"],""]]
+});
+U({id:"b2-35",lvl:"B2",e:"🏰",t:"German-Speaking Culture & History",
+ intro:"Germany, Austria and Switzerland: culture, history and customs – the background to understanding the language.",
+ grammar:{t:"Talking about the past in texts",html:`
+<p>Historical texts use the <b>Präteritum</b> and the <b>passive</b>: <i>1990 wurde Deutschland wiedervereinigt.</i> Dates: <i>am 3. Oktober 1990</i> (ordinal + point), years without preposition: <i>1989 fiel die Berliner Mauer.</i></p>
+<table class="g"><tr><th>Region</th><th>Features</th></tr>
+<tr><td><b>Deutschland</b></td><td>Population ~84 m; capital Berlin; many dialects; <i>Hochdeutsch</i> (standard German)</td></tr>
+<tr><td><b>Österreich</b></td><td>Capital Wien; <i>Servus, Grüß Gott</i>; Austrian vocabulary: <i>Erdäpfel</i> (potatoes), <i>Paradeiser</i> (tomatoes)</td></tr>
+<tr><td><b>Schweiz</b></td><td>Four national languages; <i>Grüezi</i>; Swiss German in daily life, Standard German in writing</td></tr></table>
+<p><b>Customs:</b> <i>Mülltrennung</i> (waste separation), <i>Ruhezeiten</i> (quiet hours), <i>Weihnachtsmärkte</i> (Christmas markets), <i>Oktoberfest</i>, <i>Karneval / Fasching</i>, <i>Pfand</i> (bottle deposit).</p>`},
+ vocab:[["die Geschichte","history"],["das Mittelalter","Middle Ages"],["das Jahrhundert","century"],["der Krieg","war"],["der Frieden","peace"],["die Mauer","wall"],["die Wiedervereinigung","reunification"],["der Fall","fall / case"],["die Grenze","border"],["das Erbe","heritage"],["die Tradition","tradition"],["der Brauch","custom"],["die Mülltrennung","waste separation"],["das Pfand","deposit"],["der Weihnachtsmarkt","Christmas market"],["das Volksfest","folk festival"],["die Mundart","dialect"],["das Hochdeutsch","standard German"],["die Region","region"],["das Schloss","castle"]],
+ sent:[["1989 fiel die Berliner Mauer.","The Berlin Wall fell in 1989."],["Am 3. Oktober 1990 wurde Deutschland wiedervereinigt.","Germany was reunified on 3 October 1990."],["In der Schweiz spricht man vier Sprachen.","Four languages are spoken in Switzerland."],["Im Dezember besuchen viele den Weihnachtsmarkt.","Many visit the Christmas market in December."],["Auf Flaschen zahlt man in Deutschland Pfand.","In Germany you pay a deposit on bottles."],["In Österreich sagt man „Erdäpfel“ statt „Kartoffeln“.","In Austria they say „Erdäpfel“ instead of „Kartoffeln“."],["Das Schloss wurde im Mittelalter gebaut.","The castle was built in the Middle Ages."],["Mülltrennung ist in Deutschland sehr wichtig.","Waste separation is very important in Germany."]],
+ dlg:{t:"Cultural differences",lines:[["A","Warum trennen die Deutschen so viel Müll?","Why do Germans separate so much waste?"],["B","Es ist Tradition und gesetzlich vorgeschrieben.","It's a tradition and legally required."],["A","Und was ist Pfand?","And what is Pfand?"],["B","Man zahlt Geld für die Flasche und bekommt es zurück.","You pay money for the bottle and get it back."],["A","Interessant! Und in Österreich?","Interesting! And in Austria?"],["B","Dort sagt man „Servus“ und isst Erdäpfel.","There they say „Servus“ and eat Erdäpfel."]]},
+ ex:[["1989 ___ die Mauer. (fallen, Präteritum)","fiel",["fiel","fällt","fallte","gefallen"],""],["Am 3. Oktober 1990 ___ Deutschland wiedervereinigt.","wurde",["wurde","wird","war","hat"],""],["In der Schweiz ___ man vier Sprachen.","spricht",["spricht","sprecht","sprechen","sprach"],""],["Auf Flaschen zahlt man ___ . (deposit)","Pfand",["Pfand","Pflicht","Platz","Preis"],""]]
+});
+
+/* Language config: German (UI English) */
+const CFG={
+ key:"deutsch_v1",idb:"deutsch",tl:"de",sr:"de-DE",
+ vre:[/^de[-_]DE/i,/^de([-_]|$)/i,/^de[-_](AT|CH)/i],alt:/$^/,
+ numw:{"0":"null","1":"eins","2":"zwei","3":"drei","4":"vier","5":"fünf","6":"sechs","7":"sieben","8":"acht","9":"neun","10":"zehn","11":"elf","12":"zwölf","13":"dreizehn","14":"vierzehn","15":"fünfzehn","16":"sechzehn","17":"siebzehn","18":"achtzehn","19":"neunzehn","20":"zwanzig","30":"dreißig","40":"vierzig","50":"fünfzig","100":"hundert","1000":"tausend"},
+ sounds:[
+  ["ü","Round your lips as for „oo“, but say „ee“ – like French „u“","über, Tür, fünf, müde"],
+  ["ö","Round your lips as for „o“, but say „e“ – like French „eu“","schön, Öl, hören, möchten"],
+  ["ä","Like the „e“ in „bed“ (short) or „ai“ in „air“ (long)","Mädchen, spät, Käse, Männer"],
+  ["ch (after e, i, ä, ö, ü)","Soft hiss from the front of the mouth, like „h“ in „huge“","ich, nicht, Milch, Mädchen"],
+  ["ch (after a, o, u)","Throaty, like „ch“ in Scottish „loch“","Bach, Buch, Nacht, auch"],
+  ["sch","Like English „sh“","Schule, schön, Fisch, schnell"],
+  ["sp / st (at the start)","Pronounced „shp“ / „sht“","Sport, spielen, Straße, Student"],
+  ["z","Always „ts“ as in „cats“","Zeit, zehn, Zimmer, Katze"],
+  ["w","Like English „v“","Wasser, wir, Wetter, wohnen"],
+  ["v","Usually like English „f“ (in foreign words „v“)","Vater, viel, von, Vogel"],
+  ["ß / ss","Both are a sharp „s“; ß comes after long vowels and diphthongs","Straße, heiß, dass, essen"],
+  ["r","Back-of-the-throat „r“ (gargle-like), or after vowels almost like „a“","rot, Regen, Bruder, Vater"],
+  ["ei / ie / eu","ei = „eye“, ie = long „ee“, eu/äu = „oy“","Eis, Liebe, neu, Häuser"],
+  ["Final devoicing","b, d, g at the end sound like p, t, k","Hand, Tag, gelb, Weg"],
+  ["Long / short vowels","Doubled letters or a vowel before two consonants = short; vowel + h or single consonant often long","Bett (short), Beet (long), Stadt, Staat"],
+  ["Word stress","Usually on the first syllable; separable prefixes are stressed: AUF-stehen","Arbeit, aufstehen, Wohnung, verstehen"]
+ ],
+ gcats:[
+  ["Articles",["der","die","das","den","dem","des","ein","eine","einen","einem","einer"],"Three genders: <b>der</b> (m), <b>die</b> (f / plural), <b>das</b> (n). The <b>accusative</b> changes only masculine: der → <b>den</b>, ein → <b>einen</b>; the <b>dative</b>: dem / der / dem / den."],
+  ["Personal pronouns",["ich","du","er","sie","es","wir","ihr","Sie"],"<b>du</b> = informal, <b>Sie</b> = formal (capital S, always plural verb). <b>ihr</b> = you (plural informal)."],
+  ["Prepositions",["in","auf","an","mit","für","von","zu","nach","bei","aus","um","über","unter","vor"],"<b>mit, von, zu, nach, bei, aus</b> always take the dative; <b>für, um, durch, ohne</b> the accusative; <b>in, auf, an, über, unter, vor</b> are two-way (acc. = motion, dat. = location)."],
+  ["Auxiliary verbs",["bin","bist","ist","sind","seid","habe","hast","hat","haben","habt","war","hatte","wird","werden"],"<b>sein</b> and <b>haben</b> form the Perfekt; <b>werden</b> forms the future and the passive."],
+  ["Modal verbs",["kann","muss","will","soll","darf","möchte","können","müssen","wollen","sollen","dürfen","möchten"],"Modal verbs stand in position 2; the infinitive goes to the end of the sentence."],
+  ["Conjunctions",["und","aber","oder","denn","weil","dass","wenn","obwohl","damit","sondern","als","ob"],"<b>und, aber, oder, denn, sondern</b> do not change the word order; <b>weil, dass, wenn, obwohl, damit, als, ob</b> send the verb to the end."],
+  ["Question words",["was","wo","wann","wer","warum","wie","woher","wohin","welche","wie viel"],"<b>wo</b> (where), <b>woher</b> (where from), <b>wohin</b> (where to), <b>wann</b> (when), <b>warum</b> (why), <b>wer</b> (who), <b>was</b> (what)."],
+  ["Negation",["nicht","kein","keine","keinen","nie","niemand","nichts"],"<b>kein</b> negates nouns (<i>Ich habe kein Auto</i>), <b>nicht</b> negates verbs/adjectives/whole sentences."]
+ ],
+ gsyn:[["der","die","das"],["den","dem","des"],["ein","eine","einen","einem","einer"],["ich","wir"],["er","sie","es"],["war","hatte"],["kann","können"],["muss","müssen"],["will","wollen"],["soll","sollen"],["darf","dürfen"]],
+ tongue:["Fischers Fritz fischt frische Fische.","Zwischen zwei Zwetschgenzweigen sitzen zwei zwitschernde Schwalben.","Blaukraut bleibt Blaukraut und Brautkleid bleibt Brautkleid.","Der Kapitän kauft Kaffee für Karl.","Ich möchte schöne Schuhe kaufen."],
+ t:{
+  cm:[["id2de","German → English"],["de2id","English → German"],["listen","Listening → Meaning"]],
+  howSay:"How do you say that in German?",dictWrite:"Listen to the sentence and write it in German.",transTo:"Translate into German",
+  dictHint:"Type a German or English word.",dictPh:"Search (German or English) …",test1:"🔊 Test 1: German",voiceAuto:"Automatic (German → default)",
+  diag:"Diagnosis",
+  voiceMissing:"⚠️ No <b>German voice</b> found – the default voice is used. iPhone: Settings → Accessibility → Spoken Content → Voices → download German. Without a voice the app automatically uses an online voice (internet required).",
+  voiceSub:(n,l)=>"ℹ️ The voice “"+n+"” ("+l+") is used instead. Better choice: Sounds → Audio diagnosis.",
+  voiceNone:"⚠️ No German voice found – the model may sound wrong (tab “Sounds” → Diagnosis).",
+  tipListen:"<li><b>Listen every day:</b> Watch German series (with German subtitles), listen to podcasts and music. Start with subtitles, then without.</li>",
+  tipMistakes:"<li><b>Mistakes are good:</b> Germans appreciate every effort. Being understood matters more than being perfect.</li>",
+  soundsIntro:"German is spoken <b>almost as it is written</b> – but a few sounds (ü, ö, ch, r) take practice. Tap the examples to hear them, then practise in the “Speak” tab.",
+  greet:"Willkommen! 👋",hintBtn:"💡 Hint (English)",transPh:"In German …",testSent:"Guten Morgen. Wie geht es dir?",
+  srUnsup:"German is not supported by this device's speech recognition.",
+  lvl:{A1:"Beginner – first conversations",A2:"Elementary – everyday life",B1:"Intermediate – fluent & natural",B2:"Upper intermediate – confident & nuanced"},
+  quick:`<details class="card tip" open><summary>⚡ The 10 most important rules at a glance</summary><ol>
+   <li><b>The verb is in position 2</b> in main clauses: <i>Heute gehe ich ins Kino.</i></li>
+   <li><b>Every noun is capitalised</b> and has a gender: <i>der Mann, die Frau, das Kind</i>. Learn the article with the noun!</li>
+   <li><b>Four cases:</b> nominative (subject), accusative (direct object), dative (indirect object), genitive (possession). Articles and adjectives change.</li>
+   <li><b>Subordinate clauses</b> (weil, dass, wenn, obwohl …) send the conjugated verb <b>to the end</b>.</li>
+   <li><b>Separable verbs</b> split: <i>Ich stehe um 7 Uhr auf.</i></li>
+   <li><b>Perfekt</b> (haben/sein + participle) is the spoken past: <i>Ich habe gegessen. Ich bin gegangen.</i></li>
+   <li><b>Modal verbs</b> + infinitive at the end: <i>Ich kann gut schwimmen.</i></li>
+   <li><b>du / Sie:</b> du for friends and family, Sie for strangers and at work.</li>
+   <li><b>Plurals are irregular</b> – learn them with the noun: <i>das Buch – die Bücher</i>.</li>
+   <li><b>Compound words:</b> German builds long words from short ones: <i>Handschuh</i> = hand + shoe = glove. The last part decides the gender.</li></ol></details>`
+ }
+};
+
+
+const LT=CFG.t;
+/* ---------- Items ---------- */
+const ITEMS=[],IDX={};
+function addItem(u,k,i,v){const it={id:u.id+":"+k+i,u:u.id,k,idn:v[0],de:v[1],ph:phon(v[0])};ITEMS.push(it);IDX[it.id]=it;}
+UNITS.forEach((u,n)=>{u.n=n+1;(u.vocab||[]).forEach((v,i)=>addItem(u,"v",i,v));(u.sent||[]).forEach((v,i)=>addItem(u,"s",i,v));});
+const UNIT=id=>UNITS.find(u=>u.id===id);
+const LEVELS=["A1","A2","B1","B2"];
+
+const SOUNDS=CFG.sounds;
+
+/* ---------- Speicher ---------- */
+let S={box:{},due:{},xp:0,last:"",streak:0,bestStreak:0,best:{},hist:{},day:null,goal:60,newPerDay:10,cmode:"id2de",ckinds:"vs",totalCards:0,totalSpeak:0};
+try{const r=localStorage.getItem(CFG.key);if(r)Object.assign(S,JSON.parse(r));}catch(e){}
+function ds(dt){return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");}
+const today=()=>ds(new Date());
+const yesterday=()=>ds(new Date(Date.now()-864e5));
+function D(){const t=today();if(!S.day||S.day.d!==t)S.day={d:t,cards:0,speak:0,dict:0,ex:0,newc:0};return S.day;}
+let STORE_OK=false;
+try{localStorage.setItem("__t","1");STORE_OK=localStorage.getItem("__t")==="1";localStorage.removeItem("__t");}catch(e){}
+function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open(CFG.idb,1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}});}
+async function idbPut(){try{const db=await idbOpen();db.transaction("kv","readwrite").objectStore("kv").put(JSON.stringify(S),"S");}catch(e){}}
+async function idbLoad(){try{const db=await idbOpen();return await new Promise(res=>{const q=db.transaction("kv").objectStore("kv").get("S");q.onsuccess=()=>res(q.result);q.onerror=()=>res(null);});}catch(e){return null;}}
+function save(){S.ts=Date.now();try{localStorage.setItem(CFG.key,JSON.stringify(S));}catch(e){}idbPut();header();}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function storageWarn(){
+  let h="";
+  if(!STORE_OK)h+=`<div class="warn">⚠️ <b>Your browser does not keep data here permanently</b> (private mode, preview or local file). Your progress will be lost when you close it. Fix: open the app via an https address in Safari and add it to your Home Screen (instructions in the “Progress” tab) – or back up regularly via “Progress → Backup”.</div>`;
+  else if(isIOS&&!S.hideIos)h+=`<div class="warn">📱 <b>iPhone tip:</b> Safari often deletes data of local files after a while. The safe way: open the app on an https page → Share → “Add to Home Screen”. And make a backup now and then (“Progress” tab). <button class="btn sm" data-act="hideIos">Got it</button></div>`;
+  if(S.xp>=50&&(!S.lastBackup||Date.now()-S.lastBackup>7*864e5))h+=`<div class="warn">💾 Your last backup is ${S.lastBackup?Math.round((Date.now()-S.lastBackup)/864e5)+" days old":"not done yet"}. <button class="btn sm" data-act="go" data-tab="prog">Back up now</button></div>`;
+  return h;
+}
+function addXp(n){
+  const t=today();
+  if(S.last!==t){S.streak=(S.last===yesterday())?S.streak+1:1;S.last=t;}
+  S.bestStreak=Math.max(S.bestStreak||0,S.streak);
+  S.xp+=n;S.hist[t]=(S.hist[t]||0)+n;D();save();
+}
+function header(){
+  const e1=document.getElementById("sXp"),e2=document.getElementById("sStreak");if(!e1)return;
+  e1.textContent="⭐ "+S.xp+" XP";
+  const live=S.last===today()||S.last===yesterday();
+  e2.textContent="🔥 "+(live?S.streak:0)+" days";
+}
+
+/* ---------- Hilfsfunktionen ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const sample=(a,n)=>shuffle(a).slice(0,n);
+const APPVER="3.3";
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function norm(s){return String(s).toLowerCase().replace(/ß/g,"ss").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
+const sim=(a,b)=>(!a.length&&!b.length)?1:1-lev(a,b)/Math.max(a.length,b.length);
+const NUMW=CFG.numw;
+const heardNorm=s=>norm(s).split(" ").map(w=>NUMW[w]||w).join(" ");
+
+/* ---------- Scopes ---------- */
+function unitsIn(scope){
+  if(scope==="all")return UNITS;
+  if(scope.startsWith("lvl:"))return UNITS.filter(u=>u.lvl===scope.slice(4));
+  return UNITS.filter(u=>u.id===scope.slice(2));
+}
+function itemsIn(scope,kinds){const ids=new Set(unitsIn(scope).map(u=>u.id));return ITEMS.filter(x=>ids.has(x.u)&&(!kinds||kinds.includes(x.k)));}
+function scopeSelect(){
+  return `<select data-sel="scope"><option value="all">All lessons</option>${LEVELS.map(l=>`<option value="lvl:${l}" ${V.scope==="lvl:"+l?"selected":""}>Stufe ${l}</option>`).join("")}${UNITS.map(u=>`<option value="u:${u.id}" ${V.scope==="u:"+u.id?"selected":""}>${u.lvl} · ${u.n}. ${esc(u.t)}</option>`).join("")}</select>`;
+}
+function mastery(u){const it=ITEMS.filter(x=>x.u===u.id);if(!it.length)return 0;return Math.round(100*it.filter(x=>(S.box[x.id]||0)>=3).length/it.length);}
+function lvlPct(l){const us=UNITS.filter(u=>u.lvl===l);return Math.round(us.reduce((a,u)=>a+mastery(u),0)/us.length);}
+function dueCount(){const n=Date.now();return ITEMS.filter(x=>S.due[x.id]&&S.due[x.id]<=n).length;}
+function nextUnit(){return UNITS.find(u=>mastery(u)<60)||UNITS[UNITS.length-1];}
+
+/* ---------- Speech output ---------- */
+let voices=[],playTok=0;
+function loadVoices(){try{voices=speechSynthesis.getVoices();}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+const isIdLang=v=>CFG.vre[1].test(v.lang||"");
+const idVoice=()=>{
+  if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
+  return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
+};
+const TTSLOG=[];
+function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
+function toast(msg,ms){
+  try{let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";document.body.appendChild(t);}
+  t.textContent=msg;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none";},ms||7000);}catch(e){}
+}
+function stopAudio(){playTok++;try{speechSynthesis.cancel();}catch(e){}try{AUD.pause();}catch(e){}}
+/* Online-Stimme als normale Audiodatei (funktioniert auch, wenn die Speech output des Geräts stumm bleibt) */
+function releaseAudio(){   // Audio-Element wirklich freigeben, damit das Microphone die Audio-Session bekommt
+  try{AUD.onended=null;AUD.onerror=null;AUD.pause();AUD.removeAttribute&&AUD.removeAttribute("src");AUD.load&&AUD.load();}catch(e){}
+  try{speechSynthesis.cancel();}catch(e){}
+}
+function speakOnline(text,rate){
+  return new Promise(res=>{
+    let done=false;const fin=ok=>{if(!done){done=true;if(!ok)try{AUD.pause();}catch(e){}res(ok);}};
+    const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+CFG.tl+"&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
+    tlog("Online voice: loading \""+text.slice(0,28)+"\"");
+    try{
+      AUD.pause();AUD.onended=()=>{tlog("→ online finished");try{AUD.onended=null;AUD.onerror=null;AUD.removeAttribute("src");AUD.load();}catch(e){}fin(true);};
+      AUD.onerror=()=>{tlog("→ online voice: load error");fin(false);};
+      AUD.src=url;AUD.load&&AUD.load();
+      const p=AUD.play();
+      if(p&&p.then)p.then(()=>tlog("→ online started")).catch(e=>{tlog("→ online blocked: "+((e&&e.name)||e));fin(false);});
+    }catch(e){fin(false);}
+    setTimeout(()=>fin(false),Math.max(9000,text.length*400));
+  });
+}
+let ttsUnlocked=false;
+function deviceSpeak(text,rate,pitch,forceDefault){
+  return new Promise(res=>{
+    if(!("speechSynthesis" in window)){tlog("keine speechSynthesis");res(false);return;}
+    try{loadVoices();}catch(e){}
+    let done=false,started=false,tries=0,retrying=false;
+    const fin=ok=>{if(!done){done=true;res(!!ok);}};
+    const say=()=>{
+      tries++;
+      const u=new SpeechSynthesisUtterance(text),v=forceDefault?null:idVoice();
+      tlog("Device voice: \""+text.slice(0,28)+"\" – "+(v?v.name+" ("+v.lang+")":"Default")+" – attempt "+tries+" (voices: "+voices.length+")");
+      if(v){u.voice=v;u.lang=v.lang;}
+      u.rate=rate||.95;u.pitch=pitch||1;u.volume=1;
+      u.onstart=()=>{started=true;ttsUnlocked=true;tlog("→ started");};
+      u.onend=()=>{started=true;tlog("→ finished");fin(true);};
+      u.onerror=ev=>{const c=ev&&ev.error;tlog("→ ERROR: "+c);if(c==="canceled"||c==="interrupted"){if(!retrying)fin(started);return;}fin(false);};
+      try{speechSynthesis.resume();}catch(e){}
+      try{speechSynthesis.speak(u);}catch(e){fin(false);}
+    };
+    // Beim ersten Mal ohne Umweg direkt im Fingertipp sprechen; iOS verwirft sonst oft die Äußerung
+    if(speechSynthesis.speaking||speechSynthesis.pending){
+      try{speechSynthesis.cancel();}catch(e){}
+      if(ttsUnlocked){retrying=true;setTimeout(()=>{retrying=false;say();},80);}else say();
+    }else say();
+    setTimeout(()=>{if(!done&&!started&&tries<2){tlog("did not start – retrying");retrying=true;try{speechSynthesis.cancel();}catch(e){}setTimeout(()=>{retrying=false;say();},80);}},700);
+    setTimeout(()=>{if(!done&&!started){tlog("→ never started");fin(false);}},2000);
+    setTimeout(()=>fin(started),Math.max(7000,text.length*320));
+  });
+}
+async function speak(text,rate,pitch,forceDefault){
+  if(S.ttsV!==2){S.ttsV=2;S.ttsMode="online";save();}   // einmalig: Online-Stimme als Standard für alle Lektionen
+  const mode=S.ttsMode||"online";
+  if(!forceDefault&&(mode==="online"||(mode==="auto"&&(S.ttsAutoOnline||!idVoice())))){
+    if(await speakOnline(text,rate))return;
+    tlog("Online voice not possible → device voice");
+  }
+  const ok=await deviceSpeak(text,rate,pitch,forceDefault);
+  if(!ok&&!forceDefault&&mode==="auto"&&!S.ttsAutoOnline){
+    tlog("Device voice silent → trying online voice");
+    if(await speakOnline(text,rate)){S.ttsAutoOnline=true;save();toast("The device voice stayed silent – now using the online voice (internet required).",6000);}
+    else toast("No speech output possible: device voice silent and online voice unreachable. See the log in the “Sounds” tab.",9000);
+  }
+}
+async function playDialog(u,cb){
+  const my=++playTok,L=u.dlg.lines;
+  for(let i=0;i<L.length;i++){
+    if(my!==playTok)return;cb&&cb(i);
+    await speak(L[i][1],.9,L[i][0]==="A"?1:1.18);
+    if(my!==playTok)return;await sleep(250);
+  }
+  cb&&cb(-1);
+}
+function voiceWarning(){
+  if(!("speechSynthesis" in window))return '<div class="warn">This browser has no speech output. Please use Safari, Chrome or Edge.</div>';
+  const v=idVoice();
+  if(!v)return '<div class="warn">'+LT.voiceMissing+' <button class="btn sm" data-act="go" data-tab="sounds">'+LT.diag+'</button></div>';
+  if(!isIdLang(v)&&!S.voiceURI)return '<div class="small" style="margin-bottom:8px">'+LT.voiceSub(esc(v.name),esc(v.lang))+'</div>';
+  return "";
+}
+
+/* ---------- Aufnahme & Bewertung ---------- */
+const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+const SP={target:"",res:null,url:null,status:""};
+function spReset(t){SP.target=t;SP.res=null;if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}SP.url=null;SP.status="";}
+function evaluate(target,alts){
+  const tw=norm(target).split(" ").filter(Boolean);let best=null;
+  for(const a of (alts.length?alts:[""])){
+    const hw=heardNorm(a).split(" ").filter(Boolean);
+    const words=tw.map(w=>({w,s:hw.length?Math.max(...hw.map(h=>sim(w,h))):0}));
+    let sc=words.reduce((x,y)=>x+y.s,0)/Math.max(1,words.length);
+    if(hw.length>tw.length)sc*=Math.max(.7,tw.length/hw.length);
+    if(!best||sc>best.sc)best={sc,words,heard:a};
+  }
+  return {score:Math.round(best.sc*100),words:best.words,heard:best.heard};
+}
+/* ---------- Audio-Element (iOS: einmal per Fingertipp „entsperren“) ---------- */
+const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+const AUD=typeof Audio!=="undefined"?new Audio():{play(){return Promise.resolve();},pause(){}};
+let audUnlocked=false;
+function unlockAudio(){
+  try{loadVoices();}catch(e){}
+  try{if(navigator.audioSession&&navigator.audioSession.type!=="play-and-record")navigator.audioSession.type="playback";}catch(e){}
+  try{AUD.src=SILENT;const p=AUD.play();p&&p.catch&&p.catch(()=>{});}catch(e){}
+  if(audUnlocked)return;audUnlocked=true;
+}
+function pickMime(){const c=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];for(const t of c){try{if(window.MediaRecorder&&MediaRecorder.isTypeSupported(t))return t;}catch(e){}}return "";}
+const SRERR={"not-allowed":"Speech recognition not allowed (check microphone permission).","service-not-allowed":"Speech recognition not allowed here. iPhone: Settings → General → Keyboard → turn on “Enable Dictation” and test the page in a Safari tab instead of as a Home Screen app.","no-speech":"No speech was heard.","audio-capture":"No microphone found.","network":"No internet connection for speech recognition.","language-not-supported":LT.srUnsup,"aborted":"Recognition aborted."};
+async function getMic(opts){
+  releaseAudio();
+  const as=t=>{try{if(navigator.audioSession)navigator.audioSession.type=t;}catch(e){}};
+  let last;
+  for(const t of ["play-and-record","auto",null]){
+    if(t)as(t);
+    for(let k=0;k<2;k++){
+      try{return await navigator.mediaDevices.getUserMedia(opts||{audio:true});}
+      catch(e){last=e;if(e&&(e.name==="NotAllowedError"||e.name==="NotFoundError"||e.name==="SecurityError"))throw e;await sleep(250);}
+    }
+  }
+  throw last;
+}
+const recMode=()=>S.recMode||(isIOS?"rec":"both");
+const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,curMode:"",usedRec:false,
+ async start(cb,forceMode){
+  if(this.active)return;
+  const gen=++this.gen,mode=forceMode||recMode(),wantRec=mode!=="sr";
+  this.curMode=mode;this.usedRec=wantRec;
+  this.wantSR=mode!=="rec"&&!!SRC;
+  if(wantRec&&!this.wantSR)SP.res=null;
+  this.cb=cb;this.fin=false;this.alts=[];this.chunks=[];this.srErr=null;this.blob=null;this.mr=null;this.stream=null;
+  playTok++;releaseAudio();   // laufende Wiedergabe beenden, Microphone braucht freie Audio-Session
+  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
+  await sleep(isIOS?350:50);
+  if(gen!==this.gen)return;
+  if(mode==="sr"&&!SRC){SP.status="No speech recognition in this browser – choose “Recording only” above.";render();return;}
+  if(wantRec){
+    if(!navigator.mediaDevices||!window.MediaRecorder){SP.status="Recording is not supported by this browser (“Sounds” tab → Diagnosis).";render();return;}
+    try{this.stream=await getMic({audio:{echoCancellation:true,noiseSuppression:true}});}
+    catch(e){SP.status="Microphone blocked ("+((e&&e.name)||"Error")+"). Allow access for this page (iPhone: Settings → Safari → Microphone, or the notice in the address bar). Local files (file://) often do not work – use the https address.";render();return;}
+    try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
+    const mime=pickMime();
+    try{this.mr=new MediaRecorder(this.stream,mime?{mimeType:mime}:undefined);}catch(e){this.mr=new MediaRecorder(this.stream);}
+    this.mrDone=false;
+    this.mr.ondataavailable=e=>{if(e.data&&e.data.size)this.chunks.push(e.data);};
+    this.mr.onstop=()=>{if(gen!==this.gen)return;this.mrDone=true;this.blob=new Blob(this.chunks,{type:(this.mr&&this.mr.mimeType)||mime||"audio/mp4"});this.tryFinish();};
+    this.mr.start();
+    try{
+      this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+      const src=this.ctx.createMediaStreamSource(this.stream),an=this.ctx.createAnalyser();an.fftSize=1024;src.connect(an);
+      const data=new Uint8Array(an.fftSize);
+      const draw=()=>{if(!this.active)return;const cv=document.getElementById("meter");
+        if(cv){const g=cv.getContext("2d");an.getByteTimeDomainData(data);g.clearRect(0,0,cv.width,cv.height);g.strokeStyle="#c8102e";g.lineWidth=2;g.beginPath();
+          for(let i=0;i<data.length;i++){const x=i/data.length*cv.width,y=data[i]/255*cv.height;i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}
+        this.raf=requestAnimationFrame(draw);};
+      this.active=true;draw();
+    }catch(e){}
+  }else{this.mrDone=true;}
+  this.active=true;
+  this.srDone=true;
+  this.interim="";this.srTries=0;this.t0=Date.now();
+  if(this.wantSR)this.startSR(gen);
+  SP.status="● Recording … speak now (stops automatically).";
+  clearTimeout(this.timer);this.timer=setTimeout(()=>this.stop(),14000);
+  render();
+ },
+ startSR(gen){
+  try{
+    const sr=new SRC();sr.lang=CFG.sr;sr.interimResults=true;sr.maxAlternatives=5;sr.continuous=false;this.srDone=false;this.srTries++;
+    let gotFinal=false;
+    sr.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal){gotFinal=true;for(let j=0;j<e.results[i].length;j++)this.alts.push(e.results[i][j].transcript);}
+      else this.interim=e.results[i][0].transcript;}};
+    sr.onerror=e=>{this.srErr=e.error;};
+    sr.onend=()=>{
+      if(gen!==this.gen)return;
+      // Zu früh beendet, noch nichts erkannt, Nutzer hat nicht gestoppt → neu starten (iOS bricht gern ab)
+      const el=Date.now()-this.t0,soft=!this.srErr||this.srErr==="no-speech"||this.srErr==="aborted";
+      if(this.active&&!gotFinal&&!this.alts.length&&soft&&this.srTries<4&&el<10500){
+        this.srErr=null;try{this.startSR(gen);return;}catch(e){}
+      }
+      if(!this.alts.length&&this.interim)this.alts.push(this.interim);   // Zwischenergebnis retten
+      this.srDone=true;if(this.active)this.stop();else this.tryFinish();};
+    sr.start();this.sr=sr;
+  }catch(e){this.srDone=true;this.srErr="aborted";}
+ },
+ stop(silent){
+  clearTimeout(this.timer);cancelAnimationFrame(this.raf);
+  const was=this.active;this.active=false;
+  try{if(this.sr&&!this.srDone)this.sr.stop();}catch(e){}
+  try{if(this.mr&&this.mr.state!=="inactive")this.mr.stop();}catch(e){}
+  try{this.stream&&this.stream.getTracks().forEach(t=>t.stop());}catch(e){}
+  try{this.ctx&&this.ctx.close();}catch(e){}
+  this.ctx=null;
+  try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}
+  if(silent){this.gen++;this.fin=true;this.srDone=true;this.mrDone=true;return;}
+  if(was){SP.status="Evaluating …";render();const g=this.gen;setTimeout(()=>{if(g===this.gen){if(!this.alts.length&&this.interim)this.alts.push(this.interim);this.srDone=true;this.mrDone=true;this.tryFinish();}},3200);}
+ },
+ tryFinish(){
+  if(this.active||!this.srDone||!this.mrDone||this.fin)return;
+  this.fin=true;
+  const alts=this.alts.slice(),err=this.srErr;
+  if(this.usedRec){
+    if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}
+    SP.url=(this.blob&&this.blob.size>0)?URL.createObjectURL(this.blob):null;
+  }
+  S.totalSpeak=(S.totalSpeak||0)+1;D().speak++;
+  if(this.wantSR&&alts.length){
+    SP.res=evaluate(SP.target,alts);
+    const key="t:"+norm(SP.target);S.best[key]=Math.max(S.best[key]||0,SP.res.score);
+    addXp(Math.max(1,Math.round(SP.res.score/10)));
+    SP.status=this.usedRec?"Done – listen to your recording (▶) and compare (⇄) with the model.":"Scoring done – below you can see which words were recognised.";
+  }else if(this.wantSR){
+    SP.res=null;addXp(1);
+    SP.status=(err&&SRERR[err])?SRERR[err]:"Nothing was recognised. Speak louder and closer to the microphone. Speech recognition needs internet.";
+    if(SP.url)SP.status+=" You can still listen to your recording.";
+  }else{SP.res=null;addXp(1);SP.status=SP.url?"Recording saved. Tap ⇄ Compare (model, then you) or ▶ just your recording. For a percentage score: 📊 Score and say the sentence once more.":"Nothing was recorded. Check the microphone permission.";}
+  if(this.cb)this.cb(SP.res);
+  render();
+ }
+};
+function playAud(url){
+  return new Promise(r=>{
+    try{AUD.pause();AUD.onended=AUD.onerror=()=>r();AUD.src=url;AUD.load&&AUD.load();
+      const p=AUD.play();if(p&&p.catch)p.catch(()=>{SP.status="Playback blocked – tap ▶ “My recording” once more.";const el=document.querySelector("#spstat");if(el)el.textContent=SP.status;r();});
+    }catch(e){r();}
+  });
+}
+function playMine(){if(!SP.url)return Promise.resolve();return playAud(SP.url);}
+async function compareAudio(){
+  unlockAudio();                                  // im Fingertipp: Audio-Element freischalten
+  if(!SP.url)return;
+  SP.status="⇄ Compare: first the model, then your recording …";const el=document.getElementById("spstat");if(el)el.textContent=SP.status;
+  await speak(SP.target,.9);
+  await sleep(350);
+  await playMine();
+  SP.status="Comparison done – once more? Tap ⇄ or record again.";const e2=document.getElementById("spstat");if(e2)e2.textContent=SP.status;
+}
+function resultHtml(r){
+  const col=r.score>=85?"var(--ok)":r.score>=60?"var(--mid)":"var(--bad)";
+  return `<div class="row" style="justify-content:space-between"><div><div class="small">Heard:</div><div style="font-size:17px">„${esc(r.heard||"–")}“</div></div><div class="score" style="color:${col}">${r.score}%</div></div>
+  <div style="margin:8px 0">${r.words.map(w=>`<span class="word ${w.s>=.85?"g":w.s>=.6?"m":"r"}">${esc(w.w)}</span>`).join("")}</div>
+  <div class="small">${r.score>=85?"Very good! 🎉":r.score>=60?"Almost – watch the orange/red words and listen to the model again.":"Not quite yet – listen slowly and repeat syllable by syllable."} (Speech-recognition score = rough guide.)</div>`;
+}
+function speakBox(target,ph,hideTarget){
+  const m=recMode();
+  const supp=(m!=="sr"&&!navigator.mediaDevices)?'<div class="warn">No microphone access possible. Open the https address of the app directly in Safari/Chrome/Edge (not in a preview or as a local file).</div>':"";
+  const noSR=(m!=="rec"&&!SRC)?'<div class="warn">No speech recognition in this browser. Choose “Recording only” above and compare by ear.</div>':"";
+  const mix=(m==="both"&&isIOS)?'<div class="warn">On iPhone, simultaneous recording and speech recognition often block each other. If something hangs: choose “Recording only” or “Scoring only”.</div>':"";
+  const idv=(!idVoice()&&"speechSynthesis" in window)?'<div class="small" style="margin-bottom:6px">'+LT.voiceNone+'</div>':"";
+  return `${supp}${noSR}${mix}
+  <div class="card" style="text-align:center">
+   ${hideTarget?`<div class="small">Text hidden – speak from memory.</div>`:`<div class="big" style="font-size:26px">${esc(target)}</div>`}
+   ${ph&&!hideTarget?`<div class="ph">${esc(ph)}</div>`:""}${idv}
+   <div class="row" style="justify-content:center;margin:12px 0">
+    <button class="btn" data-act="saySP">🔊 Model</button><button class="btn" data-act="saySP" data-slow="1">🐢 Slow</button></div>
+   <canvas id="meter" width="700" height="50"></canvas>
+   <div class="row" style="justify-content:center;margin-top:10px">
+    <button class="btn ${Rec.active&&Rec.curMode!=="sr"?"rec":"pri"}" data-act="toggleRec" ${Rec.active&&Rec.curMode==="sr"?"disabled":""}>${Rec.active&&Rec.curMode!=="sr"?"⏹ Stop":"🎙 Record"}</button>
+    <button class="btn" data-act="playMine" ${SP.url?"":"disabled"}>▶ My recording</button>
+    <button class="btn" data-act="compare" ${SP.url?"":"disabled"}>⇄ Compare</button>
+    <button class="btn ${Rec.active&&Rec.curMode==="sr"?"rec":""}" data-act="scoreOnly" ${(!SRC||(Rec.active&&Rec.curMode!=="sr"))?"disabled":""}>${Rec.active&&Rec.curMode==="sr"?"⏹ Stop":"📊 Score"}</button>
+    <button class="btn" data-act="altRec">🎤 Record with iPhone recorder</button></div>
+   <div class="small" style="margin-top:6px">① Listen to the model → ② 🎙 record → ③ ⇄ Compare (model, then you) → ④ 📊 Score (speak again, for the percentage)</div>
+   <div class="small" id="spstat" style="margin-top:8px">${esc(SP.status||"Tip: first listen to the model, then repeat.")}</div>
+   <div class="row" style="justify-content:center;margin-top:8px"><select data-sel="recmode">
+    <option value="both" ${m==="both"?"selected":""}>Recording + scoring</option>
+    <option value="rec" ${m==="rec"?"selected":""}>Recording only (self-comparison)</option>
+    <option value="sr" ${m==="sr"?"selected":""}>Scoring only (speech recognition)</option></select></div>
+  </div>
+  ${SP.res?`<div class="card">${resultHtml(SP.res)}</div>`:""}`;
+}
+
+/* ---------- Zustand ---------- */
+const V={tab:"today",scope:"all",unit:null,utab:"intro",cards:null,
+ sp:{mode:"item",unit:"a1-01",kind:"s",i:0},rp:null,
+ hear:{mode:"dict",q:null},ex:null,exType:"mix",q:"",showDe:true,showId:true,hideT:false};
+const TABS=[["today","Today"],["path","Path"],["cards","Cards"],["speak","Speak"],["hear","Listen"],["ex","Practice"],["gram","Grammar"],["dict","Dictionary"],["sounds","Sounds"],["prog","Progress"]];
+function tabsHtml(){$("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" class="${V.tab===k?"on":""}">${n}</button>`).join("");}
+function go(t){Rec.stop(true);stopAudio();V.tab=t;if(t==="path")V.unit=null;render();window.scrollTo(0,0);}
+function render(){
+  tabsHtml();
+  ({today:vToday,path:vPath,cards:vCards,speak:vSpeak,hear:vHear,ex:vEx,gram:vGram,dict:vDict,sounds:vSounds,prog:vProg})[V.tab]();
+  header();
+}
+
+/* ===================== HEUTE ===================== */
+function vToday(){
+  const d=D(),xp=S.hist[today()]||0,pct=Math.min(100,Math.round(100*xp/S.goal));
+  const next=nextUnit(),due=dueCount();
+  const plan=[["Review flashcards","cards",d.cards,20,"cards"],["Speak sentences aloud (with recording)","speak",d.speak,5,"speak"],["Write a dictation","dict",d.dict,3,"hear"],["Solve exercises","ex",d.ex,10,"ex"]];
+  $("#view").innerHTML=`
+  <h2>${LT.greet}</h2>${storageWarn()}
+  <div class="card"><div class="row" style="justify-content:space-between"><b>Daily goal: ${xp} / ${S.goal} XP</b>
+   <select data-sel="goal">${[30,60,100,150].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></div>
+   <div class="bar" style="margin-top:8px;height:12px"><i style="width:${pct}%"></i></div>
+   <div class="small" style="margin-top:6px">🔥 ${S.streak||0} day streak · ${due} cards due</div></div>
+  <div class="card"><h3 style="margin-top:0">Your daily plan (approx. 25–30 min)</h3>
+   ${plan.map(p=>`<div class="row" style="margin:7px 0"><span class="check">${p[2]>=p[3]?"✅":"⬜"}</span><div style="flex:1"><b>${p[0]}</b><div class="small">${Math.min(p[2],p[3])}/${p[3]}</div></div><button class="btn sm" data-act="go" data-tab="${p[4]}">Los</button></div>`).join("")}
+   <div class="row" style="margin:7px 0"><span class="check">📘</span><div style="flex:1"><b>New lesson: ${next.n}. ${esc(next.t)}</b><div class="small">${next.lvl} · ${mastery(next)}% learned</div></div><button class="btn pri sm" data-act="openUnit" data-u="${next.id}">Open</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Progress by level</h3>
+   ${LEVELS.map(l=>`<div style="margin:8px 0"><b>${l}</b> <span class="small">${lvlPct(l)}%</span><div class="bar"><i style="width:${lvlPct(l)}%"></i></div></div>`).join("")}</div>
+  <details class="card tip"><summary>🎯 How to become truly fluent</summary><ul>
+   <li><b>Daily, not rarely:</b> 25 minutes every day beat 3 hours on the weekend. The daily plan above is built for that.</li>
+   <li><b>Speak aloud:</b> Repeat every sentence aloud several times (shadowing in the “Speak” tab). Fluency is muscle training for your mouth.</li>
+   <li><b>Sentences, not single words:</b> The cards mix words and whole sentences. Whole sentences teach you word order and small words.</li>
+   <li><b>Repeat the role-play:</b> Play every dialogue in both roles until you can speak without the text (“Hide text”).</li>
+   <li><b>Real people:</b> Find language partners (e.g. via tandem apps or language cafés) and talk to native speakers weekly from lesson 5. Nothing replaces real conversations.</li>
+   ${LT.tipListen}
+   ${LT.tipMistakes}</ul></details>`;
+}
+
+/* ===================== LERNPFAD ===================== */
+function vPath(){
+  if(V.unit)return vUnit();
+  $("#view").innerHTML=`<h2>Path</h2>`+LEVELS.map(l=>`<h3><span class="lvl">${l}</span>${LT.lvl[l]} <span class="small">· ${lvlPct(l)}%</span></h3>
+   <div class="grid">${UNITS.filter(u=>u.lvl===l).map(u=>`<div class="card" style="cursor:pointer;margin:0" data-act="openUnit" data-u="${u.id}">
+    <div style="font-size:26px">${u.e}</div><b>${u.n}. ${esc(u.t)}</b>
+    <div class="small">${(u.vocab||[]).length} words · ${(u.sent||[]).length} sentences · dialogue</div>
+    <div class="bar" style="margin-top:8px"><i style="width:${mastery(u)}%"></i></div></div>`).join("")}</div>`).join("");
+}
+function dlgHtml(u,rev){
+  return u.dlg.lines.map((l,i)=>`<div class="bub ${l[0]}" id="bub${i}"><b>${V.showId||rev?esc(l[1]):"…"}</b>${V.showDe?`<span>${esc(l[2])}</span>`:""}
+   <div><button class="btn sm" data-act="sayLine" data-u="${u.id}" data-l="${i}">🔊</button></div></div>`).join("");
+}
+function vUnit(){
+  const u=UNIT(V.unit),t=V.utab;
+  const tabs=[["intro","Overview"],["vocab","Vocabulary"],["sent","Sentences"],["dlg","Dialog"]];
+  let body="";
+  if(t==="intro")body=`<div class="card"><p>${esc(u.intro)}</p></div><div class="card"><h3 style="margin-top:0">📖 ${esc(u.grammar.t)}</h3>${u.grammar.html}</div>
+   <div class="row"><button class="btn pri" data-act="startCards" data-scope="u:${u.id}">🃏 Cards of this lesson</button><button class="btn" data-act="startEx" data-scope="u:${u.id}">✍️ Practice</button></div>`;
+  if(t==="vocab"||t==="sent"){
+    const k=t==="vocab"?"v":"s",its=ITEMS.filter(x=>x.u===u.id&&x.k===k);
+    body=`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="sayAll" data-u="${u.id}" data-k="${k}">▶ Read all aloud</button><button class="btn" data-act="startCards" data-scope="u:${u.id}">🃏 Cards</button></div>
+    <div class="card"><table>${its.map(x=>`<tr><td style="width:46%"><b>${esc(x.idn)}</b><div class="ph" style="font-size:13px">${esc(x.ph)}</div></td><td>${esc(x.de)}</td>
+     <td style="white-space:nowrap"><button class="btn sm" data-act="say" data-i="${x.id}">🔊</button> <button class="btn sm" data-act="goSpeakItem" data-i="${x.id}">🎙</button></td></tr>`).join("")}</table></div>`;
+  }
+  if(t==="dlg")body=`<div class="card"><h3 style="margin-top:0">🗣️ ${esc(u.dlg.t)}</h3>
+   <div class="row" style="margin-bottom:8px"><button class="btn pri" data-act="playDlg" data-u="${u.id}">▶ Listen</button>
+    <button class="btn" data-act="toggleDe">${V.showDe?"Hide translation":"Show translation"}</button>
+    <button class="btn" data-act="toggleId">${V.showId?"Hide text (listening test)":"Show text"}</button>
+    <button class="btn" data-act="startRp" data-u="${u.id}" data-role="B">🎭 Role-play</button></div>${dlgHtml(u)}</div>`;
+  $("#view").innerHTML=`<div class="row"><button class="btn sm" data-act="back">← Path</button><span class="lvl">${u.lvl}</span><h2 style="margin:0">${u.e} ${u.n}. ${esc(u.t)}</h2></div>
+   ${voiceWarning()}<div class="tabs2">${tabs.map(([k,n])=>`<button data-act="utab" data-t="${k}" class="${t===k?"on":""}">${n}</button>`).join("")}</div>${body}`;
+}
+
+/* ===================== KARTEN (SRS) ===================== */
+function buildCards(free){
+  const kinds=S.ckinds.split(""),pool=itemsIn(V.scope,kinds),now=Date.now();
+  let q=[],isFree=!!free;
+  if(!free){
+    const rev=pool.filter(x=>S.due[x.id]&&S.due[x.id]<=now);
+    const left=Math.max(0,S.newPerDay-D().newc);
+    const nw=pool.filter(x=>!S.due[x.id]&&!S.box[x.id]).slice(0,left);
+    const uo={};UNITS.forEach((u,i)=>uo[u.id]=i);
+    nw.sort((a,b)=>(uo[a.u]-uo[b.u])||((a.k==="v"?0:1)-(b.k==="v"?0:1)));   // Reihenfolge: Lektion → Vocabulary → Sätze
+    q=shuffle(rev).sort((a,b)=>(a.k==="v"?0:1)-(b.k==="v"?0:1)).slice(0,30).map(x=>x.id).concat(nw.map(x=>x.id));
+    if(!q.length)isFree=true;
+  }
+  if(isFree){q=shuffle(pool).sort((a,b)=>(S.box[a.id]||0)-(S.box[b.id]||0)).slice(0,15).map(x=>x.id);q=shuffle(q).sort((a,b)=>(IDX[a].k==="v"?0:1)-(IDX[b].k==="v"?0:1));}
+  V.cards={q,i:0,flip:false,free:isFree,again:{},spoken:false,right:0};
+}
+const CM=LT.cm;
+function vCards(){
+  if(!V.cards)buildCards();
+  const c=V.cards;
+  const cfg=`<div class="row" style="margin-bottom:10px">${scopeSelect()}
+   <select data-sel="cmode">${CM.map(m=>`<option value="${m[0]}" ${S.cmode===m[0]?"selected":""}>${m[1]}</option>`).join("")}</select>
+   <select data-sel="ckinds"><option value="vs" ${S.ckinds==="vs"?"selected":""}>Words + sentences</option><option value="v" ${S.ckinds==="v"?"selected":""}>words only</option><option value="s" ${S.ckinds==="s"?"selected":""}>sentences only</option></select></div>`;
+  if(c.i>=c.q.length){
+    $("#view").innerHTML=`<h2>Flashcards</h2>${cfg}<div class="card">${c.q.length?`<p>🎉 Round complete! ${c.q.length} cards practised.</p>`:`<p>There is nothing to practise in this area.</p>`}
+     <div class="row"><button class="btn pri" data-act="newCards">New round</button><button class="btn" data-act="freeCards">Free practice</button></div>
+     <div class="small" style="margin-top:8px">${dueCount()} cards due in total · ${Math.max(0,S.newPerDay-D().newc)} new cards still possible today.</div></div>`;
+    return;
+  }
+  const it=IDX[c.q[c.i]],m=S.cmode;let front="",back="";
+  const idBlock=`<div class="big">${esc(it.idn)}</div><div class="ph">${esc(it.ph)}</div>`;
+  if(m==="id2de"){front=idBlock;back=`<div class="de" style="margin-top:14px;font-size:22px">${esc(it.de)}</div>`;}
+  if(m==="de2id"){front=`<div class="small">${LT.howSay}</div><div class="big" style="font-size:26px">${esc(it.de)}</div>`;back=`<div style="margin-top:14px">${idBlock}</div>`;}
+  if(m==="listen"){front=`<div class="small">What do you hear?</div><div style="font-size:48px">🔊</div>`;back=`<div style="margin-top:12px">${idBlock}<div class="de" style="font-size:20px">${esc(it.de)}</div></div>`;}
+  const u=UNIT(it.u);
+  $("#view").innerHTML=`<h2>Flashcards</h2>${voiceWarning()}${cfg}
+   <div class="small" style="margin-bottom:6px">Card ${c.i+1}/${c.q.length}${c.free?" · free practice":""} · ${it.k==="v"?"📘 Word":"💬 Sentence"} · ${u.lvl} ${u.n}. ${esc(u.t)}</div>
+   <div class="card flip" data-act="flip">${front}${c.flip?`<div>${back}</div>`:`<div class="small" style="margin-top:14px">Tippen / Leertaste zum Umdrehen</div>`}</div>
+   <div class="row" style="margin-bottom:12px"><button class="btn" data-act="say" data-i="${it.id}">🔊 Normal</button><button class="btn" data-act="say" data-i="${it.id}" data-slow="1">🐢 Slow</button><button class="btn" data-act="goSpeakItem" data-i="${it.id}">🎙 Practise speaking</button></div>
+   ${c.flip?`<div class="row"><button class="btn" data-act="rate" data-r="0" style="border-color:var(--bad)">❌ Nicht gewusst (1)</button><button class="btn" data-act="rate" data-r="1" style="border-color:var(--mid)">😐 Schwer (2)</button><button class="btn pri" data-act="rate" data-r="2">✅ Gewusst (3)</button></div>`:""}`;
+  if(!c.spoken&&(m==="id2de"||m==="listen")){c.spoken=true;speak(it.idn);}
+  if(c.flip&&m==="de2id"&&!c.spoken2){c.spoken2=true;speak(it.idn);}
+}
+function rateCard(r){
+  const c=V.cards,id=c.q[c.i],isNew=!S.box[id];let b=S.box[id]||0;const days=[0,1,2,4,8,16,32];
+  if(isNew)D().newc++;
+  if(r===0){b=1;S.due[id]=Date.now()+10*60000;if(!c.again[id]){c.again[id]=1;c.q.push(id);}}
+  else if(r===1){b=Math.max(1,b);S.due[id]=Date.now()+864e5;}
+  else{b=Math.min(6,b+1);S.due[id]=Date.now()+days[b]*864e5;c.right++;}
+  S.box[id]=b;D().cards++;S.totalCards=(S.totalCards||0)+1;
+  addXp(r===2?3:r===1?2:1);
+  c.i++;c.flip=false;c.spoken=false;c.spoken2=false;render();
+}
+
+/* ===================== SPRECHEN ===================== */
+function vSpeak(){
+  const s=V.sp;
+  const modes=`<div class="tabs2"><button data-act="spMode" data-m="item" class="${s.mode==="item"?"on":""}">Words & sentences</button><button data-act="spMode" data-m="role" class="${s.mode==="role"?"on":""}">Role-play & shadowing</button></div>`;
+  if(s.mode==="role"){vRp(modes);return;}
+  const u=UNIT(s.unit),list=ITEMS.filter(x=>x.u===u.id&&x.k===s.kind),it=list[Math.min(s.i,list.length-1)];
+  if(SP.target!==it.idn)spReset(it.idn);
+  const best=S.best["t:"+norm(it.idn)];
+  $("#view").innerHTML=`<h2>Speaking & pronunciation</h2>${voiceWarning()}${modes}
+   <div class="row" style="margin-bottom:10px"><select data-sel="spunit">${UNITS.map(x=>`<option value="${x.id}" ${x.id===s.unit?"selected":""}>${x.lvl} · ${x.n}. ${esc(x.t)}</option>`).join("")}</select>
+   <select data-sel="spkind"><option value="v" ${s.kind==="v"?"selected":""}>Words</option><option value="s" ${s.kind==="s"?"selected":""}>Sentences</option></select>
+   <span class="small">${s.i+1}/${list.length}${best!=null?" · best "+best+"%":""}</span></div>
+   <div class="card" style="text-align:center;padding:10px"><span class="de">${esc(it.de)}</span></div>
+   ${speakBox(it.idn,it.ph)}
+   <div class="row" style="justify-content:space-between"><button class="btn" data-act="spPrev">← Back</button><button class="btn" data-act="spRand">🎲 Random</button><button class="btn" data-act="spNext">Next →</button></div>`;
+}
+function vRp(modes){
+  const roleUnits=UNITS;
+  if(!V.rp)V.rp={u:V.sp.unit,role:"B",i:0,scores:[],played:{},done:false};
+  const r=V.rp,u=UNIT(r.u),L=u.dlg.lines;
+  const cfg=`<div class="row" style="margin-bottom:10px"><select data-sel="rpunit">${roleUnits.map(x=>`<option value="${x.id}" ${x.id===r.u?"selected":""}>${x.lvl} · ${x.n}. ${esc(x.t)} – ${esc(x.dlg.t)}</option>`).join("")}</select>
+   <select data-sel="rprole"><option value="A" ${r.role==="A"?"selected":""}>I am person A</option><option value="B" ${r.role==="B"?"selected":""}>I am person B</option><option value="both" ${r.role==="both"?"selected":""}>Shadowing (repeat all lines)</option></select>
+   <label class="small"><input type="checkbox" data-chk="hideT" ${V.hideT?"checked":""}> Hide text</label></div>`;
+  if(r.i>=L.length){
+    const sc=r.scores.filter(x=>x!=null),avg=sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):null;
+    $("#view").innerHTML=`<h2>Speaking & pronunciation</h2>${modes}${cfg}<div class="card"><h3 style="margin-top:0">🎉 Dialogue completed!</h3>${avg!=null?`<div class="score">${avg}%</div><div class="small">Average over ${sc.length} lines</div>`:`<p>Repeat the dialogue until you can say it fluently.</p>`}
+     <div class="row" style="margin-top:10px"><button class="btn pri" data-act="rpRestart">Again</button><button class="btn" data-act="rpSwap">Swap roles</button></div></div>`;
+    if(avg!=null&&!r.rewarded){r.rewarded=true;addXp(10);}
+    return;
+  }
+  const line=L[r.i],mine=r.role==="both"||line[0]===r.role;
+  let hist="";for(let k=0;k<=r.i;k++){const l=L[k];const hide=(l[0]===r.role||r.role==="both")&&V.hideT&&k===r.i;hist+=`<div class="bub ${l[0]}"><b>${hide?"…":esc(l[1])}</b><span>${k===r.i&&hide?"":esc(l[2])}</span></div>`;}
+  let body="";
+  if(!mine){
+    body=`<div class="card"><div class="small">Your partner is speaking … 🔊</div><div class="row" style="margin-top:8px"><button class="btn" data-act="rpNext">Next ⏭</button></div></div>`;
+    if(!r.played[r.i]){r.played[r.i]=true;const my=++playTok,idx=r.i;speak(line[1],.9,line[0]==="A"?1:1.18).then(async()=>{await sleep(300);if(my===playTok&&V.rp===r&&r.i===idx){r.i++;render();}});}
+  }else{
+    if(SP.target!==line[1]&&!(SP._rpIdx===r.i&&SP._rpU===r.u)){spReset(line[1]);SP._rpIdx=r.i;SP._rpU=r.u;}
+    body=`<div class="small" style="margin:6px 0">Your turn – ${esc(line[2])}</div>${speakBox(line[1],phon(line[1]),V.hideT)}
+     <div class="row"><button class="btn pri" data-act="rpNext">${SP.res||SP.url?"Next →":"Skip →"}</button></div>`;
+    if(r.role==="both"&&!r.played[r.i]){r.played[r.i]=true;speak(line[1],.9,line[0]==="A"?1:1.18);}
+  }
+  $("#view").innerHTML=`<h2>Speaking & pronunciation</h2>${voiceWarning()}${modes}${cfg}<div class="small" style="margin-bottom:4px">Line ${r.i+1}/${L.length} · ${esc(u.dlg.t)}</div>${hist}${body}`;
+}
+
+/* ===================== HÖREN ===================== */
+function buildDict(){
+  const pool=itemsIn(V.scope,["s"]);
+  V.hear.q={qs:shuffle(pool).slice(0,8).map(x=>x.id),i:0,res:null,typed:"",score:0,played:false};
+}
+function vHear(){
+  const h=V.hear;
+  const modes=`<div class="tabs2"><button data-act="hMode" data-m="dict" class="${h.mode==="dict"?"on":""}">Dictation</button><button data-act="hMode" data-m="dlg" class="${h.mode==="dlg"?"on":""}">Dialogue listening test</button></div>`;
+  if(h.mode==="dlg"){
+    const us=UNITS,u=UNIT(h.dlgU||"a1-01");
+    $("#view").innerHTML=`<h2>Listen</h2>${voiceWarning()}${modes}
+     <div class="row" style="margin-bottom:10px"><select data-sel="hdlg">${us.map(x=>`<option value="${x.id}" ${x.id===u.id?"selected":""}>${x.lvl} · ${x.n}. ${esc(x.dlg.t)}</option>`).join("")}</select>
+     <button class="btn pri" data-act="playDlg" data-u="${u.id}">▶ Listen</button>
+     <button class="btn" data-act="toggleId">${V.showId?"Hide text":"Show text"}</button>
+     <button class="btn" data-act="toggleDe">${V.showDe?"Translation off":"Translation on"}</button></div>
+     <div class="card">${dlgHtml(u)}</div><div class="small">Tip: first listen without the text and understand what you can. Then show the text and listen again selectively.</div>`;
+    return;
+  }
+  if(!h.q)buildDict();
+  const q=h.q;
+  const head=`<h2>Listen</h2>${voiceWarning()}${modes}<div class="row" style="margin-bottom:10px">${scopeSelect()}<span class="small">Dictation ${Math.min(q.i+1,q.qs.length)}/${q.qs.length}</span></div>`;
+  if(q.i>=q.qs.length){
+    $("#view").innerHTML=`${head}<div class="card"><div class="score">${q.score}/${q.qs.length}</div><p>${q.score>=q.qs.length*.8?"Very strong listening comprehension! 🌟":"Keep practising – listening is training."}</p><button class="btn pri" data-act="newDict">New dictation</button></div>`;return;
+  }
+  const it=IDX[q.qs[q.i]];
+  let res="";
+  if(q.res){
+    res=`<div class="card"><div style="margin:4px 0">${q.res.words.map(w=>`<span class="word ${w.s>=.99?"g":w.s>=.7?"m":"r"}">${esc(w.w)}</span>`).join("")}</div>
+     <div class="small">Correct: <b>${esc(it.idn)}</b> – ${esc(it.de)}</div><div class="row" style="margin-top:8px"><button class="btn pri" data-act="dNext">Next →</button></div></div>`;
+  }
+  $("#view").innerHTML=`${head}<div class="card"><p>${LT.dictWrite}</p>
+   <div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="dPlay">🔊 Play</button><button class="btn" data-act="dPlay" data-slow="1">🐢 Slow</button>
+   <button class="btn" data-act="dHint">${LT.hintBtn}</button></div>
+   <div id="dhint" class="small" style="display:none;margin-bottom:8px">${esc(it.de)}</div>
+   <input type="text" id="din" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res?"disabled":""} value="${esc(q.typed||"")}" placeholder="Write what you hear …">
+   ${q.res?"":`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="dCheck">Check</button></div>`}</div>${res}`;
+  if(!q.played){q.played=true;speak(it.idn,.8);}
+  const inp=$("#din");if(inp&&!q.res){inp.focus();inp.onkeydown=e=>{if(e.key==="Enter")dictCheck();};}
+}
+function dictCheck(){
+  const q=V.hear.q,it=IDX[q.qs[q.i]],val=($("#din")||{}).value||"";
+  const tw=norm(it.idn).split(" "),uw=norm(val).split(" ").filter(Boolean);
+  const words=tw.map(w=>({w,s:uw.length?Math.max(...uw.map(u=>sim(w,u))):0}));
+  const all=words.every(w=>w.s>=.99);
+  q.typed=val;q.res={words,ok:all};if(all)q.score++;
+  D().dict++;addXp(all?5:1);render();
+}
+
+/* ===================== ÜBEN ===================== */
+const EXT=[["mix","Mixed"],["gram","Grammar: fill in the words"],["cloze","Gap fill (grammar)"],["build","Word order"],["trans","Translate"],["hear","Listening"],["vocab","Vocabulary quiz"]];
+
+const GCATS=CFG.gcats;
+function gramPool(scope){
+  const L=[];
+  unitsIn(scope).forEach(u=>{
+    (u.sent||[]).forEach(v=>L.push(v));
+    ((u.dlg&&u.dlg.lines)||[]).forEach(l=>L.push([l[1],l[2]]));
+  });
+  const out=[];
+  L.forEach(v=>{
+    const toks=v[0].replace(/[.,!?]/g,"").split(" ");
+    GCATS.forEach((c,ci)=>{
+      toks.forEach((w,wi)=>{
+        const lw=w.toLowerCase();
+        const hit=c[1].find(x=>x.toLowerCase()===lw);
+        if(hit&&!(c[0]==="Pronouns"&&wi>0&&false))out.push({idn:v[0],de:v[1],ci,wi,ans:hit,w});
+      });
+    });
+  });
+  return out;
+}
+function genEx(scope,type,n){
+  const sents=itemsIn(scope,["s"]),words=itemsIn(scope,["v"]);
+  const cl=[];unitsIn(scope).forEach(u=>(u.ex||[]).forEach(c=>cl.push(c)));
+  const allS=ITEMS.filter(x=>x.k==="s"),allW=ITEMS.filter(x=>x.k==="v");
+  const mk={
+   cloze(){const c=pick(cl);return {key:"c"+c[0],t:"cloze",p:c[0],a:c[1],o:shuffle(c[2]),n:c[3]};},
+   build(){const it=pick(sents);return {key:"b"+it.id,t:"build",it,pool:shuffle(it.idn.split(" ").map((w,i)=>({w,i}))),ans:[]};},
+   trans(){const it=pick(sents.concat(words));return {key:"t"+it.id,t:"trans",it};},
+   hear(){const it=pick(sents);const o=shuffle([it,...sample(allS.filter(x=>x.de!==it.de),3)]);return {key:"h"+it.id,t:"hear",it,o};},
+   vocab(){const it=pick(words);const dir=Math.random()<.5?"id2de":"de2id";const o=shuffle([it,...sample(allW.filter(x=>x.de!==it.de&&x.idn!==it.idn),3)]);return {key:"v"+it.id+dir,t:"vocab",it,dir,o};}
+  };
+  const gp=gramPool(scope);
+  mk.gram=function(){const g=pick(gp);const c=GCATS[g.ci];const toks=g.idn.replace(/[.,!?]/g,"").split(" ");const raw=g.idn.split(" ");
+    const q=raw.map((t,i)=>i===g.wi?"_____":t).join(" ");
+    const bl=new Set();(CFG.gsyn||[]).forEach(gr=>{if(gr.includes(g.ans))gr.forEach(x=>bl.add(x));});bl.delete(g.ans);
+    let cand=c[1].filter(x=>x!==g.ans&&!bl.has(x));if(cand.length<3)cand=c[1].filter(x=>x!==g.ans);
+    const o=shuffle([g.ans,...sample(cand,3)]);
+    return {key:"g"+g.idn+g.wi+g.ci,t:"gram",p:q,a:g.ans,o,n:c[0]+": "+c[2],de:g.de,idn:g.idn};};
+  const cnt={gram:gp.length,cloze:cl.length,build:sents.length,trans:sents.length+words.length,hear:sents.length,vocab:words.length};
+  const avail=Object.keys(mk).filter(k=>cnt[k]>0);
+  const types=type==="mix"?avail:avail.filter(k=>k===type);
+  const qs=[],seen=new Set();
+  for(let i=0;i<n&&types.length;i++){
+    for(let tries=0;tries<6;tries++){const q=mk[types[i%types.length]]();if(!seen.has(q.key)){seen.add(q.key);qs.push(q);break;}}
+  }
+  return shuffle(qs);
+}
+function newEx(){V.ex={scope:V.scope,type:V.exType,qs:genEx(V.scope,V.exType,10),i:0,score:0};}
+function vEx(){
+  if(!V.ex)newEx();
+  const e=V.ex;
+  const cfg=`<div class="row" style="margin-bottom:10px">${scopeSelect()}<select data-sel="extype">${EXT.map(t=>`<option value="${t[0]}" ${V.exType===t[0]?"selected":""}>${t[1]}</option>`).join("")}</select><button class="btn" data-act="newEx">🔄 New</button></div>`;
+  if(!e.qs.length){$("#view").innerHTML=`<h2>Practice</h2>${cfg}<div class="card">There are no exercises of this type for this selection.</div>`;return;}
+  if(e.i>=e.qs.length){
+    $("#view").innerHTML=`<h2>Practice</h2>${cfg}<div class="card"><div class="score">${e.score}/${e.qs.length}</div><p>${e.score>=e.qs.length*.8?"Excellent! 🌟":"Well done – practice makes perfect."}</p><button class="btn pri" data-act="newEx">New round</button></div>`;
+    if(!e.rewarded){e.rewarded=true;D().ex+=e.qs.length;addXp(5+e.score);}
+    return;
+  }
+  const q=e.qs[e.i];let body="";
+  const fb=()=>q.res===undefined?"":`<div class="card" style="margin-top:10px">${q.res?"✅ Correct!":"❌ Not quite."} ${q.fb||""}<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exNext">Next →</button></div></div>`;
+  const optBtn=(label,i,ok,picked)=>`<button class="btn opt${q.res!==undefined?(ok?" ok":(picked?" no":"")):""}" data-act="exOpt" data-i="${i}" ${q.res!==undefined?"disabled":""}>${esc(label)}</button>`;
+  if(q.t==="cloze"){
+    body=`<div class="small">Gap fill</div><div class="big" style="font-size:22px">${esc(q.p)}</div>${q.o.map((o,i)=>optBtn(o,i,o===q.a,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.a)}</b>${q.n?" – "+esc(q.n):""}`;
+  }
+  if(q.t==="gram"){
+    body=`<div class="small">Grammar – which word fits?</div><div class="big" style="font-size:22px">${esc(q.p)}</div><div class="de" style="margin-bottom:6px">${esc(q.de)}</div>${q.o.map((o,i)=>optBtn(o,i,o===q.a,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.idn)}</b> <button class="btn sm" data-act="exPlayText" data-x="${esc(q.idn)}">🔊</button><div class="small" style="margin-top:6px">${q.n}</div>`;
+  }
+  if(q.t==="vocab"){
+    const lbl=x=>q.dir==="id2de"?x.de:x.idn;
+    body=`<div class="small">Vocabulary quiz</div><div class="big">${esc(q.dir==="id2de"?q.it.idn:q.it.de)}</div>${q.dir==="id2de"?`<div class="ph">${esc(q.it.ph)}</div>`:""}${q.o.map((o,i)=>optBtn(lbl(o),i,o.id===q.it.id,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> = ${esc(q.it.de)}`;
+  }
+  if(q.t==="hear"){
+    body=`<div class="small">Listening – what does the sentence mean?</div><div class="row" style="margin:8px 0"><button class="btn pri" data-act="exPlay">🔊 Play</button><button class="btn" data-act="exPlay" data-slow="1">🐢 Slow</button></div>${q.o.map((o,i)=>optBtn(o.de,i,o.id===q.it.id,q.pick===i)).join("")}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b>`;
+    if(!q.played){q.played=true;speak(q.it.idn);}
+  }
+  if(q.t==="build"){
+    body=`<div class="small">Word order – tap the words in the correct order</div><div class="big" style="font-size:22px">${esc(q.it.de)}</div>
+     <div class="ans">${q.ans.map((c,k)=>`<span class="chip" data-act="exDrop" data-k="${k}">${esc(c.w)}</span>`).join("")}</div>
+     <div>${q.pool.map((c,k)=>`<span class="chip" data-act="exTake" data-k="${k}">${esc(c.w)}</span>`).join("")}</div>
+     ${q.res===undefined?`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exBuildCheck" ${q.pool.length?"disabled":""}>Check</button></div>`:""}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> <button class="btn sm" data-act="exPlay">🔊</button>`;
+  }
+  if(q.t==="trans"){
+    body=`<div class="small">${LT.transTo}</div><div class="big" style="font-size:24px">${esc(q.it.de)}</div>
+     <input type="text" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" ${q.res!==undefined?"disabled":""} value="${esc(q.typed||"")}" placeholder="${LT.transPh}">
+     ${q.res===undefined?`<div class="row" style="margin-top:8px"><button class="btn pri" data-act="exTransCheck">Check</button><button class="btn" data-act="exSkip">Not sure</button></div>`:""}`;
+    if(q.res!==undefined)q.fb=`<b>${esc(q.it.idn)}</b> <button class="btn sm" data-act="exPlay">🔊</button>`;
+  }
+  $("#view").innerHTML=`<h2>Practice</h2>${voiceWarning()}${cfg}<div class="small" style="margin-bottom:6px">Exercise ${e.i+1}/${e.qs.length} · points ${e.score}</div><div class="card">${body}</div>${fb()}`;
+  const inp=$("#tin");if(inp&&q.res===undefined){inp.focus();inp.onkeydown=ev=>{if(ev.key==="Enter")exTransCheck();};}
+}
+function exFinish(q,ok){q.res=!!ok;if(ok)V.ex.score++;addXp(ok?2:0);render();}
+function exTransCheck(){
+  const q=V.ex.qs[V.ex.i],v=($("#tin")||{}).value||"";q.typed=v;
+  const a=norm(q.it.idn),b=norm(v);exFinish(q,b===a||(b.length>3&&sim(a,b)>=.93));
+}
+
+/* ===================== GRAMMATIK ===================== */
+function vGram(){
+  const quick=LT.quick;
+  $("#view").innerHTML=`<h2>Grammatik</h2>${quick}`+LEVELS.map(l=>`<h3><span class="lvl">${l}</span></h3>`+UNITS.filter(u=>u.lvl===l).map(u=>`<details class="card"><summary>${u.e} ${u.n}. ${esc(u.grammar.t)}</summary>${u.grammar.html}<div class="row"><button class="btn sm" data-act="openUnit" data-u="${u.id}">To lesson</button><button class="btn sm" data-act="startEx" data-scope="u:${u.id}" data-type="cloze">Practise gap fill</button></div></details>`).join("")).join("");
+}
+
+/* ===================== WÖRTERBUCH ===================== */
+function dictResults(q){
+  const n=norm(q);if(!n)return `<div class="small">${LT.dictHint} ${ITEMS.length} entries searchable.</div>`;
+  const r=ITEMS.filter(x=>norm(x.idn).includes(n)||norm(x.de).includes(n)).slice(0,80);
+  if(!r.length)return `<div class="small">Nothing found.</div>`;
+  return `<div class="card"><table>${r.map(x=>{const u=UNIT(x.u);return `<tr><td style="width:44%"><b>${esc(x.idn)}</b><div class="ph" style="font-size:13px">${esc(x.ph)}</div></td><td>${esc(x.de)}<div class="small">${u.lvl} · ${u.n}. ${esc(u.t)}</div></td><td style="white-space:nowrap"><button class="btn sm" data-act="say" data-i="${x.id}">🔊</button></td></tr>`;}).join("")}</table></div>`;
+}
+function vDict(){
+  $("#view").innerHTML=`<h2>Dictionary</h2>${voiceWarning()}<input type="text" id="dq" placeholder="${LT.dictPh}" value="${esc(V.q)}" autocomplete="off"><div id="dres" style="margin-top:12px">${dictResults(V.q)}</div>`;
+  const i=$("#dq");i.oninput=()=>{V.q=i.value;$("#dres").innerHTML=dictResults(V.q);};
+}
+
+
+/* ---------- Diagnose ---------- */
+const DIAG={url:null};
+function diagHtml(){
+  const yes=b=>b?"✅":"❌",standalone=!!(navigator.standalone||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches));
+  const v=idVoice(),nv=voices.length;
+  const rows=[["Speech output",yes("speechSynthesis" in window)],["voices found",nv+""],["Selected voice",v?("✅ "+esc(v.name)+" ("+esc(v.lang)+")"):"❌ none – default voice"],["Speech recognition",yes(!!SRC)],["Recording (MediaRecorder)",window.MediaRecorder?("✅ "+esc(pickMime()||"default format")):"❌"],["Microphone access possible",yes(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))],["Secure connection (https)",yes(window.isSecureContext)],["As Home Screen app",standalone?"ja":"nein"],["Speicher funktioniert",yes(STORE_OK)],["Recording mode",esc(recMode())],["Audio-Session-API (iOS 16.4+)",yes(!!navigator.audioSession)]];
+  return `<div class="card"><b>🔧 Audio diagnosis</b><p class="small">Shows what your device can do. Test sound and microphone here first.</p>
+   <table>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>
+   <div class="row" style="margin-top:10px"><button class="btn" data-act="diagSpeak">${LT.test1}</button><button class="btn" data-act="diagSpeakDef">🔊 Test 2: default voice (English)</button><button class="btn" data-act="diagSpeakOn">🔊 Test 3: online voice</button><button class="btn" data-act="diagMic">🎙 Microphone test (3 sec.)</button><button class="btn" data-act="diagPlay" ${DIAG.url?"":"disabled"} id="diagplay">▶ Play test recording</button></div>
+   <div class="row" style="margin-top:10px"><span class="small">Voice:</span><select data-sel="voice"><option value="">${LT.voiceAuto}</option>${voices.slice().sort((x,y)=>(isIdLang(y)-isIdLang(x))||((CFG.alt.test(y.lang)-CFG.alt.test(x.lang)))||x.name.localeCompare(y.name)).map(x=>`<option value="${esc(x.voiceURI)}" ${S.voiceURI===x.voiceURI?"selected":""}>${esc(x.name)} – ${esc(x.lang)}</option>`).join("")}</select></div>
+   <div class="row" style="margin-top:10px"><span class="small">Source:</span><select data-sel="ttsmode">
+    <option value="auto" ${(S.ttsMode||"online")==="auto"?"selected":""}>Automatic (device, otherwise online)</option>
+    <option value="device" ${S.ttsMode==="device"?"selected":""}>Device voice only</option>
+    <option value="online" ${(S.ttsMode||"online")==="online"?"selected":""}>Online voice (default, internet required)</option></select></div>
+   <div class="small" style="margin-top:10px"><b>Speech output log</b> (shows what happens):</div>
+   <pre id="ttslog" style="background:var(--soft);padding:8px;border-radius:8px;font-size:12px;white-space:pre-wrap;max-height:200px;overflow:auto;margin:4px 0">${esc(TTSLOG.join("\n")||"– nothing yet –")}</pre>
+   <div class="small" id="diagmsg" style="margin-top:8px">iPhone: silent switch off and volume up! Speech output is often silent when the silent switch is on.</div></div>`;
+}
+async function diagMic(){
+  const m=document.getElementById("diagmsg");
+  if(!navigator.mediaDevices||!window.MediaRecorder){m.textContent="❌ Recording is not supported here.";return;}
+  try{
+    const st=await getMic({audio:true}),mime=pickMime();
+    let mr;try{mr=new MediaRecorder(st,mime?{mimeType:mime}:undefined);}catch(e){mr=new MediaRecorder(st);}
+    const ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data);};
+    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}const b=new Blob(ch,{type:mr.mimeType||mime||"audio/mp4"});
+      if(DIAG.url){try{URL.revokeObjectURL(DIAG.url);}catch(e){}}DIAG.url=b.size?URL.createObjectURL(b):null;
+      m.textContent=b.size?("✅ Recorded ("+Math.round(b.size/1024)+" KB). Tap “Play test recording”."):"⚠️ No sound arrived – check the microphone.";
+      const bt=document.getElementById("diagplay");if(bt)bt.disabled=!DIAG.url;};
+    m.textContent="🎙 Speak now … (3 sec.)";mr.start();setTimeout(()=>{if(mr.state!=="inactive")mr.stop();},3000);
+  }catch(e){m.textContent="❌ Microphone: "+((e&&e.name)||e)+(e&&e.message?" ("+String(e.message).slice(0,80)+")":"")+" [v"+APPVER+"] – Tip: in the “Speak” tab there is “Record with iPhone recorder”. Also close other Safari/Chrome tabs and apps that use the microphone.";}
+}
+
+/* ===================== LAUTE ===================== */
+function vSounds(){
+  $("#view").innerHTML=`<h2>Pronunciation guide</h2>${voiceWarning()}
+  <div class="card"><p>${LT.soundsIntro}</p>
+  <table><tr><th>Spelling</th><th>Pronunciation</th><th>Examples</th></tr>${SOUNDS.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${r[2].split(", ").map(w=>`<button class="btn sm" style="margin:2px" data-act="sayw" data-w="${esc(w)}">🔊 ${esc(w)}</button>`).join("")}</td></tr>`).join("")}</table></div>
+  ${diagHtml()}
+  <div class="card"><b>Mini tongue twisters</b><p class="small">First slowly, then faster. Record yourself and compare!</p>
+  ${CFG.tongue.map(w=>`<div class="row" style="margin:6px 0"><button class="btn sm" data-act="sayw" data-w="${esc(w)}">🔊</button><span>${esc(w)}</span><span class="ph" style="font-size:13px">${esc(phon(w))}</span></div>`).join("")}</div>`;
+}
+
+/* ===================== FORTSCHRITT ===================== */
+function vProg(){
+  const known=ITEMS.filter(x=>(S.box[x.id]||0)>=3).length,seen=ITEMS.filter(x=>S.box[x.id]).length;
+  const days=[];for(let k=13;k>=0;k--)days.push(ds(new Date(Date.now()-k*864e5)));
+  const vals=days.map(d=>S.hist[d]||0),mx=Math.max(10,...vals);
+  $("#view").innerHTML=`<h2>Progress</h2>
+  <div class="grid">
+   <div class="card"><div class="small">Entries learned</div><div class="big">${known}</div><div class="small">of ${ITEMS.length} (${seen} seen)</div></div>
+   <div class="card"><div class="small">Total XP</div><div class="big">${S.xp}</div></div>
+   <div class="card"><div class="small">Streak</div><div class="big">${S.streak||0} 🔥</div><div class="small">Record: ${S.bestStreak||0}</div></div>
+   <div class="card"><div class="small">Cards / recordings</div><div class="big">${S.totalCards||0} / ${S.totalSpeak||0}</div></div></div>
+  <div class="card"><b>XP of the last 14 days</b><div class="chart" style="margin-top:10px">${vals.map((v,k)=>`<div title="${days[k]}: ${v} XP" style="height:${Math.max(2,Math.round(90*v/mx))}px"></div>`).join("")}</div></div>
+  <div class="card"><b>Levels</b>${LEVELS.map(l=>`<div style="margin:8px 0">${l} <span class="small">${lvlPct(l)}%</span><div class="bar"><i style="width:${lvlPct(l)}%"></i></div></div>`).join("")}</div>
+  <div class="card"><b>Settings</b><div class="row" style="margin-top:8px"><span>New cards per day:</span><select data-sel="newpd">${[5,10,15,20,30].map(n=>`<option value="${n}" ${S.newPerDay===n?"selected":""}>${n}</option>`).join("")}</select></div></div>
+  <div class="card"><b>💾 Backup & restore</b>
+   <p class="small">Your progress is stored in the browser storage (${STORE_OK?"Storage works ✅":"Storage NOT available ⚠️"}). Last backup: ${S.lastBackup?new Date(S.lastBackup).toLocaleDateString("de-DE"):"none yet"}.</p>
+   <div class="row"><button class="btn pri" data-act="bkCopy">📋 Copy to clipboard</button><button class="btn" data-act="bkFile">⬇️ Save as file</button>
+    <label class="btn" style="cursor:pointer">📂 Load from file<input type="file" accept=".json,.txt,application/json,text/plain" data-file="bk" style="display:none"></label></div>
+   <details style="margin-top:8px"><summary class="small">Show / paste backup text</summary>
+   <textarea id="bk" spellcheck="false">${esc(JSON.stringify(S))}</textarea>
+   <div class="row" style="margin-top:8px"><button class="btn" data-act="bkImport">Import text</button><button class="btn" data-act="reset" style="border-color:var(--bad);color:var(--bad)">Reset</button></div></details>
+   <div class="small" id="bkmsg" style="margin-top:6px"></div></div>
+  <details class="card"><summary>📱 How to keep your progress safe on iPhone</summary><ol>
+   <li>Put the file on a free web host with https (e.g. GitHub Pages, Netlify Drop or Cloudflare Pages) and open the address <b>in Safari</b>.</li>
+   <li>Tap <b>Share → “Add to Home Screen”</b>. As a Home Screen app, iOS keeps the data permanently.</li>
+   <li>Only over https does the <b>Microphone</b> work reliably on iPhone.</li>
+   <li>Until then: regularly use “Save as file” or “Copy to clipboard” (e.g. paste into Notes).</li></ol></details>`;
+}
+
+/* ===================== EVENTS ===================== */
+function openUnit(id){V.unit=id;V.utab="intro";V.tab="path";Rec.stop(true);stopAudio();render();window.scrollTo(0,0);}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-tab],[data-act]");if(!t)return;
+  const dsx=t.dataset;
+  if(dsx.tab&&!dsx.act){go(dsx.tab);return;}
+  const a=dsx.act;
+  switch(a){
+   case"go":go(dsx.tab);break;
+   case"openUnit":openUnit(dsx.u);break;
+   case"back":V.unit=null;render();break;
+   case"utab":V.utab=dsx.t;stopAudio();render();break;
+   case"say":speak(IDX[dsx.i].idn,dsx.slow?.55:.95);break;
+   case"sayw":speak(dsx.w,.9);break;
+   case"saySP":speak(SP.target,dsx.slow?.55:.9);break;
+   case"sayLine":{const u=UNIT(dsx.u);speak(u.dlg.lines[+dsx.l][1],.9,u.dlg.lines[+dsx.l][0]==="A"?1:1.18);break;}
+   case"sayAll":{const its=ITEMS.filter(x=>x.u===dsx.u&&x.k===dsx.k);const my=++playTok;(async()=>{for(const x of its){if(my!==playTok)return;await speak(x.idn,.9);await sleep(400);}})();break;}
+   case"playDlg":{const u=UNIT(dsx.u);playDlg(u);break;}
+   case"toggleDe":V.showDe=!V.showDe;render();break;
+   case"toggleId":V.showId=!V.showId;render();break;
+   case"startCards":V.scope=dsx.scope;V.cards=null;go("cards");break;
+   case"startEx":V.scope=dsx.scope;if(dsx.type)V.exType=dsx.type;V.ex=null;go("ex");break;
+   case"newCards":buildCards();render();break;
+   case"freeCards":buildCards(true);render();break;
+   case"flip":V.cards.flip=true;render();break;
+   case"rate":rateCard(+dsx.r);break;
+   case"goSpeakItem":{const it=IDX[dsx.i];const l=ITEMS.filter(x=>x.u===it.u&&x.k===it.k);V.sp={mode:"item",unit:it.u,kind:it.k,i:l.indexOf(it)};go("speak");break;}
+   case"spMode":V.sp.mode=dsx.m;Rec.stop(true);stopAudio();render();break;
+   case"spNext":case"spPrev":case"spRand":{const l=ITEMS.filter(x=>x.u===V.sp.unit&&x.k===V.sp.kind);const n=l.length;V.sp.i=a==="spRand"?Math.floor(Math.random()*n):(V.sp.i+(a==="spNext"?1:n-1))%n;Rec.stop(true);render();break;}
+   case"toggleRec":Rec.active?Rec.stop():Rec.start(null,recMode()==="sr"?"rec":undefined);break;
+   case"altRec":{
+    let inp=document.getElementById("altrecinp");
+    if(!inp){inp=document.createElement("input");inp.type="file";inp.accept="audio/*";inp.setAttribute("capture","microphone");inp.id="altrecinp";inp.style.display="none";document.body.appendChild(inp);
+      inp.addEventListener("change",()=>{const f=inp.files&&inp.files[0];if(!f)return;
+        if(SP.url){try{URL.revokeObjectURL(SP.url);}catch(e){}}
+        SP.url=URL.createObjectURL(f);S.totalSpeak=(S.totalSpeak||0)+1;D().speak++;addXp(1);save();
+        SP.status="Recording accepted. Tap ⇄ Compare or ▶ My recording.";inp.value="";render();});}
+    inp.click();break;}
+   case"scoreOnly":Rec.active?Rec.stop():Rec.start(null,"sr");break;
+   case"playMine":playMine();break;
+   case"compare":compareAudio();break;
+   case"startRp":V.rp={u:dsx.u,role:dsx.role||"B",i:0,scores:[],played:{},done:false};V.sp.mode="role";go("speak");break;
+   case"rpNext":{const r=V.rp;if(SP.res)r.scores[r.i]=SP.res.score;Rec.stop(true);stopAudio();r.i++;SP._rpIdx=-1;render();break;}
+   case"rpRestart":V.rp={u:V.rp.u,role:V.rp.role,i:0,scores:[],played:{},done:false};SP._rpIdx=-1;render();break;
+   case"rpSwap":V.rp={u:V.rp.u,role:V.rp.role==="A"?"B":"A",i:0,scores:[],played:{},done:false};SP._rpIdx=-1;render();break;
+   case"hMode":V.hear.mode=dsx.m;stopAudio();render();break;
+   case"newDict":buildDict();render();break;
+   case"dPlay":{const q=V.hear.q;speak(IDX[q.qs[q.i]].idn,dsx.slow?.5:.85);break;}
+   case"dHint":{const h=document.getElementById("dhint");if(h)h.style.display="block";break;}
+   case"dCheck":dictCheck();break;
+   case"dNext":{const q=V.hear.q;q.i++;q.res=null;q.typed="";q.played=false;render();break;}
+   case"newEx":newEx();render();break;
+   case"exPlay":{const q=V.ex.qs[V.ex.i];speak(q.it.idn,dsx.slow?.55:.9);break;}
+   case"exPlayText":speak(dsx.x,.9);break;
+   case"exOpt":{const q=V.ex.qs[V.ex.i];if(q.res!==undefined)break;const i=+dsx.i;q.pick=i;let ok=false;
+     if(q.t==="cloze"||q.t==="gram")ok=q.o[i]===q.a;else ok=q.o[i].id===q.it.id;exFinish(q,ok);break;}
+   case"exTake":{const q=V.ex.qs[V.ex.i];const c=q.pool.splice(+dsx.k,1)[0];q.ans.push(c);render();break;}
+   case"exDrop":{const q=V.ex.qs[V.ex.i];if(q.res!==undefined)break;const c=q.ans.splice(+dsx.k,1)[0];q.pool.push(c);render();break;}
+   case"exBuildCheck":{const q=V.ex.qs[V.ex.i];exFinish(q,norm(q.ans.map(c=>c.w).join(" "))===norm(q.it.idn));break;}
+   case"exTransCheck":exTransCheck();break;
+   case"exSkip":{const q=V.ex.qs[V.ex.i];q.typed="";exFinish(q,false);break;}
+   case"exNext":V.ex.i++;render();break;
+   case"diagSpeakOn":unlockAudio();speakOnline(LT.testSent,.95).then(ok=>{if(!ok)toast("Online voice unreachable or blocked (see log).");});break;
+   case"diagSpeakDef":unlockAudio();speak("Hello. This is a test of the speech output.",1,1,true);break;
+   case"diagSpeak":unlockAudio();speak(LT.testSent,.9);break;
+   case"diagMic":diagMic();break;
+   case"diagPlay":if(DIAG.url)playAud(DIAG.url);break;
+   case"hideIos":S.hideIos=true;save();render();break;
+   case"bkCopy":{const txt=JSON.stringify(S),msg=document.getElementById("bkmsg");
+     const ok=()=>{S.lastBackup=Date.now();save();msg.textContent="✅ Copied. Paste the text e.g. into Notes and keep it safe.";};
+     const fallback=()=>{const b=document.getElementById("bk");try{b.value=txt;b.focus();b.select();b.setSelectionRange(0,txt.length);document.execCommand("copy")?ok():(msg.textContent="Please copy the selected text under “Show backup text” manually.");}catch(x){msg.textContent="Please copy the text under “Show backup text” manually.";}};
+     try{navigator.clipboard.writeText(txt).then(ok,fallback);}catch(x){fallback();}break;}
+   case"bkFile":{try{const blob=new Blob([JSON.stringify(S)],{type:"application/json"}),u=URL.createObjectURL(blob),a=document.createElement("a");
+     a.href=u;a.download="belajar-sicherung-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},1500);
+     S.lastBackup=Date.now();save();document.getElementById("bkmsg").textContent="✅ Saving file (on iPhone: save to “Files”).";}catch(x){document.getElementById("bkmsg").textContent="Download not possible – use “Copy to clipboard”.";}break;}
+   case"bkImport":{try{const o=JSON.parse(document.getElementById("bk").value);if(!o||typeof o!=="object"||!o.box)throw 0;S=Object.assign(S,o);save();document.getElementById("bkmsg").textContent="✅ Imported.";render();}catch(x){document.getElementById("bkmsg").textContent="❌ Invalid backup.";}break;}
+   case"reset":{if(dsx.sure){S={box:{},due:{},xp:0,last:"",streak:0,bestStreak:0,best:{},hist:{},day:null,goal:60,newPerDay:10,cmode:"id2de",ckinds:"vs",totalCards:0,totalSpeak:0};save();render();}else{t.dataset.sure="1";t.textContent="Really delete? (click again)";}break;}
+  }
+});
+function playDlg(u){
+  playDialog(u,i=>{document.querySelectorAll(".bub").forEach((b,k)=>b.classList.toggle("on",k===i));});
+}
+document.addEventListener("change",e=>{
+  const k=e.target.dataset.sel,c=e.target.dataset.chk,v=e.target.value;
+  if(e.target.dataset.file==="bk"){
+    const f=e.target.files&&e.target.files[0];if(!f)return;const fr=new FileReader();
+    fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!o||typeof o!=="object"||!o.box)throw 0;S=Object.assign(S,o);save();render();const m=document.getElementById("bkmsg");if(m)m.textContent="✅ Backup loaded.";}catch(x){const m=document.getElementById("bkmsg");if(m)m.textContent="❌ File is not a valid backup.";}};
+    fr.readAsText(f);return;
+  }
+  if(c==="hideT"){V.hideT=e.target.checked;render();return;}
+  if(!k)return;
+  if(k==="scope"){V.scope=v;V.cards=null;V.ex=null;V.hear.q=null;render();}
+  if(k==="cmode"){S.cmode=v;save();V.cards&&(V.cards.spoken=false,V.cards.flip=false);render();}
+  if(k==="ckinds"){S.ckinds=v;save();V.cards=null;render();}
+  if(k==="extype"){V.exType=v;V.ex=null;render();}
+  if(k==="spunit"){V.sp.unit=v;V.sp.i=0;Rec.stop(true);render();}
+  if(k==="spkind"){V.sp.kind=v;V.sp.i=0;Rec.stop(true);render();}
+  if(k==="rpunit"){V.rp={u:v,role:V.rp.role,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
+  if(k==="rprole"){V.rp={u:V.rp.u,role:v,i:0,scores:[],played:{},done:false};stopAudio();SP._rpIdx=-1;render();}
+  if(k==="hdlg"){V.hear.dlgU=v;stopAudio();render();}
+  if(k==="ttsmode"){S.ttsMode=v;S.ttsAutoOnline=false;save();unlockAudio();speak(LT.testSent,.9);}
+  if(k==="voice"){S.voiceURI=v||undefined;save();unlockAudio();speak(LT.testSent,.9);}
+  if(k==="recmode"){Rec.stop(true);S.recMode=v;save();render();}
+  if(k==="goal"){S.goal=+v;save();render();}
+  if(k==="newpd"){S.newPerDay=+v;save();}
+});
+document.addEventListener("keydown",e=>{
+  if(V.tab!=="cards"||!V.cards||V.cards.i>=V.cards.q.length)return;
+  if(/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||""))return;
+  if(e.key===" "||e.key==="Enter"){e.preventDefault();if(!V.cards.flip){V.cards.flip=true;render();}}
+  else if(V.cards.flip&&["1","2","3"].includes(e.key))rateCard(+e.key-1);
+});
+document.addEventListener("pointerdown",()=>{if(!audUnlocked)unlockAudio();},{passive:true});
+window.addEventListener("beforeunload",()=>{try{speechSynthesis.cancel();}catch(e){}});
+header();render();
+idbLoad().then(raw=>{if(!raw)return;try{const o=JSON.parse(raw);if((o.ts||0)>(S.ts||0)&&o.box){S=Object.assign(S,o);header();render();}}catch(e){}});
+
+</script>
+</body>
+</html>
