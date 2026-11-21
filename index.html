@@ -1120,7 +1120,8 @@ const recMode=()=>S.recMode||(isIOS?"rec":"both");
 const Rec={active:false,stream:null,mr:null,chunks:[],sr:null,ctx:null,raf:0,alts:[],timer:0,srDone:true,mrDone:true,srErr:null,gen:0,fin:false,cb:null,blob:null,wantSR:false,curMode:"",usedRec:false,
  async start(cb,forceMode){
   if(this.active)return;
-  const gen=++this.gen,mode=forceMode||recMode(),wantRec=mode!=="sr";
+  let mode=forceMode||recMode();if(isIOS&&mode==="both"&&SRC)mode="sr";   // iOS: Aufnahme + Erkennung gleichzeitig blockieren sich
+  const gen=++this.gen,wantRec=mode!=="sr";
   this.curMode=mode;this.usedRec=wantRec;
   this.wantSR=mode!=="rec"&&!!SRC;
   if(wantRec&&!this.wantSR)SP.res=null;
@@ -1907,18 +1908,51 @@ function tchPick(i){
   tchHandle(val,false);
 }
 function chatSend(txt,spoken){tchHandle(txt,spoken);}
-function chatListen(retryIdx){
+let chatSR=null,chatSRgen=0;
+async function chatListen(retryIdx){
   if(!SRC){V.chat.err=LT.srUnsup;render();return;}
-  stopAudio();releaseAudio();
-  const r=new SRC();r.lang=CFG.sr;r.interimResults=false;r.maxAlternatives=3;
-  const st=$("#cstat");if(st)st.textContent="🎙 Ich höre zu …";
-  let got=false;
-  r.onresult=e=>{got=true;const alts=[];for(let k=0;k<e.results[0].length;k++)alts.push(e.results[0][k].transcript);
+  if(chatSR){try{chatSR.abort();}catch(e){}chatSR=null;chatSRgen++;const st0=$("#cstat");if(st0)st0.textContent="";return;}   // zweiter Tipp = abbrechen
+  const gen=++chatSRgen;
+  Rec.stop(true);stopAudio();releaseAudio();V.chat.err="";
+  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
+  await sleep(isIOS?400:60);if(gen!==chatSRgen)return;
+  const st=()=>$("#cstat"),say=t=>{const e=st();if(e)e.textContent=t;};
+  const alts=[];let interim="",srErr=null,tries=0,t0=Date.now(),finished=false;
+  const finish=()=>{
+    if(finished)return;finished=true;chatSR=null;
+    try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}
+    if(!alts.length&&interim)alts.push(interim);
+    if(!alts.length){
+      V.chat.err=(srErr&&SRERR[srErr])?SRERR[srErr]:"Nichts erkannt. Tippe auf 🎙, warte kurz, bis „Ich höre zu“ erscheint, und sprich dann deutlich. Du kannst auch tippen. (Die Spracherkennung braucht Internet.)";
+      say("");render();return;
+    }
+    say("");
     if(retryIdx!=null){const m=V.chat.msgs[retryIdx];if(m&&m.cmp){const ev=evaluate(m.cmp.target,alts);m.cmp.retry={score:ev.score,words:ev.words};addXp(1);render();}}
-    else chatSend(alts[0],true);};
-  r.onerror=e=>{if(!got){V.chat.err="Spracherkennung: "+(e.error||"Fehler");render();}};
-  r.onend=()=>{if(!got&&st)st.textContent="";};
-  try{r.start();}catch(e){V.chat.err="Spracherkennung konnte nicht starten.";render();}
+    else chatSend(alts[0],true);
+  };
+  const run=()=>{
+    tries++;
+    let r;try{r=new SRC();}catch(e){srErr="aborted";finish();return;}
+    chatSR=r;r.lang=CFG.sr;r.interimResults=true;r.maxAlternatives=5;r.continuous=false;
+    let got=false;
+    r.onstart=()=>say("🎙 Ich höre zu – sprich jetzt …");
+    r.onresult=e=>{
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        if(e.results[i].isFinal){got=true;for(let k=0;k<e.results[i].length;k++)alts.push(e.results[i][k].transcript);}
+        else{interim=e.results[i][0].transcript;say("🎙 "+interim+" …");}
+      }};
+    r.onerror=e=>{srErr=e.error;};
+    r.onend=()=>{
+      if(gen!==chatSRgen||finished)return;
+      const soft=!srErr||srErr==="no-speech"||srErr==="aborted";
+      if(!got&&!alts.length&&!interim&&soft&&tries<3&&Date.now()-t0<9000){srErr=null;setTimeout(()=>{if(gen===chatSRgen&&!finished)run();},150);return;}
+      finish();
+    };
+    try{r.start();}catch(e){srErr="aborted";finish();}
+  };
+  say("🎙 Mikrofon wird vorbereitet …");
+  run();
+  setTimeout(()=>{if(gen===chatSRgen&&!finished&&chatSR){try{chatSR.stop();}catch(e){}}},12000);   // Sicherheits-Stopp
 }
 function cmpHtml(m,i){
   if(!m.cmp)return "";

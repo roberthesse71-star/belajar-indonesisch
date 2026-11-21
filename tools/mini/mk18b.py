@@ -89,3 +89,5 @@ T.update({
 T.update({"🔊 Vorlesen":"🔊 Read aloud"})
 
 T.update({"👩‍🏫 Dein Lehrer":"👩‍🏫 Your teacher","Starte mit der Einstufung – der Lehrer findet dein Level.":"Start with the placement – the teacher finds your level.","Er führt dich durch Lektion ":"The teacher guides you through lesson "," – erklärt, spricht vor, fragt ab.":" – explains, models, quizzes you.",'"Lernen"':'"Learn"'})
+
+T.update({"🎙 Ich höre zu – sprich jetzt …":"🎙 I'm listening – speak now …","🎙 Mikrofon wird vorbereitet …":"🎙 Preparing the microphone …","Nichts erkannt. Tippe auf 🎙, warte kurz, bis „Ich höre zu“ erscheint, und sprich dann deutlich. Du kannst auch tippen. (Die Spracherkennung braucht Internet.)":"Nothing recognised. Tap 🎙, wait until “I'm listening” appears and then speak clearly. You can also type. (Speech recognition needs internet.)"})
