@@ -106,3 +106,5 @@ T.update({
 })
 
 T.update({">Protokoll</summary>":">Log</summary>"})
+
+T.update({"🎙 Kein Ton erkannt – ich starte neu, bitte noch einmal sprechen …":"🎙 No sound detected – restarting, please speak again …"})

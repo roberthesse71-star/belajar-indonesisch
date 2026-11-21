@@ -868,13 +868,14 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const TTSLOG=[];
+const BUILD="21.11.2026 08:40";
+const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
   try{let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";document.body.appendChild(t);}
   t.textContent=msg;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none";},ms||7000);}catch(e){}
 }
-function stopAudio(){playTok++;try{if(onlineFin)onlineFin(false);}catch(e){}try{speechSynthesis.cancel();}catch(e){}try{AUD.pause();}catch(e){}}
+function stopAudio(){audioEndedAt=Date.now();playTok++;try{if(onlineFin)onlineFin(false);}catch(e){}try{speechSynthesis.cancel();}catch(e){}try{AUD.pause();}catch(e){}}
 /* Online-Stimme als normale Audiodatei (funktioniert auch, wenn die Speech output des Geräts stumm bleibt) */
 function releaseAudio(){   // Audio-Element wirklich freigeben, damit das Microphone die Audio-Session bekommt
   try{AUD.onended=null;AUD.onerror=null;AUD.pause();AUD.removeAttribute&&AUD.removeAttribute("src");AUD.load&&AUD.load();}catch(e){}
@@ -887,7 +888,7 @@ function speakOnline(text,rate,tlang){
     const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+(tlang||CFG.tl)+"&q="+encodeURIComponent(text.slice(0,190))+((rate&&rate<.7)?"&ttsspeed=0.24":"");
     tlog("Online voice: loading \""+text.slice(0,28)+"\"");
     try{
-      AUD.pause();AUD.onended=()=>{tlog("→ online finished");try{AUD.onended=null;AUD.onerror=null;AUD.removeAttribute("src");AUD.load();}catch(e){}fin(true);};
+      AUD.pause();AUD.onended=()=>{audioEndedAt=Date.now();tlog("→ online finished");try{AUD.onended=null;AUD.onerror=null;AUD.removeAttribute("src");AUD.load();}catch(e){}fin(true);};
       AUD.onerror=()=>{tlog("→ online voice: load error");fin(false);};
       AUD.src=url;AUD.load&&AUD.load();
       const p=AUD.play();
@@ -1019,16 +1020,17 @@ let micUses=0,SRkeep=null;
 function srGet(reuse){if(reuse&&SRkeep)return SRkeep;SRkeep=new SRC();return SRkeep;}
 async function micReset(hard){
   stopAudio();releaseAudio();try{if(SRkeep)SRkeep.abort();}catch(e){}SRkeep=null;try{speechSynthesis.cancel();}catch(e){}
-  tlog("Microphone-Neustart"+(hard?" (hart)":"")+" #"+micUses);
+  tlog("v"+BUILD+" · Microphone-Neustart"+(hard?" (hart)":"")+" #"+micUses);
   try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
   if(hard){try{if(SRkeep)SRkeep.abort();}catch(e){}SRkeep=null;}
-  if(isIOS&&(hard||micUses>0)&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+  if(isIOS&&hard&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
     try{const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop());}catch(e){}
     await sleep(350);
   }
   try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
   micUses++;
-  await sleep(isIOS?600:60);
+  const gap=(isIOS?1300:60)-(Date.now()-audioEndedAt);   // nach Wiedergabe der Audio-Session Zeit zum Umschalten geben
+  await sleep(Math.max(isIOS?650:60,gap));
 }
 function scoreText(text){
   text=(text||"").trim();if(!text){toast("Speak into the keyboard microphone or type the sentence.",3500);return;}
@@ -1219,7 +1221,7 @@ function vToday(){
   const next=nextUnit(),due=dueCount();
   const plan=[["Review flashcards","cards",d.cards,20,"cards"],["Speak sentences aloud (with recording)","speak",d.speak,5,"speak"],["Write a dictation","dict",d.dict,3,"hear"],["Solve exercises","ex",d.ex,10,"ex"]];
   $("#view").innerHTML=`
-  <h2>${LT.greet()}</h2>${storageWarn()}${placeCard()}
+  <h2>${LT.greet()}</h2><div class="small" style="margin:-6px 0 8px;opacity:.65">Version ${BUILD}</div>${storageWarn()}${placeCard()}
   <div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div style="flex:1"><b>👩‍🏫 Your teacher</b><div class="small">${needPlace()?"Start with the placement – the teacher finds your level.":"The teacher guides you through lesson "+next.n+": "+esc(next.t)+" – explains, models, quizzes you."}</div></div><button class="btn pri" data-act="toTutor">${needPlace()?"Placement":"Learn"}</button></div></div>
   <div class="card"><div class="row" style="justify-content:space-between"><b>Daily goal: ${xp} / ${S.goal} XP</b>
    <select data-sel="goal">${[30,60,100,150].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></div>
@@ -1838,9 +1840,9 @@ async function chatListen(retryIdx){
   micBusy=true;Rec.stop(true);V.chat.err="";
   await micReset();if(gen!==chatSRgen){return;}
   const st=()=>$("#cstat"),say=t=>{const e=st();if(e)e.textContent=t;};
-  const alts=[];let interim="",srErr=null,tries=0,t0=Date.now(),finished=false;
+  const alts=[];let interim="",srErr=null,tries=0,t0=Date.now(),finished=false,heard=false,deadT=null;
   const finish=()=>{
-    if(finished)return;finished=true;chatSR=null;micBusy=false;if(lvlStop)lvlStop();
+    if(finished)return;finished=true;clearTimeout(deadT);chatSR=null;micBusy=false;if(lvlStop)lvlStop();
     try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
     if(!alts.length&&interim)alts.push(interim);
     if(!alts.length){
@@ -1862,13 +1864,15 @@ async function chatListen(retryIdx){
         if(e.results[i].isFinal){got=true;for(let k=0;k<e.results[i].length;k++)alts.push(e.results[i][k].transcript);}
         else{interim=e.results[i][0].transcript;say("🎙 "+interim+" …");}
       }};
-    ["audiostart","soundstart","speechstart","speechend","soundend","audioend","nomatch"].forEach(n=>{r["on"+n]=()=>tlog("SR Ereignis: "+n);});
+    ["audiostart","soundstart","speechstart","speechend","soundend","audioend","nomatch"].forEach(n=>{r["on"+n]=()=>{tlog("SR Ereignis: "+n);if(n==="soundstart"||n==="speechstart")heard=true;};});
+    heard=false;clearTimeout(deadT);
+    deadT=setTimeout(()=>{if(!heard&&!finished&&gen===chatSRgen&&tries<3&&!alts.length&&!interim){tlog("Kein Ton nach 6 s → Neustart");say("🎙 No sound detected – restarting, please speak again …");try{r.abort();}catch(e){}}},6000);
     r.onerror=e=>{srErr=e.error;tlog("SR Fehler: "+e.error+(e.message?" ("+e.message+")":""));};
     r.onend=()=>{
       tlog("SR ende (Ergebnisse: "+alts.length+", Zwischen: "+(interim?1:0)+")");
       if(gen!==chatSRgen||finished)return;
       const soft=!srErr||srErr==="no-speech"||srErr==="aborted";
-      if(!got&&!alts.length&&!interim&&soft&&tries<3&&Date.now()-t0<9000){srErr=null;setTimeout(()=>{if(gen===chatSRgen&&!finished)run();},tries>1?500:250);return;}
+      if(!got&&!alts.length&&!interim&&soft&&tries<3&&Date.now()-t0<22000){srErr=null;setTimeout(()=>{if(gen===chatSRgen&&!finished)run();},tries>1?500:250);return;}
       finish();
     };
     try{r.start();}catch(e){srErr="aborted";tlog("SR start Ausnahme: "+(e&&e.name));finish();}
@@ -1884,7 +1888,7 @@ async function chatListen(retryIdx){
       if(finished)lvlStop();
     }).catch(e=>tlog("Pegel-Messung nicht möglich: "+(e&&e.name)));
   }
-  setTimeout(()=>{if(gen===chatSRgen&&!finished){if(chatSR){try{chatSR.stop();}catch(e){}}setTimeout(()=>{if(gen===chatSRgen&&!finished)finish();},1500);}},12000);   // Sicherheits-Stopp
+  setTimeout(()=>{if(gen===chatSRgen&&!finished){if(chatSR){try{chatSR.stop();}catch(e){}}setTimeout(()=>{if(gen===chatSRgen&&!finished)finish();},1500);}},24000);   // Sicherheits-Stopp
 }
 function cmpHtml(m,i){
   if(!m.cmp)return "";
