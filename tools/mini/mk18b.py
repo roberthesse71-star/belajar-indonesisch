@@ -115,3 +115,23 @@ T.update({
 "Spracherkennung konnte nicht starten.":"Speech recognition could not start.",
 "Mikrofon zurückgesetzt – tippe jetzt auf 🎙.":"Microphone reset – now tap 🎙.",
 })
+
+T.update({
+"Aufnahme wird von diesem Browser nicht unterstützt. Nutze ⌨️ Tastatur-Diktat.":"Recording is not supported by this browser. Use ⌨️ keyboard dictation.",
+"Mikrofon blockiert (":"Microphone blocked (",
+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon).":"). Allow access for this page (iPhone: Settings → Safari → Microphone).",
+"🔴 Aufnahme läuft – sprich jetzt. Tippe ■, um zu senden.":"🔴 Recording – speak now. Tap ■ to send.",
+"Die Aufnahme war leer. Tippe 🎤, sprich erst nach dem roten Hinweis und tippe dann ■.":"The recording was empty. Tap 🎤, speak after the red notice and then tap ■.",
+"⏳ Spracherkennung wird geladen (einmalig, danach offline) …":"⏳ Loading speech recognition (once, then offline) …",
+"⏳ Spracherkennung wird geladen … ":"⏳ Loading speech recognition … ",
+"Ich habe nichts verstanden. Sprich etwas lauter und näher am Mikrofon und versuche es noch einmal.":"I didn't catch that. Speak a little louder and closer to the microphone and try again.",
+"Die Spracherkennung konnte nicht geladen oder ausgeführt werden (":"Speech recognition could not be loaded or run (",
+"). Beim ersten Mal braucht sie Internet (ca. 40 MB). Du kannst solange ⌨️ Tastatur-Diktat nutzen.":"). The first time it needs internet (about 40 MB). Meanwhile you can use ⌨️ keyboard dictation.",
+"■ Senden":"■ Send",
+"ℹ️ Protokoll":"ℹ️ Log",
+"<b>Protokoll</b>":"<b>Log</b>",
+"(noch leer)":"(empty yet)",
+">Kopieren</button>":">Copy</button>",
+"Protokoll kopiert.":"Log copied.",
+"Kopieren nicht möglich – markiere den Text.":"Copying not possible – select the text.",
+})

@@ -974,7 +974,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 08:46";
+const BUILD="21.11.2026 08:52";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -1306,7 +1306,7 @@ const GROUPS={today:["today"],path:["path","cards","speak","hear","ex"],rp:["rp"
 const SUBN={path:"Lernen",cards:"Karten",speak:"Sprechen",hear:"Diktat",ex:"Üben",rp:"Rollenspiel",hdlg:"Hörtest",gram:"Grammatik",dict:"Wörterbuch",sounds:"Laute",prog:"Fortschritt"};
 function grpOf(t){for(const g in GROUPS)if(GROUPS[g].includes(t))return g;return "today";}
 function tabsHtml(){const g=grpOf(V.tab);$("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" class="${g===k?"on":""}">${n}</button>`).join("");}
-function go(t){Rec.stop(true);if(t!=="chat")liveStop();stopAudio();V.tab=t;if(t==="path"&&!V.unit)V.unit=nextUnit().id;render();window.scrollTo(0,0);}
+function go(t){Rec.stop(true);if(t!=="chat"){liveStop();if(Vm.on)vmStop();}stopAudio();V.tab=t;if(t==="path"&&!V.unit)V.unit=nextUnit().id;render();window.scrollTo(0,0);}
 function render(){
   tabsHtml();
   ({today:vToday,path:vPath,cards:vCards,speak:()=>{V.sp.mode="item";vSpeak();},rp:()=>{V.sp.mode="role";vSpeak();},hear:()=>{V.hear.mode="dict";vHear();},hdlg:()=>{V.hear.mode="dlg";vHear();},ex:vEx,gram:vGram,dict:vDict,sounds:vSounds,prog:vProg,chat:vChat})[V.tab]();
@@ -1943,6 +1943,7 @@ function chatSend(txt,spoken){
     if(!opts.some(x=>norm(x)===norm(txt))){miniBuild();const ai=miniIntent(txt);if(["target","unknown"].includes(ai.intent)||ai.conf<.6){tlog("Gesprochen ignoriert (Auswahlaufgabe): "+txt);return;}}
   }
   tchHandle(txt,spoken);
+  if(V.chat.pendingAudio){const um=[...V.chat.msgs].reverse().find(m=>m.role==="user");if(um&&!um.audio)um.audio=V.chat.pendingAudio;V.chat.pendingAudio=null;render();}
 }
 /* Dauer-Sitzung: EINE Spracherkennung bleibt für die ganze Lektion offen.
    Grund: Nach dem Ende der ersten Sitzung liefert das Mikrofon in manchen Browsern/auf iOS keinen Ton mehr. */
@@ -1988,6 +1989,86 @@ function liveOpen(){
   };
   try{r.start();}catch(e){tlog("SR start Ausnahme: "+(e&&e.name));liveWant=false;liveSR=null;V.chat.err="Spracherkennung konnte nicht starten.";render();}
 }
+/* ===== Sprachnachricht: erst aufnehmen (MediaRecorder), danach im Browser auswerten (Whisper, einmaliger Download, danach offline) ===== */
+const WH={asr:null,loading:null,model:"Xenova/whisper-tiny",lib:"https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2"};
+const WH_LANG={id:"indonesian",en:"english",de:"german"};
+async function whLoad(onProg){
+  if(WH.asr)return WH.asr;
+  if(WH.loading)return WH.loading;
+  WH.loading=(async()=>{
+    tlog("Whisper: lade Bibliothek …");
+    const lib=window.__asrLib||await import(WH.lib);
+    const env=lib.env;if(env){env.allowLocalModels=false;try{env.backends.onnx.wasm.numThreads=1;}catch(e){}}
+    tlog("Whisper: lade Modell "+WH.model+" …");
+    const t0=Date.now();
+    const asr=await lib.pipeline("automatic-speech-recognition",WH.model,{progress_callback:p=>{if(onProg&&p&&p.status==="progress")onProg(Math.round(p.progress||0),p.file||"");}});
+    tlog("Whisper: bereit ("+Math.round((Date.now()-t0)/1000)+" s)");
+    WH.asr=asr;return asr;
+  })();
+  try{return await WH.loading;}catch(e){WH.loading=null;throw e;}
+}
+async function toPcm16k(blob){
+  const buf=await blob.arrayBuffer();
+  const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC();
+  const dec=await new Promise((res,rej)=>{const p=ctx.decodeAudioData(buf,res,rej);if(p&&p.then)p.then(res,rej);});
+  try{ctx.close();}catch(e){}
+  const OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  const off=new OAC(1,Math.max(1,Math.ceil(dec.duration*16000)),16000),src=off.createBufferSource();
+  src.buffer=dec;src.connect(off.destination);src.start();
+  const out=await off.startRendering();
+  return out.getChannelData(0);
+}
+async function whTranscribe(blob,onProg){
+  const asr=await whLoad(onProg);
+  const pcm=await toPcm16k(blob);
+  tlog("Whisper: Audio "+(pcm.length/16000).toFixed(1)+" s → erkenne …");
+  const t0=Date.now();
+  const out=await asr(pcm,{language:WH_LANG[CFG.tl]||"english",task:"transcribe"});
+  const text=String((out&&out.text)||"").replace(/\[[^\]]*\]|\([^)]*\)/g," ").replace(/\s+/g," ").trim();
+  tlog("Whisper: \""+text+"\" ("+Math.round((Date.now()-t0)/1000)+" s)");
+  return text;
+}
+const Vm={mr:null,stream:null,chunks:[],on:false,busy:false,timer:0};
+function vmStatus(t){const e=$("#cstat");if(e)e.textContent=t;}
+async function vmToggle(){
+  if(Vm.busy)return;
+  if(Vm.on){vmStop();return;}
+  liveStop();stopAudio();releaseAudio();V.chat.err="";
+  if(!navigator.mediaDevices||!window.MediaRecorder){V.chat.err="Aufnahme wird von diesem Browser nicht unterstützt. Nutze ⌨️ Tastatur-Diktat.";render();return;}
+  try{if(navigator.audioSession)navigator.audioSession.type="play-and-record";}catch(e){}
+  await sleep(isIOS?400:60);
+  try{Vm.stream=await getMic({audio:{echoCancellation:true,noiseSuppression:true}});}
+  catch(e){V.chat.err="Mikrofon blockiert ("+((e&&e.name)||"Fehler")+"). Erlaube den Zugriff für diese Seite (iPhone: Einstellungen → Safari → Mikrofon).";tlog("Mikrofon blockiert: "+(e&&e.name));render();return;}
+  const mime=pickMime();Vm.chunks=[];
+  try{Vm.mr=new MediaRecorder(Vm.stream,mime?{mimeType:mime}:undefined);}catch(e){Vm.mr=new MediaRecorder(Vm.stream);}
+  Vm.mr.ondataavailable=e=>{if(e.data&&e.data.size)Vm.chunks.push(e.data);};
+  Vm.mr.onstop=()=>vmDone(new Blob(Vm.chunks,{type:(Vm.mr&&Vm.mr.mimeType)||mime||"audio/mp4"}));
+  Vm.mr.start();Vm.on=true;tlog("Sprachnachricht: Aufnahme läuft");
+  clearTimeout(Vm.timer);Vm.timer=setTimeout(()=>{if(Vm.on)vmStop();},20000);
+  render();vmStatus("🔴 Aufnahme läuft – sprich jetzt. Tippe ■, um zu senden.");
+}
+function vmStop(){
+  clearTimeout(Vm.timer);Vm.on=false;
+  try{if(Vm.mr&&Vm.mr.state!=="inactive")Vm.mr.stop();}catch(e){}
+  try{Vm.stream&&Vm.stream.getTracks().forEach(t=>t.stop());}catch(e){}
+  try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch(e){}
+}
+async function vmDone(blob){
+  Vm.busy=true;render();
+  tlog("Sprachnachricht: "+Math.round(blob.size/1024)+" KB ("+blob.type+")");
+  if(blob.size<1500){Vm.busy=false;V.chat.err="Die Aufnahme war leer. Tippe 🎤, sprich erst nach dem roten Hinweis und tippe dann ■.";render();return;}
+  try{
+    vmStatus("⏳ Spracherkennung wird geladen (einmalig, danach offline) …");
+    const text=await whTranscribe(blob,(p)=>vmStatus("⏳ Spracherkennung wird geladen … "+p+" %"));
+    Vm.busy=false;
+    if(!text){V.chat.err="Ich habe nichts verstanden. Sprich etwas lauter und näher am Mikrofon und versuche es noch einmal.";render();return;}
+    V.chat.pendingAudio=URL.createObjectURL(blob);
+    chatSend(text,true);
+  }catch(e){
+    Vm.busy=false;tlog("Whisper Fehler: "+((e&&e.message)||e));
+    V.chat.err="Die Spracherkennung konnte nicht geladen oder ausgeführt werden ("+((e&&e.message)||e)+"). Beim ersten Mal braucht sie Internet (ca. 40 MB). Du kannst solange ⌨️ Tastatur-Diktat nutzen.";render();
+  }
+}
 function cmpHtml(m,i){
   if(!m.cmp)return "";
   const c=m.cmp,sc=(c.retry||c).score,w=(c.retry||c).words;
@@ -2003,7 +2084,7 @@ function vOT(){
   const nl=t=>esc(t).replace(/\n/g,"<br>");
   const bub=C.msgs.map((m,i)=>m.role==="assistant"
    ?`<div class="bub A"><b>${nl(m.text)}</b>${(m.text||"").length>45?`<div style="margin-top:6px"><button class="btn sm" data-act="chatRead" data-i="${i}">🔊 Vorlesen</button></div>`:""}${m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><div class="small">🎯 Sprich nach:</div><b>${esc(m.goal)}</b> <button class="btn sm" data-act="chatSayG" data-i="${i}">🔊</button>${m.ph?`<div class="ph" style="font-size:13px">${esc(m.ph)}</div>`:""}${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.chips&&m===last?`<div class="row" style="margin-top:8px">${m.chips.map((c,k)=>`<button class="btn sm" data-act="miniChip" data-i="${i}" data-k="${k}">${esc(c[0])}</button>`).join("")}</div>`:""}${m.say&&!m.goal?`<div class="card" style="margin:8px 0 0;padding:10px 12px"><b>${esc(m.say)}</b> <button class="btn sm" data-act="chatSayS" data-i="${i}">🔊</button>${m.gl?`<div class="small">${esc(m.gl)}</div>`:""}</div>`:""}${m.opts&&m===last?`<div style="margin-top:8px">${m.opts.map((x,k)=>`<button class="btn opt" data-act="otPick" data-i="${k}">${esc(x)}</button>`).join("")}</div>`:""}</div>`
-   :`<div class="bub B"><b>${esc(m.text)}</b>${cmpHtml(m,i)}</div>`).join("");
+   :`<div class="bub B"><b>${esc(m.text)}</b>${m.audio?`<div style="margin-top:6px"><audio controls preload="none" src="${m.audio}" style="width:100%;height:34px"></audio></div>`:""}${cmpHtml(m,i)}</div>`).join("");
   const manual=`<div class="small" style="margin:12px 0 6px">Oder wähle dein Level selbst:</div><div class="row">${LEVELS.map(l=>`<button class="btn sm" data-act="setLevel" data-l="${l}">${l}</button>`).join("")}</div>`;
   const teach=o&&o.mode==="teach",talk=o&&o.mode==="talk";
   const dlgWait=teach&&o.dlg;
@@ -2018,10 +2099,11 @@ function vOT(){
   const done=o&&o.done?`<div class="row" style="margin-top:10px">${weakN?`<button class="btn pri" data-act="tchDrill">Schwache Wörter wiederholen</button>`:""}<button class="btn ${weakN?"":"pri"}" data-act="otNext">Nächste Lektion</button><button class="btn" data-act="chatReset">Lektion neu starten</button></div>`:"";
   const prog=teach&&!o.done?`<div class="small" style="margin-bottom:8px">Lektion ${otUnit().n} · ${TCH_PH[o.cur?o.cur.ph:0]} · Schritt ${Math.min(o.i+1,o.steps.length)} von ${o.steps.length}<div style="height:6px;border-radius:3px;background:var(--line);margin-top:4px"><div style="height:6px;border-radius:3px;background:var(--red);width:${Math.round(100*o.i/Math.max(1,o.steps.length))}%"></div></div></div>`:"";
   $("#view").innerHTML=`<h2>${place?"Einstufung":"Lehrer"}</h2>
-   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
+   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button><button class="btn sm" data-act="chatLog">ℹ️ Protokoll</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
+   ${C.showLog?`<div class="card"><div class="small"><b>Protokoll</b> · Version ${BUILD}</div><pre class="small" style="white-space:pre-wrap;max-height:240px;overflow:auto">${esc(TTSLOG.join("\n")||"(noch leer)")}</pre><button class="btn sm" data-act="chatLogCopy">Kopieren</button></div>`:""}
    ${prog}${start}${bub}${done}
    ${C.err?`<div class="warn">${esc(C.err)}<details style="margin-top:6px"><summary class="small">Protokoll</summary><pre class="small" style="white-space:pre-wrap">${esc(TTSLOG.join("\n"))}</pre></details><div class="row" style="margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Mikrofon zurücksetzen</button><button class="btn sm" data-act="chatKbd">⌨️ Tastatur-Diktat</button></div></div>`:""}
-   ${inputOn?`<div class="chatbar"><button class="btn ${liveSR?"rec":"pri"}" data-act="chatListen">${liveSR?"⏹":"🎙"}</button><button class="btn" data-act="chatKbd" title="Tastatur-Diktat">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
+   ${inputOn?`<div class="chatbar"><button class="btn ${Vm.on?"rec":"pri"}" data-act="vmToggle" ${Vm.busy?"disabled":""}>${Vm.on?"■ Senden":"🎤"}</button><button class="btn ${liveSR?"rec":""}" data-act="chatListen" title="Live-Erkennung">${liveSR?"⏹":"🎙"}</button><button class="btn" data-act="chatKbd" title="Tastatur-Diktat">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
   const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter"){const v=i.value;i.value="";chatSend(v);}};
   const s2=$("#tunit");if(s2)s2.onchange=e=>{V.unit=e.target.value;};
   window.scrollTo(0,1e6);
@@ -2335,7 +2417,10 @@ document.addEventListener("click",e=>{
    case"toTutor":V.unit=nextUnit().id;V.chat.msgs=[];V.chat.ot=null;V.chat.result=null;go("chat");break;
    case"toLesson":openUnit(nextUnit().id);break;
    case"chatRetry":chatListen(+dsx.i);break;
-   case"micFix":{Rec.stop(true);liveStop();V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt auf 🎙.",4000);render();});break;}
+   case"micFix":{Rec.stop(true);liveStop();if(Vm.on)vmStop();V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt auf 🎙.",4000);render();});break;}
+   case"vmToggle":vmToggle();break;
+   case"chatLog":V.chat.showLog=!V.chat.showLog;render();break;
+   case"chatLogCopy":{const t="Version "+BUILD+"\n"+TTSLOG.join("\n");try{navigator.clipboard.writeText(t).then(()=>toast("Protokoll kopiert.",2500),()=>toast("Kopieren nicht möglich – markiere den Text.",3500));}catch(e){toast("Kopieren nicht möglich – markiere den Text.",3500);}break;}
    case"chatKbd":{const i=$("#cin");if(i)i.focus();toast("Tippe auf das Mikrofon-Symbol deiner iPhone-Tastatur (unten rechts), sprich, dann auf „Senden“.",6000);break;}
    case"kbScore":scoreText(($("#kbin")||{}).value);break;
    case"chatAuto":V.chat.auto=!V.chat.auto;render();break;
