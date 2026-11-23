@@ -837,7 +837,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="21.11.2026 09:33";
+const BUILD="23.11.2026 20:08";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -1569,7 +1569,7 @@ function vProg(){
    <div class="card"><div class="small">Karten / Aufnahmen</div><div class="big">${S.totalCards||0} / ${S.totalSpeak||0}</div></div></div>
   <div class="card"><b>XP der letzten 14 Tage</b><div class="chart" style="margin-top:10px">${vals.map((v,k)=>`<div title="${days[k]}: ${v} XP" style="height:${Math.max(2,Math.round(90*v/mx))}px"></div>`).join("")}</div></div>
   <div class="card"><b>Stufen</b>${LEVELS.map(l=>`<div style="margin:8px 0">${l} <span class="small">${lvlPct(l)}%</span><div class="bar"><i style="width:${lvlPct(l)}%"></i></div></div>`).join("")}</div>
-  <div class="card"><b>Einstellungen</b><div class="row" style="margin-top:8px"><span>Neue Karten pro Tag:</span><select data-sel="newpd">${[5,10,15,20,30].map(n=>`<option value="${n}" ${S.newPerDay===n?"selected":""}>${n}</option>`).join("")}</select></div></div>
+  <div class="card"><b>Einstellungen</b><div class="row" style="margin-top:8px"><span>Neue Karten pro Tag:</span><select data-sel="newpd">${[5,10,15,20,30].map(n=>`<option value="${n}" ${S.newPerDay===n?"selected":""}>${n}</option>`).join("")}</select></div></div>${typeof GQ!=="undefined"?GQ.card():""}
   <div class="card"><b>💾 Sicherung & Wiederherstellung</b>
    <p class="small">Dein Fortschritt liegt im Speicher des Browsers (${STORE_OK?"Speicher funktioniert ✅":"Speicher NICHT verfügbar ⚠️"}). Letzte Sicherung: ${S.lastBackup?new Date(S.lastBackup).toLocaleDateString("de-DE"):"noch keine"}.</p>
    <div class="row"><button class="btn pri" data-act="bkCopy">📋 In Zwischenablage kopieren</button><button class="btn" data-act="bkFile">⬇️ Als Datei sichern</button>
@@ -1636,7 +1636,7 @@ function otStart(){
 }
 function tchPrompt(q){
   const o=V.chat.ot;
-  if(q.t==="info")return {text:q.text,opts:["Verstanden – weiter ▶"]};
+  if(q.t==="info")return {text:q.text,opts:(typeof GQ!=="undefined"&&GQ.ok()&&o&&o.i>0)?["Verstanden – weiter ▶","🧠 Ausführlicher erklären"]:["Verstanden – weiter ▶"]};
   if(q.t==="rep"){
     const t=stripG(q.it.idn);
     return {text:(q.hdr?q.hdr+" ":"")+(q.new?"Hör zu und sprich nach.":"Sprich noch einmal nach.")+" – "+LT.tp.cmd,goal:t,gl:q.it.de,ph:q.it.ph||"",say:t};
@@ -1738,6 +1738,13 @@ function tchQuestion(txt,spoken){
   if(intent==="quiz"){const k=o.steps.findIndex((s,j)=>j>=o.i&&s.t==="final");if(k>=0){o.i=k;o.dlg=null;tchRun();return;}}
   if(intent==="nextlesson"){C.msgs.push({role:"assistant",text:"Gerne – wir können jederzeit zur nächsten Lektion wechseln. Tippe unten auf „Nächste Lektion“."});o.skip=true;render();return;}
   if(intent==="stop"){C.msgs.push({role:"assistant",text:"Kein Problem, wir machen eine Pause. Sag Bescheid oder tippe auf „Weiter“, dann geht es an der gleichen Stelle weiter.",opts:["Weiter ▶"]});o.paused=true;render();return;}
+  const gqIntents=["repeat","slow","dialog","quiz","nextlesson","stop"];
+  if(typeof GQ!=="undefined"&&GQ.ok()&&!gqIntents.includes(intent)&&txt.length>3){
+    C.think=true;render();
+    GQ.answer(txt).then(t=>{C.think=false;C.msgs.push({role:"assistant",text:t||"Dazu habe ich gerade keine Antwort."});resume();if(C.auto)speakNative(t);})
+     .catch(e=>{C.think=false;tlog("Groq Fehler: "+((e&&e.message)||e));C.err=GQ.errText(e);miniFixedReply(C,txt,mTok(txt),um);resume();});
+    return;
+  }
   if(!["target","unknown"].includes(intent)&&(ai.conf>=.3||intent==="repeat"||intent==="slow")){
     const dlgSave=o.dlg;o.dlg=null;
     miniDo(C,intent,txt,miniSlot(txt),um);o.dlg=dlgSave;resume();return;
@@ -1793,6 +1800,18 @@ function tchPick(i){
   }
   last.opts=null;
   if(val==="Weiter ▶"){o.paused=false;const q=o.cur;if(q&&q.t==="info"){C.msgs.push({role:"user",text:"Weiter"});tchNext();}else{C.msgs.pop();C.msgs.push({role:"user",text:"Weiter"});if(q&&!o.done){const p=tchPrompt(q);C.msgs.push(Object.assign({role:"assistant"},p));}render();}return;}
+  if(val==="🧠 Ausführlicher erklären"){
+    const q=o.cur;C.think=true;render();
+    GQ.explain(stripHtml(String((q&&q.text)||""))).then(t=>{C.think=false;C.msgs.push({role:"assistant",text:t||"Dazu fällt mir gerade nichts ein.",opts:["Verstanden – weiter ▶","🧠 Noch ein Beispiel"]});render();if(C.auto)speakNative(t);})
+     .catch(e=>{C.think=false;last.opts=["Verstanden – weiter ▶"];C.err=GQ.errText(e);render();});
+    return;
+  }
+  if(val==="🧠 Noch ein Beispiel"){
+    C.think=true;render();
+    GQ.answer("Gib mir noch 3 andere Beispielsätze zu diesem Thema, mit Übersetzung und kurzer Erklärung.").then(t=>{C.think=false;C.msgs.push({role:"assistant",text:t,opts:["Verstanden – weiter ▶","🧠 Noch ein Beispiel"]});render();if(C.auto)speakNative(t);})
+     .catch(e=>{C.think=false;last.opts=["Verstanden – weiter ▶"];C.err=GQ.errText(e);render();});
+    return;
+  }
   if(val==="Verstanden – weiter ▶"){C.msgs.push({role:"user",text:"Verstanden"});tchNext();return;}
   tchHandle(val,false);
 }
@@ -1879,6 +1898,10 @@ async function toPcm16k(blob){
   return out.getChannelData(0);
 }
 async function whTranscribe(blob,onProg){
+  if(typeof GQ!=="undefined"&&GQ.ok()){
+    try{const p0=(blob&&blob.length!=null&&!blob.arrayBuffer)?blob:await toPcm16k(blob);return await GQ.stt(p0);}
+    catch(e){tlog("Groq STT Fehler: "+((e&&e.message)||e)+" → lokale Erkennung");if(e&&e.status===401)throw e;}
+  }
   const asr=await whLoad(onProg);
   const pcm=(blob&&blob.length!=null&&!blob.arrayBuffer)?blob:await toPcm16k(blob);
   tlog("Whisper: Audio "+(pcm.length/16000).toFixed(1)+" s → erkenne …");
@@ -2044,9 +2067,10 @@ function vOT(){
   const done=o&&o.done?`<div class="row" style="margin-top:10px">${weakN?`<button class="btn pri" data-act="tchDrill">Schwache Wörter wiederholen</button>`:""}<button class="btn ${weakN?"":"pri"}" data-act="otNext">Nächste Lektion</button><button class="btn" data-act="chatReset">Lektion neu starten</button></div>`:"";
   const prog=teach&&!o.done?`<div class="small" style="margin-bottom:8px">Lektion ${otUnit().n} · ${TCH_PH[o.cur?o.cur.ph:0]} · Schritt ${Math.min(o.i+1,o.steps.length)} von ${o.steps.length}<div style="height:6px;border-radius:3px;background:var(--line);margin-top:4px"><div style="height:6px;border-radius:3px;background:var(--red);width:${Math.round(100*o.i/Math.max(1,o.steps.length))}%"></div></div></div>`:"";
   $("#view").innerHTML=`<h2>${place?"Einstufung":"Lehrer"}</h2>
-   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button><button class="btn sm" data-act="chatLog">ℹ️ Protokoll</button>${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
+   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button><button class="btn sm" data-act="chatLog">ℹ️ Protokoll</button>${typeof GQ!=="undefined"?`<button class="btn sm ${GQ.ok()?"pri":""}" data-act="gqToggle">🔑 Groq${GQ.ok()?" ✓":""}</button>`:""}${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
    ${C.showLog?`<div class="card"><div class="small"><b>Protokoll</b> · Version ${BUILD}</div><pre class="small" style="white-space:pre-wrap;max-height:240px;overflow:auto">${esc(TTSLOG.join("\n")||"(noch leer)")}</pre><div class="row"><button class="btn sm" data-act="vmTest">🧪 Mikrofon testen</button><button class="btn sm" data-act="chatLogCopy">Kopieren</button></div></div>`:""}
-   ${prog}${start}${bub}${done}
+   ${typeof GQ!=="undefined"&&!place&&(C.gqOpen||!C.msgs.length)?GQ.card():""}
+   ${prog}${start}${bub}${C.think?`<div class="small" style="margin:8px 4px">🧠 Der Lehrer überlegt …</div>`:""}${done}
    ${C.err?`<div class="warn">${esc(C.err)}<details style="margin-top:6px"><summary class="small">Protokoll</summary><pre class="small" style="white-space:pre-wrap">${esc(TTSLOG.join("\n"))}</pre></details><div class="row" style="margin-top:8px"><button class="btn sm" data-act="micFix">🔄 Mikrofon zurücksetzen</button><button class="btn sm" data-act="chatKbd">⌨️ Tastatur-Diktat</button></div></div>`:""}
    ${inputOn?`<div class="chatbar"><button class="btn ${Vm.on?"rec":"pri"}" data-act="vmToggle" ${Vm.busy?"disabled":""}>${Vm.on?"■ Senden":"🎤"}</button><button class="btn ${liveSR?"rec":""}" data-act="chatListen" title="Live-Erkennung">${liveSR?"⏹":"🎙"}</button><button class="btn" data-act="chatKbd" title="Tastatur-Diktat">⌨️</button><input type="text" id="cin" placeholder="${o&&o.ask?"Stell deine Frage …":"Sprich oder schreibe …"}" autocomplete="off" autocapitalize="off"><button class="btn" data-act="chatSendBtn">Senden</button></div><div class="small" id="cstat" style="margin:6px 0 0 8px"></div>`:""}`;
   const i=$("#cin");if(i)i.onkeydown=e=>{if(e.key==="Enter"){const v=i.value;i.value="";chatSend(v);}};
@@ -2363,6 +2387,9 @@ document.addEventListener("click",e=>{
    case"toLesson":openUnit(nextUnit().id);break;
    case"chatRetry":chatListen(+dsx.i);break;
    case"micFix":{Rec.stop(true);liveStop();if(Vm.on)vmStop();pmClose("Neustart");V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt auf 🎙.",4000);render();});break;}
+   case"gqSave":GQ.save();break;
+   case"gqOff":GQ.off();break;
+   case"gqToggle":V.chat.gqOpen=!V.chat.gqOpen;render();break;
    case"vmToggle":vmToggle();break;
    case"vmTest":vmToggle(true);break;
    case"chatLog":V.chat.showLog=!V.chat.showLog;render();break;
