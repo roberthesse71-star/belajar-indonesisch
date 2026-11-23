@@ -107,3 +107,30 @@ const GQ={
   },
   off(){GQ.setKey("");GQ.last="";render();}
 };
+
+/* ---------- Groq-Lehrer: führt durch die Lektion, erklärt Grammatik, spricht alles vor ---------- */
+GQ.spoken="Dein Text wird laut vorgelesen: keine Aufzählungszeichen, keine Klammern, keine Sternchen, keine Tabellen; Indonesisch immer in „…“; kurze, klare Sätze wie im Unterricht. ";
+GQ.rate=function(){const r=parseFloat(GQ.get("rate","1"));return r>0?r:1;};
+GQ.setRate=function(r){GQ.put("rate",String(r));};
+GQ.msgs=function(user,max){return [{role:"system",content:GQ.sys()+" "+GQ.spoken},{role:"user",content:user}];};
+GQ.intro=async function(u){
+  return GQ.clean(await GQ.chat(GQ.msgs("Begrüße mich herzlich und starte Lektion "+u.n+" („"+u.t+"“). Sag in 3–5 Sätzen, was wir heute lernen, wozu es im Alltag nützt und wie wir vorgehen (erst Grundlagen, dann Wörter, Sätze, Übungen, Dialog, Abfrage). Keine Lernziel-Liste.",1),{max:260}));
+};
+/* Grammatik in 2–3 Teilen, Teile durch eine Zeile mit --- getrennt */
+GQ.grammar=async function(u){
+  let g="";try{g=stripHtml(u.grammar.html).slice(0,3200);}catch(e){}
+  const t=await GQ.chat(GQ.msgs("Bring mir jetzt die Grammatik dieser Lektion bei: „"+(u.grammar&&u.grammar.t||u.t)+"“.\nVorlage (Stoff):\n"+g+"\n\nErkläre sie in 2 oder 3 Teilen, jeder Teil höchstens 110 Wörter. Jeder Teil behandelt EINEN Gedanken: Regel in einfachen Worten, dann 2–3 Beispiele („Indonesisch“ – Deutsch), dann ein typischer Fehler deutscher Lerner. Der letzte Teil endet mit einer kurzen Merkhilfe. Trenne die Teile mit einer Zeile, die nur --- enthält. Keine Überschriften, kein „Teil 1“.",1),{max:900,temp:.35});
+  const parts=GQ.clean(t).split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(x=>x.length>20);
+  return parts.length?parts.slice(0,3):[GQ.clean(t)];
+};
+GQ.words=async function(u,blk,first){
+  const list=blk.map(it=>"„"+stripG(it.idn)+"“ = "+it.de+(it.ph?" (Aussprache: "+it.ph+")":"")).join("; ");
+  return GQ.clean(await GQ.chat(GQ.msgs((first?"Wir beginnen mit dem Wortschatz. ":"")+"Stelle mir diese neuen Wörter vor: "+list+".\nSag zu jedem Wort in 1–2 Sätzen: Bedeutung, wie man es benutzt (mit einem kurzen Beispielsatz) oder eine Eselsbrücke – insgesamt höchstens 80 Wörter. Danach sage ich sie dir nach.",1),{max:300}));
+};
+GQ.mistake=async function(target,heard,de,kind){
+  return GQ.clean(await GQ.chat(GQ.msgs("Ich habe bei der Übung ("+kind+") „"+heard+"“ gesagt, richtig wäre „"+target+"“"+(de?" ("+de+")":"")+". Erkläre mir in höchstens 2 kurzen Sätzen, was der Unterschied ist, und gib eine Merkhilfe. Nicht schimpfen, freundlich bleiben.",1),{max:170,temp:.3}));
+};
+GQ.wrap=async function(u,fr,fn,weak){
+  return GQ.clean(await GQ.chat(GQ.msgs("Wir haben Lektion "+u.n+" („"+u.t+"“) beendet. Abfrage: "+fr+" von "+fn+" richtig."+(weak.length?" Schwach waren: "+weak.join(", ")+".":"")+" Fasse in 3–4 Sätzen zusammen, was ich gelernt habe, lobe konkret und sag, was ich als Nächstes üben sollte.",1),{max:220}));
+};
+/* Lektionstext vorlesen: Deutsch normal, Indonesisch langsamer; gibt true zurück, wenn bis zum Ende gelesen wurde */

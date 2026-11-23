@@ -997,6 +997,33 @@ const GQ={
   off(){GQ.setKey("");GQ.last="";render();}
 };
 
+/* ---------- Groq-Lehrer: führt durch die Lektion, erklärt Grammatik, spricht alles vor ---------- */
+GQ.spoken="Dein Text wird laut vorgelesen: keine Aufzählungszeichen, keine Klammern, keine Sternchen, keine Tabellen; Indonesisch immer in „…“; kurze, klare Sätze wie im Unterricht. ";
+GQ.rate=function(){const r=parseFloat(GQ.get("rate","1"));return r>0?r:1;};
+GQ.setRate=function(r){GQ.put("rate",String(r));};
+GQ.msgs=function(user,max){return [{role:"system",content:GQ.sys()+" "+GQ.spoken},{role:"user",content:user}];};
+GQ.intro=async function(u){
+  return GQ.clean(await GQ.chat(GQ.msgs("Begrüße mich herzlich und starte Lektion "+u.n+" („"+u.t+"“). Sag in 3–5 Sätzen, was wir heute lernen, wozu es im Alltag nützt und wie wir vorgehen (erst Grundlagen, dann Wörter, Sätze, Übungen, Dialog, Abfrage). Keine Lernziel-Liste.",1),{max:260}));
+};
+/* Grammatik in 2–3 Teilen, Teile durch eine Zeile mit --- getrennt */
+GQ.grammar=async function(u){
+  let g="";try{g=stripHtml(u.grammar.html).slice(0,3200);}catch(e){}
+  const t=await GQ.chat(GQ.msgs("Bring mir jetzt die Grammatik dieser Lektion bei: „"+(u.grammar&&u.grammar.t||u.t)+"“.\nVorlage (Stoff):\n"+g+"\n\nErkläre sie in 2 oder 3 Teilen, jeder Teil höchstens 110 Wörter. Jeder Teil behandelt EINEN Gedanken: Regel in einfachen Worten, dann 2–3 Beispiele („Indonesisch“ – Deutsch), dann ein typischer Fehler deutscher Lerner. Der letzte Teil endet mit einer kurzen Merkhilfe. Trenne die Teile mit einer Zeile, die nur --- enthält. Keine Überschriften, kein „Teil 1“.",1),{max:900,temp:.35});
+  const parts=GQ.clean(t).split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(x=>x.length>20);
+  return parts.length?parts.slice(0,3):[GQ.clean(t)];
+};
+GQ.words=async function(u,blk,first){
+  const list=blk.map(it=>"„"+stripG(it.idn)+"“ = "+it.de+(it.ph?" (Aussprache: "+it.ph+")":"")).join("; ");
+  return GQ.clean(await GQ.chat(GQ.msgs((first?"Wir beginnen mit dem Wortschatz. ":"")+"Stelle mir diese neuen Wörter vor: "+list+".\nSag zu jedem Wort in 1–2 Sätzen: Bedeutung, wie man es benutzt (mit einem kurzen Beispielsatz) oder eine Eselsbrücke – insgesamt höchstens 80 Wörter. Danach sage ich sie dir nach.",1),{max:300}));
+};
+GQ.mistake=async function(target,heard,de,kind){
+  return GQ.clean(await GQ.chat(GQ.msgs("Ich habe bei der Übung ("+kind+") „"+heard+"“ gesagt, richtig wäre „"+target+"“"+(de?" ("+de+")":"")+". Erkläre mir in höchstens 2 kurzen Sätzen, was der Unterschied ist, und gib eine Merkhilfe. Nicht schimpfen, freundlich bleiben.",1),{max:170,temp:.3}));
+};
+GQ.wrap=async function(u,fr,fn,weak){
+  return GQ.clean(await GQ.chat(GQ.msgs("Wir haben Lektion "+u.n+" („"+u.t+"“) beendet. Abfrage: "+fr+" von "+fn+" richtig."+(weak.length?" Schwach waren: "+weak.join(", ")+".":"")+" Fasse in 3–4 Sätzen zusammen, was ich gelernt habe, lobe konkret und sag, was ich als Nächstes üben sollte.",1),{max:220}));
+};
+/* Lektionstext vorlesen: Deutsch normal, Indonesisch langsamer; gibt true zurück, wenn bis zum Ende gelesen wurde */
+
 
 const LT=CFG.t;
 /* ---------- Items ---------- */
@@ -1084,7 +1111,7 @@ const idVoice=()=>{
   if(S.voiceURI){const v=voices.find(x=>x.voiceURI===S.voiceURI);if(v)return v;}
   return voices.find(v=>CFG.vre[0].test(v.lang))||voices.find(isIdLang)||(CFG.vre[2]&&voices.find(v=>CFG.vre[2].test(v.lang)))||null;
 };
-const BUILD="23.11.2026 20:08";
+const BUILD="23.11.2026 20:12";
 const TTSLOG=[];let audioEndedAt=0;
 function tlog(m){TTSLOG.push(new Date().toLocaleTimeString("de-DE")+"  "+m);if(TTSLOG.length>14)TTSLOG.shift();try{const el=document.getElementById("ttslog");if(el)el.textContent=TTSLOG.join("\n");}catch(e){}}
 function toast(msg,ms){
@@ -1168,17 +1195,19 @@ function segLang(seg){
   return (t>n||(t>0&&t>=n&&toks.length<=4))?"target":"native";
 }
 async function speakNative(text){
-  if(micBusy)return;
+  if(micBusy)return false;
   const my=++playTok,nl=natLang();
   const clean=String(text).replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF▶✅❓]/gu,"").replace(/\s+/g," ").trim();
   const segs=clean.split(/(?<=[.!?:;])\s+|\s+[–—]\s+|[„“”"]/).map(x=>x.trim()).filter(x=>/[A-Za-zÄÖÜäöüß0-9]/.test(x));
   const parts=[];
   for(const g of segs){const l=segLang(g)==="target"?CFG.tl:nl,p=parts[parts.length-1];
     if(p&&p.l===l&&(p.t+" "+g).length<170)p.t+=" "+g;else parts.push({l,t:g});}
+  const gr=(typeof GQ!=="undefined")?GQ.rate():1;
   for(const p of parts){
-    if(my!==playTok)return;
-    await speakOnline(p.t.slice(0,190),.95,p.l);
+    if(my!==playTok)return false;
+    await speakOnline(p.t.slice(0,190),(p.l===CFG.tl?.85:.95)*gr,p.l);
   }
+  return my===playTok;
 }
 async function playDialog(u,cb){
   const my=++playTok,L=u.dlg.lines;
@@ -1861,7 +1890,7 @@ function tchBuild(u){
   st.push({ph:0,t:"info",text:"Die Grundlagen – "+u.grammar.t+":\n"+g});
   for(let i=0;i<vit.length;i+=3){
     const blk=vit.slice(i,i+3);
-    blk.forEach((it,k)=>st.push({ph:1,t:"rep",it,new:true,hdr:(i===0&&k===0?"Jetzt die Wörter. ":"")+"Neues Wort:"}));
+    blk.forEach((it,k)=>st.push({ph:1,t:"rep",it,new:true,intro:k===0?blk:null,first:i===0,hdr:(i===0&&k===0?"Jetzt die Wörter. ":"")+"Neues Wort:"}));
     shuffle(blk).forEach(it=>st.push({ph:1,t:"mc",it,dir:"toNative",mark:true}));
     st.push({ph:1,t:"tr",it:pick(blk),mark:true});
   }
@@ -1883,6 +1912,7 @@ function otStart(){
 }
 function tchPrompt(q){
   const o=V.chat.ot;
+  if(q.t==="info"&&q.gdone)return {text:q.text,opts:["Verstanden – weiter ▶","🧠 Noch ein Beispiel"]};
   if(q.t==="info")return {text:q.text,opts:(typeof GQ!=="undefined"&&GQ.ok()&&o&&o.i>0)?["Verstanden – weiter ▶","🧠 Ausführlicher erklären"]:["Verstanden – weiter ▶"]};
   if(q.t==="rep"){
     const t=stripG(q.it.idn);
@@ -1906,11 +1936,40 @@ function tchRun(){
     C.msgs.push({role:"assistant",text:"Jetzt alles zusammen – ein Dialog: „"+u.dlg.t+"“. Ich spiele die erste Rolle, du bist Person B. Antworte sinngemäß, ich gleiche mit der Vorlage ab."});
     dlgAdvance(C,d,0);return;
   }
-  const p=tchPrompt(q);
-  C.msgs.push(Object.assign({role:"assistant",ph:q.ph},p,{ph:p.ph||""}));
-  if(p.say)o.last={say:p.say,gl:p.gl||""};
-  render();
-  if(p.say&&C.auto)speak(p.say,.9);
+  const gq=typeof GQ!=="undefined"&&GQ.ok();
+  const fail=e=>{C.think=false;tlog("Groq Lehrer: "+((e&&e.message)||e));if(e&&(e.status===401||e.status===429||/Failed to fetch|Load failed/i.test(e.message||"")))C.err=GQ.errText(e);};
+  if(gq&&q.t==="info"&&!q.gdone&&!q.gtried){
+    const kind=o.i===0?"intro":String(q.text||"").indexOf("Die Grundlagen")===0?"grammar":"";
+    if(kind){
+      C.think=true;render();
+      const u=otUnit(),stepsRef=o.steps;
+      (kind==="intro"?GQ.intro(u).then(t=>[t]):GQ.grammar(u)).then(parts=>{
+        if(V.chat.ot!==o||o.steps!==stepsRef||o.cur!==q)return;C.think=false;
+        o.steps.splice(o.i,1,...parts.map((t,k)=>({ph:0,t:"info",text:t,gdone:true,gk:kind,last:k===parts.length-1})));
+        tchRun();
+      }).catch(e=>{fail(e);q.gtried=true;tchRun();});
+      return;
+    }
+  }
+  const show=wait=>{
+    const p=tchPrompt(q);
+    C.msgs.push(Object.assign({role:"assistant",ph:q.ph},p,{ph:p.ph||""}));
+    if(p.say)o.last={say:p.say,gl:p.gl||""};
+    render();
+    if(q.t==="info"&&gq&&C.auto){speakNative(q.text);return;}
+    if(p.say&&C.auto){if(wait)wait.then(ok=>{if(ok!==false&&V.chat.ot===o&&o.cur===q)speak(p.say,.85*(typeof GQ!=="undefined"?GQ.rate():1));});else speak(p.say,.9);}
+  };
+  if(gq&&q.t==="rep"&&q.intro&&!q.introDone){
+    q.introDone=true;C.think=true;render();
+    GQ.words(otUnit(),q.intro,q.first).then(t=>{
+      if(V.chat.ot!==o||o.cur!==q)return;C.think=false;
+      if(t)C.msgs.push({role:"assistant",text:t,ph:q.ph});
+      const w=(t&&C.auto)?(render(),speakNative(t)):null;
+      show(w);
+    }).catch(e=>{fail(e);show();});
+    return;
+  }
+  show();
 }
 function tchNext(){V.chat.ot.i++;tchRun();}
 function tchFinal(){
@@ -1932,6 +1991,10 @@ function tchFinish(){
   const pct=o.fn?Math.round(100*o.fr/o.fn):100;
   C.msgs.push({role:"assistant",text:LT.tp.end+" 🎉 Abfrage: "+o.fr+" / "+o.fn+" richtig ("+pct+" %). "+(weak.length?"Das solltest du noch üben: "+weak.slice(0,8).map(x=>stripG(x.idn)).join(", ")+". Ich kann diese Wörter jetzt noch einmal mit dir wiederholen.":"Alles sitzt – sehr gut!")+" Deine Wörter sind jetzt in den Karten (Wiederholung nach Plan)."});
   addXp(5+(pct>=80?5:0));save();render();
+  if(typeof GQ!=="undefined"&&GQ.ok()){
+    C.think=true;render();
+    GQ.wrap(u,o.fr,o.fn,weak.slice(0,6).map(x=>stripG(x.idn))).then(t=>{C.think=false;if(t){C.msgs.push({role:"assistant",text:t});render();if(C.auto)speakNative(t);}}).catch(e=>{C.think=false;tlog("Groq: "+((e&&e.message)||e));render();});
+  }
 }
 function tchDrill(){
   const C=V.chat,o=C.ot;const weak=Object.keys(o.wrong).map(id=>IDX[id]).filter(Boolean);if(!weak.length)return;
@@ -1969,6 +2032,16 @@ function tchAnswer(txt,spoken){
   else if(isMc)C.msgs.push({role:"assistant",text:"Nicht ganz – „"+stripG(q.it.idn)+"“ bedeutet „"+q.it.de+"“.",say:stripG(q.it.idn),gl:q.it.de});
   else C.msgs.push({role:"assistant",text:"Kein Problem – so heißt es richtig:",goal:target});
   o.last={say:target,gl:q.it?q.it.de:""};
+  const go=()=>{if(V.chat.ot!==o||o.cur!==q)return;o.i++;tchRun();};
+  if(typeof GQ!=="undefined"&&GQ.ok()&&txt&&!isCl){
+    C.think=true;render();
+    GQ.mistake(target,txt,q.it?q.it.de:"",isMc?"Bedeutung":"Sprechen").then(t=>{
+      if(V.chat.ot!==o||o.cur!==q)return;C.think=false;
+      if(t)C.msgs.push({role:"assistant",text:t});render();
+      return (t&&C.auto)?speakNative(t):null;
+    }).then(()=>{if(C.auto)return sleep(300);}).then(go,e=>{C.think=false;tlog("Groq: "+((e&&e.message)||e));go();});
+    return;
+  }
   o.i++;tchRun();
 }
 /* Fragen an den Lehrer mitten in der Lektion */
@@ -2314,7 +2387,7 @@ function vOT(){
   const done=o&&o.done?`<div class="row" style="margin-top:10px">${weakN?`<button class="btn pri" data-act="tchDrill">Schwache Wörter wiederholen</button>`:""}<button class="btn ${weakN?"":"pri"}" data-act="otNext">Nächste Lektion</button><button class="btn" data-act="chatReset">Lektion neu starten</button></div>`:"";
   const prog=teach&&!o.done?`<div class="small" style="margin-bottom:8px">Lektion ${otUnit().n} · ${TCH_PH[o.cur?o.cur.ph:0]} · Schritt ${Math.min(o.i+1,o.steps.length)} von ${o.steps.length}<div style="height:6px;border-radius:3px;background:var(--line);margin-top:4px"><div style="height:6px;border-radius:3px;background:var(--red);width:${Math.round(100*o.i/Math.max(1,o.steps.length))}%"></div></div></div>`:"";
   $("#view").innerHTML=`<h2>${place?"Einstufung":"Lehrer"}</h2>
-   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button><button class="btn sm" data-act="chatLog">ℹ️ Protokoll</button>${typeof GQ!=="undefined"?`<button class="btn sm ${GQ.ok()?"pri":""}" data-act="gqToggle">🔑 Groq${GQ.ok()?" ✓":""}</button>`:""}${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
+   <div class="row" style="margin-bottom:10px">${place?"":`<button class="btn sm" data-act="chatAuto">${C.auto?"🔊 Ton an":"🔇 Ton aus"}</button>${teach?`<button class="btn sm ${o.ask?"pri":""}" data-act="tchAsk">❓ Frage stellen</button>`:""}<button class="btn sm" data-act="chatReset">Neu starten</button><button class="btn sm" data-act="talkStart">💬 Frei fragen</button><button class="btn sm" data-act="chatLog">ℹ️ Protokoll</button>${typeof GQ!=="undefined"&&GQ.ok()?`<button class="btn sm" data-act="gqRate">🐢 Tempo ${GQ.rate()<1?"langsam":GQ.rate()>1?"schnell":"normal"}</button>`:""}${typeof GQ!=="undefined"?`<button class="btn sm ${GQ.ok()?"pri":""}" data-act="gqToggle">🔑 Groq${GQ.ok()?" ✓":""}</button>`:""}${CFG.placement?`<button class="btn sm" data-act="relevel">Level neu testen</button>`:""}`}</div>
    ${C.showLog?`<div class="card"><div class="small"><b>Protokoll</b> · Version ${BUILD}</div><pre class="small" style="white-space:pre-wrap;max-height:240px;overflow:auto">${esc(TTSLOG.join("\n")||"(noch leer)")}</pre><div class="row"><button class="btn sm" data-act="vmTest">🧪 Mikrofon testen</button><button class="btn sm" data-act="chatLogCopy">Kopieren</button></div></div>`:""}
    ${typeof GQ!=="undefined"&&!place&&(C.gqOpen||!C.msgs.length)?GQ.card():""}
    ${prog}${start}${bub}${C.think?`<div class="small" style="margin:8px 4px">🧠 Der Lehrer überlegt …</div>`:""}${done}
@@ -2636,6 +2709,7 @@ document.addEventListener("click",e=>{
    case"micFix":{Rec.stop(true);liveStop();if(Vm.on)vmStop();pmClose("Neustart");V.chat.err="";SP.status="";micReset(true).then(()=>{toast("Mikrofon zurückgesetzt – tippe jetzt auf 🎙.",4000);render();});break;}
    case"gqSave":GQ.save();break;
    case"gqOff":GQ.off();break;
+   case"gqRate":{const r=GQ.rate();GQ.setRate(r<1?1:r>1?.85:1.12);render();break;}
    case"gqToggle":V.chat.gqOpen=!V.chat.gqOpen;render();break;
    case"vmToggle":vmToggle();break;
    case"vmTest":vmToggle(true);break;
